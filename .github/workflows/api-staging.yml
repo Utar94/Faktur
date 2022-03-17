@@ -1,6 +1,11 @@
 name: Deploy Staging API to Azure
 
-on: [push]
+on:
+  push:
+    branches:
+      - develop
+    paths:
+      - 'api/**'
 
 defaults:
   run:
