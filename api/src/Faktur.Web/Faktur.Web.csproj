@@ -11,6 +11,20 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="Views\Email\PasswordRecovery.cshtml" />
+    <Content Remove="Views\Email\SignUp.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Views\Email\PasswordRecovery.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Views\Email\SignUp.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Logitar.AspNetCore.Identity" Version="1.2.2" />
     <PackageReference Include="Logitar.Email.SendGrid" Version="1.1.0" />
     <PackageReference Include="Logitar.WebApiToolKit" Version="6.1.0" />
@@ -27,15 +41,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Faktur.Core\Faktur.Core.csproj" />
     <ProjectReference Include="..\Faktur.Infrastructure\Faktur.Infrastructure.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Update="Views\Email\PasswordRecovery.cshtml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="Views\Email\SignUp.cshtml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
 
 </Project>
