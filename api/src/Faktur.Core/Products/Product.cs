@@ -1,4 +1,5 @@
 ﻿using Faktur.Core.Articles;
+using Faktur.Core.Receipts;
 using Faktur.Core.Stores;
 
 namespace Faktur.Core.Products
@@ -22,6 +23,7 @@ namespace Faktur.Core.Products
     public int? DepartmentId { get; set; }
     public string? Description { get; set; }
     public string? Flags { get; set; }
+    public ICollection<Item> Items { get; set; } = new List<Item>();
     public string? Label { get; set; }
     public string? Sku { get; set; }
     public Store? Store { get; set; }
