@@ -4,7 +4,7 @@ on: [push]
 
 defaults:
   run:
-    working-directory: ./api/src/Faktur.Web
+    working-directory: ./api/src
 
 jobs:
   build:
@@ -18,7 +18,7 @@ jobs:
           username: ${{ secrets.REGISTRY_USERNAME }}
           password: ${{ secrets.REGISTRY_PASSWORD }}
       - run: |
-          docker build . -t francispion.azurecr.io/faktur-api:${{ github.sha }}
+          docker build . -t francispion.azurecr.io/faktur-api:${{ github.sha }} -f Faktur.Web/Dockerfile
           docker push francispion.azurecr.io/faktur-api:${{ github.sha }}
 
       - uses: azure/webapps-deploy@v2
