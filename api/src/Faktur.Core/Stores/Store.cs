@@ -1,4 +1,6 @@
-﻿namespace Faktur.Core.Stores
+﻿using Faktur.Core.Products;
+
+namespace Faktur.Core.Stores
 {
   public class Store : Aggregate
   {
@@ -21,6 +23,9 @@
     public string? Phone { get; set; }
     public string? PostalCode { get; set; }
     public string? State { get; set; }
+
+    public ICollection<Department> Departments { get; set; } = new List<Department>();
+    public ICollection<Product> Products { get; set; } = new List<Product>();
 
     public override string ToString() => $"{Name} | {base.ToString()}";
   }

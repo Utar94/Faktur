@@ -101,7 +101,7 @@ namespace Faktur.Web.Controllers
     [HttpGet("{id}")]
     public async Task<ActionResult<StoreModel>> GetAsync(int id, CancellationToken cancellationToken)
     {
-      Store? store = await dbContext.Stores
+      Store store = await dbContext.Stores
         .AsNoTracking()
         .SingleOrDefaultAsync(x => x.Id == id, cancellationToken)
         ?? throw new EntityNotFoundException<Store>(id);
@@ -112,7 +112,7 @@ namespace Faktur.Web.Controllers
     [HttpPatch("{id}/delete")]
     public async Task<ActionResult<StoreModel>> SetDeletedAsync(int id, CancellationToken cancellationToken)
     {
-      Store? store = await dbContext.Stores
+      Store store = await dbContext.Stores
         .SingleOrDefaultAsync(x => x.Id == id, cancellationToken)
         ?? throw new EntityNotFoundException<Store>(id);
 
@@ -130,7 +130,7 @@ namespace Faktur.Web.Controllers
       CancellationToken cancellationToken
     )
     {
-      Store? store = await dbContext.Stores
+      Store store = await dbContext.Stores
         .SingleOrDefaultAsync(x => x.Id == id, cancellationToken)
         ?? throw new EntityNotFoundException<Store>(id);
 

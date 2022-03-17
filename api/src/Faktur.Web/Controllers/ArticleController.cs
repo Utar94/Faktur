@@ -1,9 +1,10 @@
 ﻿using AutoMapper;
 using Faktur.Core;
+using Faktur.Core.Articles;
+using Faktur.Core.Articles.Models;
+using Faktur.Core.Articles.Payloads;
 using Faktur.Core.Models;
 using Faktur.Core.Stores;
-using Faktur.Core.Stores.Models;
-using Faktur.Core.Stores.Payloads;
 using Faktur.Infrastructure;
 using Logitar;
 using Logitar.Identity.Core;
@@ -15,14 +16,14 @@ namespace Faktur.Web.Controllers
 {
   [ApiController]
   [Authorize]
-  [Route("banners")]
-  public class BannerController : ControllerBase
+  [Route("articles")]
+  public class ArticleController : ControllerBase
   {
     private readonly FakturDbContext dbContext;
     private readonly IMapper mapper;
     private readonly IUserContext userContext;
 
-    public BannerController(FakturDbContext dbContext, IMapper mapper, IUserContext userContext)
+    public ArticleController(FakturDbContext dbContext, IMapper mapper, IUserContext userContext)
     {
       this.dbContext = dbContext;
       this.mapper = mapper;
@@ -30,32 +31,32 @@ namespace Faktur.Web.Controllers
     }
 
     [HttpPost]
-    public async Task<ActionResult<BannerModel>> CreateAsync(
-      [FromBody] CreateBannerPayload payload,
+    public async Task<ActionResult<ArticleModel>> CreateAsync(
+      [FromBody] CreateArticlePayload payload,
       CancellationToken cancellationToken
     )
     {
-      var banner = new Banner(userContext.Id);
-      dbContext.Banners.Add(banner);
+      var article = new Article(userContext.Id);
+      dbContext.Articles.Add(article);
 
-      BannerModel model = await SaveAsync(banner, payload, cancellationToken);
-      var uri = new Uri($"/banners/{model.Id}");
+      ArticleModel model = await SaveAsync(article, payload, cancellationToken);
+      var uri = new Uri($"/articles/{model.Id}");
 
       return Created(uri, model);
     }
 
     [HttpGet]
-    public async Task<ActionResult<ListModel<BannerModel>>> GetAsync(
+    public async Task<ActionResult<ListModel<ArticleModel>>> GetAsync(
       bool? deleted,
       string? search,
-      BannerSort? sort,
+      ArticleSort? sort,
       bool desc,
       int? index,
       int? count,
       CancellationToken cancellationToken
     )
     {
-      IQueryable<Banner> query = dbContext.Banners.AsNoTracking();
+      IQueryable<Article> query = dbContext.Articles.AsNoTracking();
 
       if (deleted.HasValue)
       {
@@ -72,10 +73,10 @@ namespace Faktur.Web.Controllers
       {
         switch (sort.Value)
         {
-          case BannerSort.Name:
+          case ArticleSort.Name:
             query = desc ? query.OrderByDescending(x => x.Name) : query.OrderBy(x => x.Name);
             break;
-          case BannerSort.UpdatedAt:
+          case ArticleSort.UpdatedAt:
             query = desc ? query.OrderByDescending(x => x.UpdatedAt ?? x.CreatedAt) : query.OrderBy(x => x.UpdatedAt ?? x.CreatedAt);
             break;
           default:
@@ -85,60 +86,61 @@ namespace Faktur.Web.Controllers
 
       query = query.ApplyPaging(index, count);
 
-      Banner[] banners = await query.ToArrayAsync(cancellationToken);
+      Article[] articles = await query.ToArrayAsync(cancellationToken);
 
-      return Ok(new ListModel<BannerModel>(mapper.Map<IEnumerable<BannerModel>>(banners), total));
+      return Ok(new ListModel<ArticleModel>(mapper.Map<IEnumerable<ArticleModel>>(articles), total));
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<BannerModel>> GetAsync(int id, CancellationToken cancellationToken)
+    public async Task<ActionResult<ArticleModel>> GetAsync(int id, CancellationToken cancellationToken)
     {
-      Banner banner = await dbContext.Banners
+      Article article = await dbContext.Articles
         .AsNoTracking()
         .SingleOrDefaultAsync(x => x.Id == id, cancellationToken)
         ?? throw new EntityNotFoundException<Store>(id);
 
-      return Ok(mapper.Map<BannerModel>(banner));
+      return Ok(mapper.Map<ArticleModel>(article));
     }
 
     [HttpPatch("{id}/delete")]
-    public async Task<ActionResult<BannerModel>> SetDeletedAsync(int id, CancellationToken cancellationToken)
+    public async Task<ActionResult<ArticleModel>> SetDeletedAsync(int id, CancellationToken cancellationToken)
     {
-      Banner banner = await dbContext.Banners
+      Article article = await dbContext.Articles
         .SingleOrDefaultAsync(x => x.Id == id, cancellationToken)
         ?? throw new EntityNotFoundException<Store>(id);
 
-      banner.Delete(userContext.Id);
+      article.Delete(userContext.Id);
 
       await dbContext.SaveChangesAsync(cancellationToken);
 
-      return Ok(mapper.Map<BannerModel>(banner));
+      return Ok(mapper.Map<ArticleModel>(article));
     }
 
     [HttpPut("{id}")]
-    public async Task<ActionResult<BannerModel>> UpdateAsync(
+    public async Task<ActionResult<ArticleModel>> UpdateAsync(
       int id,
-      [FromBody] UpdateBannerPayload payload,
+      [FromBody] UpdateArticlePayload payload,
       CancellationToken cancellationToken
     )
     {
-      Banner banner = await dbContext.Banners
+      Article article = await dbContext.Articles
         .SingleOrDefaultAsync(x => x.Id == id, cancellationToken)
         ?? throw new EntityNotFoundException<Store>(id);
 
-      banner.Update(userContext.Id);
+      article.Update(userContext.Id);
 
-      return Ok(await SaveAsync(banner, payload, cancellationToken));
+      return Ok(await SaveAsync(article, payload, cancellationToken));
     }
 
-    private async Task<BannerModel> SaveAsync(Banner banner, SaveBannerPayload payload, CancellationToken cancellationToken)
+    private async Task<ArticleModel> SaveAsync(Article article, SaveArticlePayload payload, CancellationToken cancellationToken)
     {
-      banner.Description = payload.Description?.CleanTrim();
-      banner.Name = payload.Name.Trim();
+      article.Description = payload.Description?.CleanTrim();
+      article.Gtin = payload.Gtin;
+      article.Name = payload.Name.Trim();
 
       await dbContext.SaveChangesAsync(cancellationToken);
 
-      return mapper.Map<BannerModel>(banner);
+      return mapper.Map<ArticleModel>(article);
     }
   }
 }
