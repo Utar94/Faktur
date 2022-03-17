@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Faktur.Core;
 using Faktur.Core.Models;
 using Faktur.Core.Stores;
 using Faktur.Core.Stores.Models;
@@ -94,12 +95,8 @@ namespace Faktur.Web.Controllers
     {
       Banner? banner = await dbContext.Banners
         .AsNoTracking()
-        .SingleOrDefaultAsync(x => x.Id == id, cancellationToken);
-
-      if (banner == null)
-      {
-        return NotFound();
-      }
+        .SingleOrDefaultAsync(x => x.Id == id, cancellationToken)
+        ?? throw new EntityNotFoundException<Store>(id);
 
       return Ok(mapper.Map<BannerModel>(banner));
     }
@@ -107,11 +104,9 @@ namespace Faktur.Web.Controllers
     [HttpPatch("{id}/delete")]
     public async Task<ActionResult<BannerModel>> SetDeletedAsync(int id, CancellationToken cancellationToken)
     {
-      Banner? banner = await dbContext.Banners.SingleOrDefaultAsync(x => x.Id == id, cancellationToken);
-      if (banner == null)
-      {
-        return NotFound();
-      }
+      Banner? banner = await dbContext.Banners
+        .SingleOrDefaultAsync(x => x.Id == id, cancellationToken)
+        ?? throw new EntityNotFoundException<Store>(id);
 
       banner.Delete(userContext.Id);
 
@@ -127,11 +122,9 @@ namespace Faktur.Web.Controllers
       CancellationToken cancellationToken
     )
     {
-      Banner? banner = await dbContext.Banners.SingleOrDefaultAsync(x => x.Id == id, cancellationToken);
-      if (banner == null)
-      {
-        return NotFound();
-      }
+      Banner? banner = await dbContext.Banners
+        .SingleOrDefaultAsync(x => x.Id == id, cancellationToken)
+        ?? throw new EntityNotFoundException<Store>(id);
 
       banner.Update(userContext.Id);
 
