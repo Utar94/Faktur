@@ -52,7 +52,7 @@ namespace Faktur.Web
       services.AddAutoMapper(typeof(Aggregate).Assembly);
 
       services.AddDbContext<FakturDbContext>(
-        options => options.UseNpgsql(configuration.GetConnectionString(nameof(FakturDbContext)))
+        options => options.UseNpgsql(configuration.GetValue<string>($"POSTGRESQLCONNSTR_{nameof(FakturDbContext)}"))
       );
     }
 
