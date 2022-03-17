@@ -3,6 +3,7 @@ using System;
 using Faktur.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Faktur.Infrastructure.Migrations
 {
     [DbContext(typeof(FakturDbContext))]
-    partial class FakturDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220317151235_CreateDepartmentTable")]
+    partial class CreateDepartmentTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -88,102 +90,6 @@ namespace Faktur.Infrastructure.Migrations
                     b.HasIndex("Name");
 
                     b.ToTable("Articles");
-                });
-
-            modelBuilder.Entity("Faktur.Core.Products.Product", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("ArticleId")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasDefaultValueSql("now()");
-
-                    b.Property<Guid>("CreatedById")
-                        .HasColumnType("uuid");
-
-                    b.Property<bool>("Deleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false);
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid?>("DeletedById")
-                        .HasColumnType("uuid");
-
-                    b.Property<int?>("DepartmentId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Flags")
-                        .HasMaxLength(10)
-                        .HasColumnType("character varying(10)");
-
-                    b.Property<Guid>("Key")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasDefaultValueSql("uuid_generate_v4()");
-
-                    b.Property<string>("Label")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<string>("Sku")
-                        .HasMaxLength(32)
-                        .HasColumnType("character varying(32)");
-
-                    b.Property<int>("StoreId")
-                        .HasColumnType("integer");
-
-                    b.Property<decimal?>("UnitPrice")
-                        .HasColumnType("money");
-
-                    b.Property<string>("UnitType")
-                        .HasMaxLength(4)
-                        .HasColumnType("character varying(4)");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid?>("UpdatedById")
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("Version")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasDefaultValue(0);
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ArticleId");
-
-                    b.HasIndex("Deleted");
-
-                    b.HasIndex("DepartmentId");
-
-                    b.HasIndex("Key")
-                        .IsUnique();
-
-                    b.HasIndex("Label");
-
-                    b.HasIndex("StoreId", "ArticleId")
-                        .IsUnique();
-
-                    b.HasIndex("StoreId", "Sku")
-                        .IsUnique();
-
-                    b.ToTable("Products");
                 });
 
             modelBuilder.Entity("Faktur.Core.Stores.Banner", b =>
@@ -680,31 +586,6 @@ namespace Faktur.Infrastructure.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("Faktur.Core.Products.Product", b =>
-                {
-                    b.HasOne("Faktur.Core.Articles.Article", "Article")
-                        .WithMany("Products")
-                        .HasForeignKey("ArticleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Faktur.Core.Stores.Department", "Department")
-                        .WithMany()
-                        .HasForeignKey("DepartmentId");
-
-                    b.HasOne("Faktur.Core.Stores.Store", "Store")
-                        .WithMany()
-                        .HasForeignKey("StoreId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Article");
-
-                    b.Navigation("Department");
-
-                    b.Navigation("Store");
-                });
-
             modelBuilder.Entity("Faktur.Core.Stores.Department", b =>
                 {
                     b.HasOne("Faktur.Core.Stores.Store", "Store")
@@ -785,11 +666,6 @@ namespace Faktur.Infrastructure.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("Faktur.Core.Articles.Article", b =>
-                {
-                    b.Navigation("Products");
                 });
 
             modelBuilder.Entity("Faktur.Core.Stores.Banner", b =>
