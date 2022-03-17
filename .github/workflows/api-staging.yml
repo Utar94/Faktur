@@ -1,4 +1,4 @@
-name: Linux Container Node Workflow
+name: Deploy Staging API to Azure
 
 on: [push]
 
