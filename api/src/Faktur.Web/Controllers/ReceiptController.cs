@@ -61,6 +61,16 @@ namespace Faktur.Web.Controllers
       return Ok(await mediator.Send(new ImportReceipt(payload), cancellationToken));
     }
 
+    [HttpPut("{id}")]
+    public async Task<ActionResult> UpdateAsync(
+      int id,
+      [FromBody] UpdateReceiptPayload payload,
+      CancellationToken cancellationToken
+    )
+    {
+      return Ok(await mediator.Send(new UpdateReceipt(id, payload), cancellationToken));
+    }
+
     [HttpPut("{id}/process")]
     public async Task<ActionResult> ProcessAsync(
       int id,

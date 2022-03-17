@@ -1,6 +1,6 @@
 ﻿namespace Faktur.Core.Settings
 {
-  public class TaxSettings
+  public class TaxesSettings
   {
     public double Gst { get; set; }
     public double Qst { get; set; }

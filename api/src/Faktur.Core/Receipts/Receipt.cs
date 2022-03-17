@@ -18,8 +18,20 @@ namespace Faktur.Core.Receipts
     public string? Number { get; set; }
     public Store? Store { get; set; }
     public int StoreId { get; set; }
-    public decimal SubTotal { get; set; }
+    public decimal SubTotal
+    {
+      get => Items.Sum(x => x.Price);
+      set
+      {
+      }
+    }
     public ICollection<Tax> Taxes { get; set; } = new List<Tax>();
-    public decimal Total { get; set; }
+    public decimal Total
+    {
+      get => SubTotal + Taxes.Sum(x => x.Amount);
+      set
+      {
+      }
+    }
   }
 }
