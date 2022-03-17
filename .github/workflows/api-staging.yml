@@ -6,6 +6,7 @@ on:
       - develop
     paths:
       - 'api/**'
+  workflow_dispatch:
 
 defaults:
   run:
