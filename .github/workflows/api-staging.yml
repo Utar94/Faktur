@@ -14,5 +14,5 @@ jobs:
           username: ${{ secrets.REGISTRY_USERNAME }}
           password: ${{ secrets.REGISTRY_PASSWORD }}
       - run: |
-          docker build . -t francispion.azurecr.io/faktur-api:${{ github.sha }}
+          docker build . -t francispion.azurecr.io/faktur-api:${{ github.sha }} api/src/Faktur.Web/Dockerfile
           docker push francispion.azurecr.io/faktur-api:${{ github.sha }}
