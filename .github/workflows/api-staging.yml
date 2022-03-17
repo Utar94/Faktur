@@ -4,7 +4,7 @@ on: [push]
 
 defaults:
   run:
-    working-directory: ./api
+    working-directory: ./api/src
 
 jobs:
   build:
