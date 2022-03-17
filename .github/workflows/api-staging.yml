@@ -4,7 +4,7 @@ on: [push]
 
 defaults:
   run:
-    working-directory: ./api/src
+    working-directory: ./api/src/Faktur.Web
 
 jobs:
   build:
