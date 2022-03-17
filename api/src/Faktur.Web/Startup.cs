@@ -33,6 +33,8 @@ namespace Faktur.Web
       CompositeValidator.Validate(applicationSettings);
       services.AddSingleton(applicationSettings);
 
+      services.AddApplicationInsightsTelemetry();
+
       services.AddWebApiToolKit(configuration, options);
 
       services.AddDefaultIdentity(configuration)
