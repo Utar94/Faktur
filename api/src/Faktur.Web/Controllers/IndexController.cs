@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Logitar.WebApiToolKit.Configuration;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Faktur.Web.Controllers
 {
@@ -6,7 +7,14 @@ namespace Faktur.Web.Controllers
   [Route("")]
   public class IndexController : ControllerBase
   {
+    private readonly ApiSettings apiSettings;
+
+    public IndexController(ApiSettings apiSettings)
+    {
+      this.apiSettings = apiSettings;
+    }
+
     [HttpGet]
-    public IActionResult Get() => Ok("Hello World!");
+    public IActionResult Get() => Ok(apiSettings.Name);
   }
 }
