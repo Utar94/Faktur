@@ -2,6 +2,10 @@ name: Linux Container Node Workflow
 
 on: [push]
 
+defaults:
+  run:
+    working-directory: ./api
+
 jobs:
   build:
     runs-on: ubuntu-latest
