@@ -12,6 +12,7 @@ namespace Faktur.Infrastructure
     }
 
     public DbSet<Banner> Banners { get; set; }
+    public DbSet<Store> Stores { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
