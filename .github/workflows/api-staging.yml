@@ -14,5 +14,11 @@ jobs:
           username: ${{ secrets.REGISTRY_USERNAME }}
           password: ${{ secrets.REGISTRY_PASSWORD }}
       - run: |
-          docker build . -t francispion.azurecr.io/faktur-api:${{ github.sha }} -f api/src/Faktur.Web/Dockerfile
+          docker build . -t francispion.azurecr.io/faktur-api:${{ github.sha }}
           docker push francispion.azurecr.io/faktur-api:${{ github.sha }}
+
+      - uses: azure/webapps-deploy@v2
+        with:
+          app-name: 'staging-api-faktur'
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          images: 'mycontainer.azurecr.io/faktur-api:${{ github.sha }}'
