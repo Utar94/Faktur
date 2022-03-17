@@ -1,4 +1,5 @@
 ﻿using Faktur.Core.Products;
+using Faktur.Core.Receipts;
 
 namespace Faktur.Core.Stores
 {
@@ -26,6 +27,7 @@ namespace Faktur.Core.Stores
 
     public ICollection<Department> Departments { get; set; } = new List<Department>();
     public ICollection<Product> Products { get; set; } = new List<Product>();
+    public ICollection<Receipt> Receipts { get; set; } = new List<Receipt>();
 
     public override string ToString() => $"{Name} | {base.ToString()}";
   }

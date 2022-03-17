@@ -1,4 +1,5 @@
 ﻿using Faktur.Core;
+using Faktur.Core.Settings;
 using Faktur.Infrastructure;
 using Faktur.Web.Email;
 using Faktur.Web.Settings;
@@ -33,6 +34,10 @@ namespace Faktur.Web
       CompositeValidator.Validate(applicationSettings);
       services.AddSingleton(applicationSettings);
 
+      var taxSettings = configuration.GetSection("Tax").Get<TaxSettings>() ?? new();
+      CompositeValidator.Validate(taxSettings);
+      services.AddSingleton(taxSettings);
+
       services.AddApplicationInsightsTelemetry();
 
       services.AddWebApiToolKit(configuration, options);
@@ -47,15 +52,11 @@ namespace Faktur.Web
         .Build()
       );
 
+      services.AddCore();
+      services.AddInfrastructure();
       services.AddSendGrid();
 
       services.AddSingleton<IEmailService, EmailService>();
-
-      services.AddAutoMapper(typeof(Aggregate).Assembly);
-
-      services.AddDbContext<FakturDbContext>(
-        options => options.UseNpgsql(configuration.GetValue<string>($"POSTGRESQLCONNSTR_{nameof(FakturDbContext)}"))
-      );
     }
 
     public override void Configure(IApplicationBuilder applicationBuilder)

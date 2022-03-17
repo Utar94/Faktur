@@ -1,4 +1,4 @@
-﻿namespace Faktur.Infrastructure
+﻿namespace Faktur.Core
 {
   public static class QueryableExtensions
   {
