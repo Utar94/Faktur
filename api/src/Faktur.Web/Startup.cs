@@ -1,4 +1,5 @@
-﻿using Faktur.Infrastructure;
+﻿using Faktur.Core;
+using Faktur.Infrastructure;
 using Faktur.Web.Email;
 using Faktur.Web.Settings;
 using Logitar.AspNetCore.Identity;
@@ -47,6 +48,8 @@ namespace Faktur.Web
       services.AddSendGrid();
 
       services.AddSingleton<IEmailService, EmailService>();
+
+      services.AddAutoMapper(typeof(Aggregate).Assembly);
 
       services.AddDbContext<FakturDbContext>(
         options => options.UseNpgsql(configuration.GetConnectionString(nameof(FakturDbContext)))

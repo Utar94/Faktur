@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="11.0.0" />
     <PackageReference Include="Logitar.Identity.Core" Version="1.2.1" />
     <PackageReference Include="Logitar.WebApiToolKit.Core" Version="6.1.0" />
   </ItemGroup>
