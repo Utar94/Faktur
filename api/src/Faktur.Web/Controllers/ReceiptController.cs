@@ -88,5 +88,15 @@ namespace Faktur.Web.Controllers
 
       return NoContent();
     }
+
+    [HttpPut("items/{id}")]
+    public async Task<ActionResult<ReceiptModel>> UpdateItemAsync(
+      int id,
+      [FromBody] UpdateItemPayload payload,
+      CancellationToken cancellationToken
+    )
+    {
+      return Ok(await mediator.Send(new UpdateItem(id, payload), cancellationToken));
+    }
   }
 }
