@@ -18,21 +18,21 @@ namespace Faktur.Core.Receipts.Commands
     private readonly IDbContext dbContext;
     private readonly IMapper mapper;
     private readonly IReceiptParser parser;
-    private readonly TaxSettings taxSettings;
+    private readonly TaxesSettings taxesSettings;
     private readonly IUserContext userContext;
 
     public ImportReceiptHandler(
       IDbContext dbContext,
       IMapper mapper,
       IReceiptParser parser,
-      TaxSettings taxSettings,
+      TaxesSettings taxesSettings,
       IUserContext userContext
     )
     {
       this.dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
       this.mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
       this.parser = parser ?? throw new ArgumentNullException(nameof(parser));
-      this.taxSettings = taxSettings ?? throw new ArgumentNullException(nameof(taxSettings));
+      this.taxesSettings = taxesSettings ?? throw new ArgumentNullException(nameof(taxesSettings));
       this.userContext = userContext ?? throw new ArgumentNullException(nameof(userContext));
     }
 
@@ -62,20 +62,6 @@ namespace Faktur.Core.Receipts.Commands
         IssuedAt = request.Payload.IssuedAt ?? DateTime.UtcNow,
         Number = request.Payload.Number?.CleanTrim()
       };
-
-      var gst = new Tax
-      {
-        Code = "GST",
-        Rate = taxSettings.Gst
-      };
-      receipt.Taxes.Add(gst);
-
-      var qst = new Tax
-      {
-        Code = "QST",
-        Rate = taxSettings.Qst
-      };
-      receipt.Taxes.Add(qst);
 
       CultureInfo culture = request.Payload.Culture == null
         ? CultureInfo.InvariantCulture
@@ -162,25 +148,12 @@ namespace Faktur.Core.Receipts.Commands
           Quantity = line.Quantity ?? 1,
           UnitPrice = line.UnitPrice ?? line.Price
         });
-
-        receipt.SubTotal += line.Price;
-
-        if (product.Flags?.Contains('F') == true)
-        {
-          gst.TaxableAmount += line.Price;
-        }
-        if (product.Flags?.Contains('P') == true)
-        {
-          qst.TaxableAmount += line.Price;
-        }
       }
 
-      receipt.Total = receipt.SubTotal;
-      foreach (Tax tax in receipt.Taxes)
-      {
-        tax.Amount = tax.TaxableAmount * (decimal)tax.Rate;
-        receipt.Total += tax.Amount;
-      }
+      receipt.CalculateSubTotal();
+      receipt.CalculateTax(taxesSettings.Gst);
+      receipt.CalculateTax(taxesSettings.Qst);
+      receipt.CalculateTotal();
 
       dbContext.Receipts.Add(receipt);
       await dbContext.SaveChangesAsync(cancellationToken);

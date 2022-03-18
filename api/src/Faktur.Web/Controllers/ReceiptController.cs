@@ -61,6 +61,22 @@ namespace Faktur.Web.Controllers
       return Ok(await mediator.Send(new ImportReceipt(payload), cancellationToken));
     }
 
+    [HttpPut("{id}")]
+    public async Task<ActionResult> UpdateAsync(
+      int id,
+      [FromBody] UpdateReceiptPayload payload,
+      CancellationToken cancellationToken
+    )
+    {
+      return Ok(await mediator.Send(new UpdateReceipt(id, payload), cancellationToken));
+    }
+
+    [HttpPatch("{id}/delete")]
+    public async Task<ActionResult<ReceiptModel>> SetDeletedAsync(int id, CancellationToken cancellationToken)
+    {
+      return Ok(await mediator.Send(new DeleteReceipt(id), cancellationToken));
+    }
+
     [HttpPut("{id}/process")]
     public async Task<ActionResult> ProcessAsync(
       int id,
@@ -71,6 +87,16 @@ namespace Faktur.Web.Controllers
       await mediator.Send(new ProcessReceipt(id, payload), cancellationToken);
 
       return NoContent();
+    }
+
+    [HttpPut("items/{id}")]
+    public async Task<ActionResult<ReceiptModel>> UpdateItemAsync(
+      int id,
+      [FromBody] UpdateItemPayload payload,
+      CancellationToken cancellationToken
+    )
+    {
+      return Ok(await mediator.Send(new UpdateItem(id, payload), cancellationToken));
     }
   }
 }

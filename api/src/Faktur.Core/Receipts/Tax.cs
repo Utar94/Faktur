@@ -2,6 +2,15 @@
 {
   public class Tax
   {
+    public Tax(Receipt receipt)
+    {
+      Receipt = receipt ?? throw new ArgumentNullException(nameof(receipt));
+      ReceiptId = receipt.Id;
+    }
+    private Tax()
+    {
+    }
+
     public decimal Amount { get; set; }
     public string Code { get; set; } = null!;
     public double Rate { get; set; }

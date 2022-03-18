@@ -97,7 +97,7 @@ namespace Faktur.Web.Controllers
       Article article = await dbContext.Articles
         .AsNoTracking()
         .SingleOrDefaultAsync(x => x.Id == id, cancellationToken)
-        ?? throw new EntityNotFoundException<Store>(id);
+        ?? throw new EntityNotFoundException<Article>(id);
 
       return Ok(mapper.Map<ArticleModel>(article));
     }
@@ -107,7 +107,7 @@ namespace Faktur.Web.Controllers
     {
       Article article = await dbContext.Articles
         .SingleOrDefaultAsync(x => x.Id == id, cancellationToken)
-        ?? throw new EntityNotFoundException<Store>(id);
+        ?? throw new EntityNotFoundException<Article>(id);
 
       article.Delete(userContext.Id);
 
@@ -125,7 +125,7 @@ namespace Faktur.Web.Controllers
     {
       Article article = await dbContext.Articles
         .SingleOrDefaultAsync(x => x.Id == id, cancellationToken)
-        ?? throw new EntityNotFoundException<Store>(id);
+        ?? throw new EntityNotFoundException<Article>(id);
 
       article.Update(userContext.Id);
 

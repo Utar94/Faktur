@@ -34,9 +34,9 @@ namespace Faktur.Web
       CompositeValidator.Validate(applicationSettings);
       services.AddSingleton(applicationSettings);
 
-      var taxSettings = configuration.GetSection("Tax").Get<TaxSettings>() ?? new();
-      CompositeValidator.Validate(taxSettings);
-      services.AddSingleton(taxSettings);
+      var taxesSettings = configuration.GetSection("Taxes").Get<TaxesSettings>() ?? new();
+      CompositeValidator.Validate(taxesSettings);
+      services.AddSingleton(taxesSettings);
 
       services.AddApplicationInsightsTelemetry();
 
