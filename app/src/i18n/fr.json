@@ -1,0 +1,274 @@
+{
+  "actions": {
+    "cancel": "Annuler",
+    "create": "Créer",
+    "delete": "Supprimer",
+    "edit": "Éditer",
+    "refresh": "Rafraîchir",
+    "search": "Rechercher",
+    "save": "Enregistrer",
+    "view": "Voir"
+  },
+  "article": {
+    "gtin": {
+      "label": "GTIN",
+      "placeholder": "Entrez un GTIN"
+    },
+    "saved": "L'article a été enregistré."
+  },
+  "articles": {
+    "create": "Nouvel article",
+    "delete": {
+      "confirm": "Désirez-vous vraiment supprimer l'article suivant ?",
+      "title": "Suppression"
+    },
+    "none": "Aucun article à afficher.",
+    "sort": {
+      "Gtin": "GTIN",
+      "Name": "Nom",
+      "UpdatedAt": "Date de modification"
+    },
+    "title": "Articles"
+  },
+  "banner": {
+    "saved": "La bannière a été enregistrée."
+  },
+  "banners": {
+    "create": "Nouvelle bannière",
+    "delete": {
+      "confirm": "Désirez-vous vraiment supprimer la bannière suivante ?",
+      "title": "Suppression"
+    },
+    "none": "Aucune bannière à afficher.",
+    "sort": {
+      "Name": "Nom",
+      "UpdatedAt": "Date de modification"
+    },
+    "title": "Bannières"
+  },
+  "count": "Nombre de résultats",
+  "department": {
+    "saved": "Le département a été enregistré."
+  },
+  "departments": {
+    "create": "Nouveau département",
+    "delete": {
+      "confirm": "Désirez-vous vraiment supprimer le département suivant ?",
+      "title": "Suppression"
+    },
+    "none": "Aucun département à afficher.",
+    "sort": {
+      "Name": "Nom",
+      "Number": "Numéro",
+      "UpdatedAt": "Date de modification"
+    },
+    "title": "Départements"
+  },
+  "desc": "Descendant",
+  "description": {
+    "label": "Description",
+    "placeholder": "Entrez une description"
+  },
+  "errorToast": {
+    "body": "Une erreur inattendue s'est produite. Veuillez réessayer plus tard ou contacter notre équipe de support.",
+    "title": "Erreur !"
+  },
+  "home": {
+    "comingSoon": "Bientôt disponible !",
+    "title": "Accueil"
+  },
+  "name": {
+    "label": "Nom",
+    "placeholder": "Entrez un nom"
+  },
+  "none": "N/A",
+  "notFound": {
+    "help": "La page demandée n'a pas été trouvée.",
+    "lead": "Page introuvable",
+    "link": "Aller à l'accueil"
+  },
+  "number": {
+    "label": "Numéro",
+    "placeholder": "Entrez un numéro"
+  },
+  "product": {
+    "article": {
+      "label": "Article",
+      "placeholder": "Sélectionnez un article"
+    },
+    "department": {
+      "label": "Département",
+      "placeholder": "Sélectionnez un département"
+    },
+    "label": {
+      "label": "Étiquette",
+      "placeholder": "Entrez une étiquette"
+    },
+    "saved": "Le produit a été enregistré.",
+    "sku": {
+      "label": "SKU",
+      "placeholder": "Entrez le SKU"
+    },
+    "store": {
+      "label": "Succursale",
+      "placeholder": "Sélectionnez une succursale"
+    }
+  },
+  "products": {
+    "create": "Nouveau produit",
+    "delete": {
+      "confirm": "Désirez-vous vraiment supprimer le produit suivant ?",
+      "title": "Suppression"
+    },
+    "none": "Aucun produit à afficher.",
+    "sort": {
+      "Label": "Étiquette",
+      "Sku": "SKU",
+      "UpdatedAt": "Date de modification"
+    },
+    "title": "Produits"
+  },
+  "recoverPassword": {
+    "description": "Entrez votre adresse courriel ou votre nom d'utilisateur dans le champ ci-dessous. Un message contenant des instructions de réinitialisation de mot de passe sera envoyé à votre adresse courriel.",
+    "submit": "Envoyer",
+    "success": "Un message a été envoyé à votre adresse courriel. Vous pouvez désormais fermer cette fenêtre.",
+    "title": "Récupération de mot de passe"
+  },
+  "resetPassword": {
+    "submit": "Réinitialiser",
+    "success": "Votre mot de passe a été réinitialisé. Vous pouvez désormais cliquer sur le bouton ci-dessous afin de vous connecter.",
+    "title": "Réinitialisation de mot de passe"
+  },
+  "search": {
+    "label": "Rechercher",
+    "placeholder": "Entrez quelque chose à rechercher"
+  },
+  "signIn": {
+    "failed": "Connexion échouée !",
+    "invalidCredentials": "Veuillez vérifier que vous avez fourni une adresse courriel/nom d'utilisateur ainsi qu'un mot de passe valides.",
+    "notConfirmed": "Your email has not been confirmed yet. Please check your email messages and your spam folder or contact our support team.",
+    "recoverPassword": "J'ai oublié mon mot de passe",
+    "remember": "Rester connecté",
+    "submit": "Se connecter",
+    "title": "Connexion"
+  },
+  "signUp": {
+    "duplicateEmail": "L'adresse courriel est déjà utilisée.",
+    "submit": "S'inscrire",
+    "success": "Un message a été envoyé à votre adresse courriel. Vous pouvez désormais fermer cette fenêtre.",
+    "title": "Inscription"
+  },
+  "sort": {
+    "label": "Tri",
+    "placeholder": "Sélectionnez une valeur de tri"
+  },
+  "status": {
+    "created": "Créé le {date}",
+    "updated": "Dernière modification le {date}",
+    "version": "version {version}"
+  },
+  "store": {
+    "address": {
+      "label": "Adresse",
+      "placeholder": "Entrez l'adresse"
+    },
+    "banner": {
+      "label": "Bannière",
+      "placeholder": "Sélectionnez une bannière"
+    },
+    "city": {
+      "label": "Ville",
+      "placeholder": "Entrez la ville"
+    },
+    "contact": "Coordonnées",
+    "country": {
+      "label": "Pays",
+      "placeholder": "Entrez le code du pays (2 lettres)"
+    },
+    "phone": {
+      "label": "Téléphone",
+      "placeholder": "Entrez le numéro de téléphone"
+    },
+    "postalCode": {
+      "label": "Code postal",
+      "placeholder": "Entrez le code postal"
+    },
+    "properties": "Propriétés",
+    "saved": "La succursale a été enregistrée.",
+    "state": {
+      "label": "Province",
+      "placeholder": "Entrez le code de la province (2 lettres)"
+    }
+  },
+  "stores": {
+    "create": "Nouvelle succursale",
+    "delete": {
+      "confirm": "Désirez-vous vraiment supprimer la succursale suivante ?",
+      "title": "Suppression"
+    },
+    "none": "Aucune succursale à afficher.",
+    "sort": {
+      "Name": "Nom",
+      "Number": "Numéro",
+      "UpdatedAt": "Date de modification"
+    },
+    "title": "Succursales"
+  },
+  "success": "Succès !",
+  "updatedAt": "Date de modification",
+  "user": {
+    "changePassword": "Changer le mot de passe",
+    "confirm": {
+      "success": "Votre adresse courriel a été confirmée. Vous pouvez cliquer sur le bouton ci-dessous afin de vous connecter.",
+      "title": "Confirmation de l'adresse courriel"
+    },
+    "confirmedAt": "Confirmé le",
+    "createdAt": "Créé le",
+    "editProfile": "Modifier le profil",
+    "email": {
+      "label": "Adresse courriel",
+      "placeholder": "Entrez votre adresse courriel"
+    },
+    "emailOrUsername": {
+      "label": "Adresse courriel ou nom d'utilisateur",
+      "placeholder": "Entrez votre adresse courriel ou votre nom d'utilisateur"
+    },
+    "firstName": {
+      "label": "Prénom",
+      "placeholder": "Entrez votre prénom"
+    },
+    "fullName": "Nom complet",
+    "lastName": {
+      "label": "Nom",
+      "placeholder": "Entrez votre nom"
+    },
+    "locale": {
+      "label": "Langue",
+      "placeholder": "Sélectionnez votre langue de préférence"
+    },
+    "password": {
+      "changeFailed": "Changement de mot de passe échoué !",
+      "changedAt": "Dernier changement le {date}",
+      "confirmation": {
+        "label": "Confirmation du mot de passe",
+        "placeholder": "Entrez votre mot de passe à nouveau"
+      },
+      "current": {
+        "label": "Mot de passe actuel",
+        "placeholder": "Entrez votre mot de passe actuel"
+      },
+      "label": "Mot de passe",
+      "mismatch": "Veuillez vérifier que le mot de passe fournit correspond à votre mot de passe actuel.",
+      "placeholder": "Entrez votre mot de passe",
+      "success": "Votre mot de passe a été changé."
+    },
+    "picture": {
+      "label": "Photo",
+      "placeholder": "Entrez l'URL de votre photo"
+    },
+    "profileUpdated": "Votre profil a été mis à jour.",
+    "signOut": "Déconnexion",
+    "title": "Profil de l'utilisateur",
+    "updatedAt": "Modifié le"
+  }
+}
