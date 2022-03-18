@@ -96,7 +96,7 @@ namespace Faktur.Web.Controllers
       Banner banner = await dbContext.Banners
         .AsNoTracking()
         .SingleOrDefaultAsync(x => x.Id == id, cancellationToken)
-        ?? throw new EntityNotFoundException<Store>(id);
+        ?? throw new EntityNotFoundException<Banner>(id);
 
       return Ok(mapper.Map<BannerModel>(banner));
     }
@@ -106,7 +106,7 @@ namespace Faktur.Web.Controllers
     {
       Banner banner = await dbContext.Banners
         .SingleOrDefaultAsync(x => x.Id == id, cancellationToken)
-        ?? throw new EntityNotFoundException<Store>(id);
+        ?? throw new EntityNotFoundException<Banner>(id);
 
       banner.Delete(userContext.Id);
 
@@ -124,7 +124,7 @@ namespace Faktur.Web.Controllers
     {
       Banner banner = await dbContext.Banners
         .SingleOrDefaultAsync(x => x.Id == id, cancellationToken)
-        ?? throw new EntityNotFoundException<Store>(id);
+        ?? throw new EntityNotFoundException<Banner>(id);
 
       banner.Update(userContext.Id);
 

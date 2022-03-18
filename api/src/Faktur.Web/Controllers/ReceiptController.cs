@@ -71,6 +71,12 @@ namespace Faktur.Web.Controllers
       return Ok(await mediator.Send(new UpdateReceipt(id, payload), cancellationToken));
     }
 
+    [HttpPatch("{id}/delete")]
+    public async Task<ActionResult<ReceiptModel>> SetDeletedAsync(int id, CancellationToken cancellationToken)
+    {
+      return Ok(await mediator.Send(new DeleteReceipt(id), cancellationToken));
+    }
+
     [HttpPut("{id}/process")]
     public async Task<ActionResult> ProcessAsync(
       int id,

@@ -111,7 +111,7 @@ namespace Faktur.Web.Controllers
       Department department = await dbContext.Departments
         .AsNoTracking()
         .SingleOrDefaultAsync(x => x.Id == id, cancellationToken)
-        ?? throw new EntityNotFoundException<Store>(id);
+        ?? throw new EntityNotFoundException<Department>(id);
 
       return Ok(mapper.Map<DepartmentModel>(department));
     }
@@ -121,7 +121,7 @@ namespace Faktur.Web.Controllers
     {
       Department department = await dbContext.Departments
         .SingleOrDefaultAsync(x => x.Id == id, cancellationToken)
-        ?? throw new EntityNotFoundException<Store>(id);
+        ?? throw new EntityNotFoundException<Department>(id);
 
       department.Delete(userContext.Id);
 
@@ -139,7 +139,7 @@ namespace Faktur.Web.Controllers
     {
       Department department = await dbContext.Departments
         .SingleOrDefaultAsync(x => x.Id == id, cancellationToken)
-        ?? throw new EntityNotFoundException<Store>(id);
+        ?? throw new EntityNotFoundException<Department>(id);
 
       department.Update(userContext.Id);
 

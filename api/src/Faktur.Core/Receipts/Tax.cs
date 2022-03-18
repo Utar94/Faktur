@@ -13,7 +13,7 @@
 
     public decimal Amount
     {
-      get => TaxableAmount * (decimal)Rate;
+      get => Math.Round(TaxableAmount * (decimal)Rate, 2);
       set
       {
       }

@@ -63,20 +63,6 @@ namespace Faktur.Core.Receipts.Commands
         Number = request.Payload.Number?.CleanTrim()
       };
 
-      var gst = new Tax(receipt)
-      {
-        Code = Constants.GstCode,
-        Rate = taxesSettings.Gst
-      };
-      receipt.Taxes.Add(gst);
-
-      var qst = new Tax(receipt)
-      {
-        Code = Constants.QstCode,
-        Rate = taxesSettings.Qst
-      };
-      receipt.Taxes.Add(qst);
-
       CultureInfo culture = request.Payload.Culture == null
         ? CultureInfo.InvariantCulture
         : CultureInfo.GetCultureInfo(request.Payload.Culture);
@@ -162,16 +148,12 @@ namespace Faktur.Core.Receipts.Commands
           Quantity = line.Quantity ?? 1,
           UnitPrice = line.UnitPrice ?? line.Price
         });
-
-        if (product.Flags?.Contains('F') == true)
-        {
-          gst.TaxableAmount += line.Price;
-        }
-        if (product.Flags?.Contains('P') == true)
-        {
-          qst.TaxableAmount += line.Price;
-        }
       }
+
+      receipt.CalculateSubTotal();
+      receipt.CalculateTax(taxesSettings.Gst);
+      receipt.CalculateTax(taxesSettings.Qst);
+      receipt.CalculateTotal();
 
       dbContext.Receipts.Add(receipt);
       await dbContext.SaveChangesAsync(cancellationToken);
