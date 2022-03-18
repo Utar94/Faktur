@@ -57,6 +57,8 @@ namespace Faktur.Core.Receipts
         }
       }
 
+      tax.Amount = Math.Round(tax.TaxableAmount * (decimal)tax.Rate, 2);
+
       return tax;
     }
     public decimal CalculateTotal()

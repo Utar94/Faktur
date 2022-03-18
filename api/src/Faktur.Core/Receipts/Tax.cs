@@ -11,13 +11,7 @@
     {
     }
 
-    public decimal Amount
-    {
-      get => Math.Round(TaxableAmount * (decimal)Rate, 2);
-      set
-      {
-      }
-    }
+    public decimal Amount { get; set; }
     public string Code { get; set; } = null!;
     public double Rate { get; set; }
     public Receipt? Receipt { get; set; }
