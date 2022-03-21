@@ -1,5 +1,5 @@
 <template>
-  <b-modal :id="id" :title="$t('receipt.edit')">
+  <b-modal :id="id" :title="$t('receipt.edit')" @hidden="setModel(receipt)">
     <validation-observer ref="form">
       <b-form @submit.prevent="submit">
         <form-field id="issuedAt" label="receipt.issuedAt" :maxValue="getDatetimeLocal(new Date())" type="datetime-local" v-model="issuedAt" />
@@ -33,10 +33,15 @@ export default {
     number: null
   }),
   methods: {
-    getDatetimeLocal(date) {
-      const s = typeof date === 'string' ? date : date.toISOString()
-      const index = s.lastIndexOf(':')
-      return s.substring(0, index)
+    getDatetimeLocal(value) {
+      const instance = value instanceof Date ? value : new Date(value)
+      const date = [instance.getFullYear(), (instance.getMonth() + 1).toString().padStart(2, '0'), instance.getDate().toString().padStart(2, '0')].join('-')
+      const time = [instance.getHours().toString().padStart(2, '0'), instance.getMinutes().toString().padStart(2, '0')].join(':')
+      return [date, time].join('T')
+    },
+    setModel(model) {
+      this.issuedAt = this.getDatetimeLocal(model.issuedAt)
+      this.number = model.number
     },
     async submit(callback) {
       if (!this.loading) {
@@ -66,8 +71,7 @@ export default {
       immediate: true,
       handler(receipt) {
         if (receipt) {
-          this.issuedAt = this.getDatetimeLocal(receipt.issuedAt) // TODO(fpion): convert UTC to local
-          this.number = receipt.number
+          this.setModel(receipt)
         }
       }
     }

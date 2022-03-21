@@ -8,7 +8,7 @@
           label="receipt.item.quantity.label"
           :minValue="0.001"
           placeholder="receipt.item.quantity.placeholder"
-          :step="0.001"
+          :step="1"
           type="number"
           v-model.number="quantity"
         />

@@ -28,7 +28,6 @@
       </div>
       <h2 v-t="'receipt.totals'" />
       <totals :sub-total="receipt.subTotal" :taxes="receipt.taxes" :total="receipt.total" />
-      <!-- TODO(fpion): les splits ne sont pas mis à jour quand on modifie un article -->
       <split :columns="columns" :headers="headers" :items="receipt.items" :tax-rates="taxRates" />
       <receipt-summary :number="receipt.number" :issuedAt="new Date(receipt.issuedAt)" />
       <div>

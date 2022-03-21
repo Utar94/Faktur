@@ -74,7 +74,6 @@ export default {
           if (e.status === 400) {
             this.errors = []
             for (const [key, values] of Object.entries(e.data)) {
-              console.log(key + ', ' + values)
               const start = key.indexOf('[')
               const end = key.indexOf(']', start)
               const line = start >= 0 && end >= 0 ? parseInt(key.substring(start + 1, end)) + 1 : key
