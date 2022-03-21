@@ -4,7 +4,6 @@ using Faktur.Core.Articles;
 using Faktur.Core.Articles.Models;
 using Faktur.Core.Articles.Payloads;
 using Faktur.Core.Models;
-using Faktur.Core.Stores;
 using Faktur.Infrastructure;
 using Logitar;
 using Logitar.Identity.Core;
@@ -91,6 +90,19 @@ namespace Faktur.Web.Controllers
       return Ok(new ListModel<ArticleModel>(mapper.Map<IEnumerable<ArticleModel>>(articles), total));
     }
 
+    [HttpDelete("{id}")]
+    public async Task<ActionResult<ArticleModel>> DeleteAsync(int id, CancellationToken cancellationToken)
+    {
+      Article article = await dbContext.Articles
+        .SingleOrDefaultAsync(x => x.Id == id, cancellationToken)
+        ?? throw new EntityNotFoundException<Article>(id);
+
+      dbContext.Articles.Remove(article);
+      await dbContext.SaveChangesAsync(cancellationToken);
+
+      return Ok(mapper.Map<ArticleModel>(article));
+    }
+
     [HttpGet("{id}")]
     public async Task<ActionResult<ArticleModel>> GetAsync(int id, CancellationToken cancellationToken)
     {
@@ -98,20 +110,6 @@ namespace Faktur.Web.Controllers
         .AsNoTracking()
         .SingleOrDefaultAsync(x => x.Id == id, cancellationToken)
         ?? throw new EntityNotFoundException<Article>(id);
-
-      return Ok(mapper.Map<ArticleModel>(article));
-    }
-
-    [HttpPatch("{id}/delete")]
-    public async Task<ActionResult<ArticleModel>> SetDeletedAsync(int id, CancellationToken cancellationToken)
-    {
-      Article article = await dbContext.Articles
-        .SingleOrDefaultAsync(x => x.Id == id, cancellationToken)
-        ?? throw new EntityNotFoundException<Article>(id);
-
-      article.Delete(userContext.Id);
-
-      await dbContext.SaveChangesAsync(cancellationToken);
 
       return Ok(mapper.Map<ArticleModel>(article));
     }

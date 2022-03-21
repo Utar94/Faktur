@@ -128,6 +128,19 @@ namespace Faktur.Web.Controllers
       return Ok(new ListModel<ProductModel>(mapper.Map<IEnumerable<ProductModel>>(products), total));
     }
 
+    [HttpDelete("{id}")]
+    public async Task<ActionResult<ProductModel>> DeleteAsync(int id, CancellationToken cancellationToken)
+    {
+      Product product = await dbContext.Products
+        .SingleOrDefaultAsync(x => x.Id == id, cancellationToken)
+        ?? throw new EntityNotFoundException<Product>(id);
+
+      dbContext.Products.Remove(product);
+      await dbContext.SaveChangesAsync(cancellationToken);
+
+      return Ok(mapper.Map<ProductModel>(product));
+    }
+
     [HttpGet("{id}")]
     public async Task<ActionResult<ProductModel>> GetAsync(int id, CancellationToken cancellationToken)
     {
@@ -136,21 +149,6 @@ namespace Faktur.Web.Controllers
         .Include(x => x.Article)
         .SingleOrDefaultAsync(x => x.Id == id, cancellationToken)
         ?? throw new EntityNotFoundException<Product>(id);
-
-      return Ok(mapper.Map<ProductModel>(product));
-    }
-
-    [HttpPatch("{id}/delete")]
-    public async Task<ActionResult<ProductModel>> SetDeletedAsync(int id, CancellationToken cancellationToken)
-    {
-      Product product = await dbContext.Products
-        .Include(x => x.Article)
-        .SingleOrDefaultAsync(x => x.Id == id, cancellationToken)
-        ?? throw new EntityNotFoundException<Product>(id);
-
-      product.Delete(userContext.Id);
-
-      await dbContext.SaveChangesAsync(cancellationToken);
 
       return Ok(mapper.Map<ProductModel>(product));
     }

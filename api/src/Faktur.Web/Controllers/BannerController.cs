@@ -90,6 +90,19 @@ namespace Faktur.Web.Controllers
       return Ok(new ListModel<BannerModel>(mapper.Map<IEnumerable<BannerModel>>(banners), total));
     }
 
+    [HttpDelete("{id}")]
+    public async Task<ActionResult<BannerModel>> DeleteAsync(int id, CancellationToken cancellationToken)
+    {
+      Banner banner = await dbContext.Banners
+        .SingleOrDefaultAsync(x => x.Id == id, cancellationToken)
+        ?? throw new EntityNotFoundException<Banner>(id);
+
+      dbContext.Banners.Remove(banner);
+      await dbContext.SaveChangesAsync(cancellationToken);
+
+      return Ok(mapper.Map<BannerModel>(banner));
+    }
+
     [HttpGet("{id}")]
     public async Task<ActionResult<BannerModel>> GetAsync(int id, CancellationToken cancellationToken)
     {
@@ -97,20 +110,6 @@ namespace Faktur.Web.Controllers
         .AsNoTracking()
         .SingleOrDefaultAsync(x => x.Id == id, cancellationToken)
         ?? throw new EntityNotFoundException<Banner>(id);
-
-      return Ok(mapper.Map<BannerModel>(banner));
-    }
-
-    [HttpPatch("{id}/delete")]
-    public async Task<ActionResult<BannerModel>> SetDeletedAsync(int id, CancellationToken cancellationToken)
-    {
-      Banner banner = await dbContext.Banners
-        .SingleOrDefaultAsync(x => x.Id == id, cancellationToken)
-        ?? throw new EntityNotFoundException<Banner>(id);
-
-      banner.Delete(userContext.Id);
-
-      await dbContext.SaveChangesAsync(cancellationToken);
 
       return Ok(mapper.Map<BannerModel>(banner));
     }
