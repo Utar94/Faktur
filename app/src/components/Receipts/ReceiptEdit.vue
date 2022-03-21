@@ -3,6 +3,10 @@
     <template v-if="receipt">
       <h1 v-if="receipt.number">{{ $t('receipt.numberFormat', { number: receipt.number }) }}</h1>
       <h1 v-else>{{ $t('receipt.issuedTitle', { date: $d(new Date(receipt.issuedAt), 'medium') }) }}</h1>
+      <div class="my-2">
+        <icon-button class="mx-1" icon="edit" text="actions.edit" variant="primary" v-b-modal.editReceipt />
+        <edit-receipt-modal id="editReceipt" :receipt="receipt" @updated="setModel" />
+      </div>
       <audit-info :entity="receipt">
         <p v-if="receipt.number">{{ $t('receipt.issuedFormat', { date: $d(new Date(receipt.issuedAt), 'medium') }) }}</p>
       </audit-info>
@@ -12,18 +16,19 @@
         <h4 v-if="department" v-text="department" />
         <b-row v-for="item in items" :key="item.id">
           <!-- Left -->
-          <receipt-item v-if="contains(item, 'left')" :item="item" />
+          <receipt-item v-if="contains(item, 'left')" :item="item" @updated="setModel" />
           <b-col v-else class="clickable" @click="move(item, 'left')" />
           <!-- Center -->
-          <receipt-item v-if="!contains(item)" :item="item" />
+          <receipt-item v-if="!contains(item)" :item="item" @updated="setModel" />
           <b-col v-else class="clickable" @click="move(item)" />
           <!-- Right -->
-          <receipt-item v-if="contains(item, 'right')" :item="item" />
+          <receipt-item v-if="contains(item, 'right')" :item="item" @updated="setModel" />
           <b-col v-else class="clickable" @click="move(item, 'right')" />
         </b-row>
       </div>
       <h2 v-t="'receipt.totals'" />
       <totals :sub-total="receipt.subTotal" :taxes="receipt.taxes" :total="receipt.total" />
+      <!-- TODO(fpion): les splits ne sont pas mis à jour quand on modifie un article -->
       <split :columns="columns" :headers="headers" :items="receipt.items" :tax-rates="taxRates" />
       <receipt-summary :number="receipt.number" :issuedAt="new Date(receipt.issuedAt)" />
       <div>
@@ -39,6 +44,7 @@
 <script>
 import Vue from 'vue'
 import { mapActions } from 'vuex'
+import EditReceiptModal from './EditReceiptModal.vue'
 import Headers from './Headers.vue'
 import ReceiptItem from './ReceiptItem.vue'
 import Split from './Split.vue'
@@ -48,6 +54,7 @@ import { getReceipt, processReceipt } from '@/api/receipts'
 
 export default {
   components: {
+    EditReceiptModal,
     Headers,
     ReceiptItem,
     ReceiptSummary,

@@ -89,7 +89,7 @@ export default {
   },
   methods: {
     onCreate({ id }) {
-      this.$router.push({ name: 'BannerEdit', params: { id } })
+      this.$router.push({ name: 'Banner', params: { id } })
     },
     async onDelete({ id }, callback) {
       let deleted = false

@@ -145,11 +145,27 @@
   },
   "properties": "Propriétés",
   "receipt": {
+    "edit": "Éditer un reçu",
+    "editItem": "Éditer un article",
     "error": "Ligne {line} : {error}",
     "headerPlaceholder": "Entrez une catégorie",
     "issuedAt": "Date d'émission",
     "issuedFormat": "Émis le {date}",
     "issuedTitle": "Reçu du {date}",
+    "item": {
+      "price": {
+        "label": "Prix",
+        "placeholder": "Entrez le prix"
+      },
+      "quantity": {
+        "label": "Quantité",
+        "placeholder": "Entrez la quantité"
+      },
+      "unitPrice": {
+        "label": "Prix unitaire",
+        "placeholder": "Entrez le prix unitaire"
+      }
+    },
     "items": "Articles",
     "lines": {
       "label": "Lignes",

@@ -131,7 +131,7 @@ export default {
   },
   methods: {
     onCreate({ id }) {
-      this.$router.push({ name: 'ProductEdit', params: { id } })
+      this.$router.push({ name: 'Product', params: { id } })
     },
     async onDelete({ id }, callback) {
       let deleted = false

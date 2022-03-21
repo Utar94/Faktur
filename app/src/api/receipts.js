@@ -32,6 +32,10 @@ export async function setReceiptDeleted(id) {
   return await patch(`/receipts/${id}/delete`)
 }
 
+export async function updateItem(id, { price, quantity, unitPrice }) {
+  return await put(`/receipts/items/${id}`, { price, quantity, unitPrice })
+}
+
 export async function updateReceipt(id, { issuedAt, number }) {
   return await put(`/receipts/${id}`, { issuedAt, number })
 }
