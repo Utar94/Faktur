@@ -72,7 +72,7 @@
 import ArticleSelect from './ArticleSelect.vue'
 import CreateProductModal from './CreateProductModal.vue'
 import DepartmentSelect from './DepartmentSelect.vue'
-import StoreSelect from './StoreSelect.vue'
+import StoreSelect from '../shared/StoreSelect.vue'
 import { getProducts, setProductDeleted } from '@/api/products'
 
 export default {

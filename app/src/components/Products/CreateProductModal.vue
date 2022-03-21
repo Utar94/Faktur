@@ -11,7 +11,7 @@
 
 <script>
 import ArticleSelect from './ArticleSelect.vue'
-import StoreSelect from './StoreSelect.vue'
+import StoreSelect from '../shared/StoreSelect.vue'
 import { createProduct } from '@/api/products'
 
 export default {

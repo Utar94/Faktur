@@ -37,7 +37,7 @@ namespace Faktur.Core.Receipts.Commands
         .SingleOrDefaultAsync(x => x.Id == request.Id, cancellationToken)
         ?? throw new EntityNotFoundException<Receipt>(request.Id);
 
-      receipt.IssuedAt = request.Payload.IssuedAt;
+      receipt.IssuedAt = request.Payload.IssuedAt.ToUniversalTime();
       receipt.Number = request.Payload.Number?.CleanTrim();
 
       receipt.CalculateSubTotal();

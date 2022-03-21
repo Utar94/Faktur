@@ -12,6 +12,8 @@ import NotFound from './components/NotFound.vue'
 import ProductEdit from './components/Products/ProductEdit.vue'
 import ProductList from './components/Products/ProductList.vue'
 import Profile from './components/Identity/Profile.vue'
+import ReceiptEdit from './components/Receipts/ReceiptEdit.vue'
+import ReceiptList from './components/Receipts/ReceiptList.vue'
 import RecoverPassword from './components/Identity/RecoverPassword.vue'
 import ResetPassword from './components/Identity/ResetPassword.vue'
 import SignIn from './components/Identity/SignIn.vue'
@@ -80,6 +82,16 @@ const router = new VueRouter({
       name: 'Profile',
       path: '/user/profile',
       component: Profile
+    },
+    {
+      name: 'Receipts',
+      path: '/receipts',
+      component: ReceiptList
+    },
+    {
+      name: 'Receipt',
+      path: '/receipts/:id',
+      component: ReceiptEdit
     },
     {
       name: 'RecoverPassword',

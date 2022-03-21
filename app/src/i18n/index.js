@@ -27,6 +27,30 @@ export default new VueI18n({
       }
     }
   },
+  numberFormats: {
+    en: {
+      currency: {
+        style: 'currency',
+        currency: 'CAD',
+        currencyDisplay: 'narrowSymbol'
+      },
+      percent: {
+        style: 'percent',
+        minimumFractionDigits: 3
+      }
+    },
+    fr: {
+      currency: {
+        style: 'currency',
+        currency: 'CAD',
+        currencyDisplay: 'narrowSymbol'
+      },
+      percent: {
+        style: 'percent',
+        minimumFractionDigits: 3
+      }
+    }
+  },
   locale: 'fr',
   fallbackLocale: 'fr',
   messages: { fr }

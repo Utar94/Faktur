@@ -1,10 +1,13 @@
 import Vue from 'vue'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import {
+  faArrowUp,
   faBan,
   faCarrot,
+  faDollarSign,
   faEdit,
   faEye,
+  faFileInvoiceDollar,
   faFlag,
   faHome,
   faKey,
@@ -24,12 +27,15 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
 library.add(
+  faArrowUp,
   faBan,
   faCarrot,
+  faDollarSign,
   faEdit,
   faEye,
   faFlag,
   faHome,
+  faFileInvoiceDollar,
   faKey,
   faPaperPlane,
   faPlus,

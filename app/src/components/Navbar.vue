@@ -27,6 +27,10 @@
               <font-awesome-icon icon="shopping-cart" />
               {{ $t('products.title') }}
             </b-nav-item>
+            <b-nav-item :to="{ name: 'Receipts' }">
+              <font-awesome-icon icon="file-invoice-dollar" />
+              {{ $t('receipts.title') }}
+            </b-nav-item>
           </template>
         </b-navbar-nav>
 

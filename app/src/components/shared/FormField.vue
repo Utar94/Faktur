@@ -54,18 +54,12 @@ export default {
       type: Number,
       required: false
     },
-    maxValue: {
-      type: Number,
-      required: false
-    },
+    maxValue: {},
     minLength: {
       type: Number,
       required: false
     },
-    minValue: {
-      type: Number,
-      required: false
-    },
+    minValue: {},
     placeholder: {
       type: String,
       default: ''
@@ -94,13 +88,13 @@ export default {
       if (typeof this.maxLength !== 'undefined') {
         rules.max = this.maxLength
       }
-      if (typeof this.maxValue !== 'undefined') {
+      if (typeof this.maxValue !== 'undefined' && this.type === 'number') {
         rules.max_value = this.maxValue
       }
       if (typeof this.minLength !== 'undefined') {
         rules.min = this.minLength
       }
-      if (typeof this.minValue !== 'undefined') {
+      if (typeof this.minValue !== 'undefined' && this.type === 'number') {
         rules.min_value = this.minValue
       }
       if (typeof this.required !== 'undefined') {

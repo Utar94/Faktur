@@ -1,5 +1,5 @@
 <template>
-  <form-textarea :id="id" label="description.label" placeholder="description.placeholder" :required="required" :value="value" @input="$emit('input', $event)" />
+  <form-textarea :id="id" :label="label" :placeholder="placeholder" :required="required" :rows="rows" :value="value" @input="$emit('input', $event)" />
 </template>
 
 <script>
@@ -9,9 +9,21 @@ export default {
       type: String,
       default: 'description'
     },
+    label: {
+      type: String,
+      default: 'description.label'
+    },
+    placeholder: {
+      type: String,
+      default: 'description.placeholder'
+    },
     required: {
       type: Boolean,
       default: false
+    },
+    rows: {
+      type: Number,
+      default: 10
     },
     value: {}
   }

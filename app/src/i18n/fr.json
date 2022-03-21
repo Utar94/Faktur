@@ -1,9 +1,12 @@
 {
   "actions": {
+    "back": "Retour",
     "cancel": "Annuler",
     "create": "Créer",
     "delete": "Supprimer",
     "edit": "Éditer",
+    "import": "Importer",
+    "process": "Traiter",
     "refresh": "Rafraîchir",
     "search": "Rechercher",
     "save": "Enregistrer",
@@ -145,6 +148,41 @@
     "title": "Produits"
   },
   "properties": "Propriétés",
+  "receipt": {
+    "error": "Ligne {line} : {error}",
+    "headerPlaceholder": "Entrez une catégorie",
+    "issuedAt": "Date d'émission",
+    "issuedFormat": "Émis le {date}",
+    "issuedTitle": "Reçu du {date}",
+    "items": "Articles",
+    "lines": {
+      "label": "Lignes",
+      "placeholder": "Collez ou entrez les lignes"
+    },
+    "numberFormat": "Reçu #{number}",
+    "processed": "Le reçu a été traité.",
+    "shared": "Partagé",
+    "subTotalFormat": "Sous-total : {amount}",
+    "taxFormat": "{code} : {taxableAmount} × {rate} = {amount}",
+    "total": "Total",
+    "totalFormat": "Total : {amount}",
+    "totals": "Totaux",
+    "withoutNumber": "Reçu sans numéro"
+  },
+  "receipts": {
+    "delete": {
+      "confirm": "Désirez-vous vraiment supprimer le reçu suivant ?",
+      "title": "Suppression"
+    },
+    "import": "Importer un reçu",
+    "none": "Aucun reçu à afficher.",
+    "sort": {
+      "IssuedAt": "Date d'émission",
+      "Number": "Numéro",
+      "UpdatedAt": "Date de modification"
+    },
+    "title": "Reçus"
+  },
   "recoverPassword": {
     "description": "Entrez votre adresse courriel ou votre nom d'utilisateur dans le champ ci-dessous. Un message contenant des instructions de réinitialisation de mot de passe sera envoyé à votre adresse courriel.",
     "submit": "Envoyer",

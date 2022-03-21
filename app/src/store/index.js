@@ -11,10 +11,14 @@ const vuexLocal = new VuexPersistence({
 
 export default new Vuex.Store({
   state: {
+    headers: null,
     locale: null,
     token: null
   },
   actions: {
+    saveHeaders({ commit }, { left, right }) {
+      commit('setHeaders', { left, right })
+    },
     signIn({ commit }, token) {
       commit('setToken', token)
     },
@@ -26,6 +30,9 @@ export default new Vuex.Store({
     }
   },
   mutations: {
+    setHeaders(state, headers) {
+      state.headers = headers
+    },
     setLocale(state, locale) {
       state.locale = locale
     },

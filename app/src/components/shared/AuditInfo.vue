@@ -6,6 +6,7 @@
       {{ $t('status.updated', { date: $d(new Date(entity.updatedAt), 'medium') }) }}
       ({{ $t('status.version', { version: entity.version }) }})
     </template>
+    <slot />
   </p>
 </template>
 
