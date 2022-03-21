@@ -7,7 +7,6 @@ import BannerEdit from './components/Banners/BannerEdit.vue'
 import BannerList from './components/Banners/BannerList.vue'
 import Confirm from './components/Identity/Confirm.vue'
 import DepartmentEdit from './components/Departments/DepartmentEdit.vue'
-import Home from './components/Home.vue'
 import NotFound from './components/NotFound.vue'
 import ProductEdit from './components/Products/ProductEdit.vue'
 import ProductList from './components/Products/ProductList.vue'
@@ -28,8 +27,7 @@ const router = new VueRouter({
     {
       name: 'Home',
       path: '/',
-      component: Home,
-      meta: { public: true }
+      redirect: { name: 'Receipts' }
     },
     {
       name: 'NotFound',

@@ -52,7 +52,7 @@
 
 <script>
 import CreateDepartmentModal from './CreateDepartmentModal.vue'
-import { getDepartments, setDepartmentDeleted } from '@/api/departments'
+import { deleteDepartment, getDepartments } from '@/api/departments'
 
 export default {
   components: {
@@ -100,7 +100,7 @@ export default {
       if (!this.loading) {
         this.loading = true
         try {
-          await setDepartmentDeleted(id)
+          await deleteDepartment(id)
           deleted = true
           if (typeof callback === 'function') {
             callback()

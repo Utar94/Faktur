@@ -1,7 +1,11 @@
-import { get, patch, post, put } from '.'
+import { _delete, get, post, put } from '.'
 
 export async function createBanner({ name }) {
   return await post('/banners', { name })
+}
+
+export async function deleteBanner(id) {
+  return await _delete(`/banners/${id}`)
 }
 
 export async function getBanner(id) {
@@ -21,10 +25,6 @@ export async function getBanners({ deleted, search, sort, desc, index, count }) 
     .map(pair => pair.join('='))
     .join('&')
   return await get(`/banners?${query}`)
-}
-
-export async function setBannerDeleted(id) {
-  return await patch(`/banners/${id}/delete`)
 }
 
 export async function updateBanner(id, { description, name }) {

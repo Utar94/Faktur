@@ -57,7 +57,7 @@
 <script>
 import BannerSelect from './BannerSelect.vue'
 import CreateStoreModal from './CreateStoreModal.vue'
-import { getStores, setStoreDeleted } from '@/api/stores'
+import { deleteStore, getStores } from '@/api/stores'
 
 export default {
   components: {
@@ -105,7 +105,7 @@ export default {
       if (!this.loading) {
         this.loading = true
         try {
-          await setStoreDeleted(id)
+          await deleteStore(id)
           deleted = true
           if (typeof callback === 'function') {
             callback()

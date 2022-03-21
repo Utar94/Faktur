@@ -51,7 +51,7 @@
 
 <script>
 import CreateBannerModal from './CreateBannerModal.vue'
-import { getBanners, setBannerDeleted } from '@/api/banners'
+import { deleteBanner, getBanners } from '@/api/banners'
 
 export default {
   components: {
@@ -96,7 +96,7 @@ export default {
       if (!this.loading) {
         this.loading = true
         try {
-          await setBannerDeleted(id)
+          await deleteBanner(id)
           deleted = true
           if (typeof callback === 'function') {
             callback()

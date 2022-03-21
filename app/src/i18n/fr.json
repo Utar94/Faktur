@@ -76,10 +76,6 @@
     "body": "Une erreur inattendue s'est produite. Veuillez réessayer plus tard ou contacter notre équipe de support.",
     "title": "Erreur !"
   },
-  "home": {
-    "comingSoon": "Bientôt disponible !",
-    "title": "Accueil"
-  },
   "name": {
     "label": "Nom",
     "placeholder": "Entrez un nom"
@@ -273,7 +269,7 @@
   "user": {
     "changePassword": "Changer le mot de passe",
     "confirm": {
-      "success": "Votre adresse courriel a été confirmée. Vous pouvez cliquer sur le bouton ci-dessous afin de vous connecter.",
+      "success": "L'utilisateur a été approuvé.",
       "title": "Confirmation de l'adresse courriel"
     },
     "confirmedAt": "Confirmé le",

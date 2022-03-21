@@ -53,7 +53,7 @@
 
 <script>
 import CreateArticleModal from './CreateArticleModal.vue'
-import { getArticles, setArticleDeleted } from '@/api/articles'
+import { deleteArticle, getArticles } from '@/api/articles'
 
 export default {
   components: {
@@ -98,7 +98,7 @@ export default {
       if (!this.loading) {
         this.loading = true
         try {
-          await setArticleDeleted(id)
+          await deleteArticle(id)
           deleted = true
           if (typeof callback === 'function') {
             callback()

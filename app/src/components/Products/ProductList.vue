@@ -73,7 +73,7 @@ import ArticleSelect from './ArticleSelect.vue'
 import CreateProductModal from './CreateProductModal.vue'
 import DepartmentSelect from './DepartmentSelect.vue'
 import StoreSelect from '../shared/StoreSelect.vue'
-import { getProducts, setProductDeleted } from '@/api/products'
+import { deleteProduct, getProducts } from '@/api/products'
 
 export default {
   components: {
@@ -138,7 +138,7 @@ export default {
       if (!this.loading) {
         this.loading = true
         try {
-          await setProductDeleted(id)
+          await deleteProduct(id)
           deleted = true
           if (typeof callback === 'function') {
             callback()

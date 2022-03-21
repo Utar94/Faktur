@@ -1,7 +1,11 @@
-import { get, patch, post, put } from '.'
+import { _delete, get, post, put } from '.'
 
 export async function createArticle({ name }) {
   return await post('/articles', { name })
+}
+
+export async function deleteArticle(id) {
+  return await _delete(`/articles/${id}`)
 }
 
 export async function getArticle(id) {
@@ -21,10 +25,6 @@ export async function getArticles({ deleted, search, sort, desc, index, count })
     .map(pair => pair.join('='))
     .join('&')
   return await get(`/articles?${query}`)
-}
-
-export async function setArticleDeleted(id) {
-  return await patch(`/articles/${id}/delete`)
 }
 
 export async function updateArticle(id, { description, gtin, name }) {

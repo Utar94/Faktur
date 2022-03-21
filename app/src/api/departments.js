@@ -1,7 +1,11 @@
-import { get, patch, post, put } from '.'
+import { _delete, get, post, put } from '.'
 
 export async function createDepartment(storeId, { name }) {
   return await post(`/stores/${storeId}/departments`, { name })
+}
+
+export async function deleteDepartment(id) {
+  return await _delete(`/departments/${id}`)
 }
 
 export async function getDepartment(id) {
@@ -21,10 +25,6 @@ export async function getDepartments(storeId, { deleted, search, sort, desc, ind
     .map(pair => pair.join('='))
     .join('&')
   return await get(`/stores/${storeId}/departments?${query}`)
-}
-
-export async function setDepartmentDeleted(id) {
-  return await patch(`/departments/${id}/delete`)
 }
 
 export async function updateDepartment(id, { description, name, number }) {

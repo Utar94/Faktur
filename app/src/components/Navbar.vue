@@ -66,16 +66,6 @@
               </b-dropdown-item>
             </b-nav-item-dropdown>
           </template>
-          <template v-else>
-            <b-nav-item :to="{ name: 'SignIn' }">
-              <font-awesome-icon icon="sign-in-alt" />
-              {{ $t('signIn.title') }}
-            </b-nav-item>
-            <b-nav-item :to="{ name: 'SignUp' }">
-              <font-awesome-icon icon="user" />
-              {{ $t('signUp.title') }}
-            </b-nav-item>
-          </template>
         </b-navbar-nav>
       </b-collapse>
     </b-navbar>
