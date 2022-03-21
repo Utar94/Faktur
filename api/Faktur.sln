@@ -6,6 +6,7 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8B008A16-6161-4B9C-8F8D-DD06919ED6DC}"
 	ProjectSection(SolutionItems) = preProject
 		.dockerignore = .dockerignore
+		.editorconfig = .editorconfig
 		.gitattributes = .gitattributes
 		.gitignore = .gitignore
 		README.md = README.md

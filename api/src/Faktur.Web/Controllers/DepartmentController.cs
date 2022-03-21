@@ -105,6 +105,19 @@ namespace Faktur.Web.Controllers
       return Ok(new ListModel<DepartmentModel>(mapper.Map<IEnumerable<DepartmentModel>>(departments), total));
     }
 
+    [HttpDelete("{id}")]
+    public async Task<ActionResult<DepartmentModel>> DeleteAsync(int id, CancellationToken cancellationToken)
+    {
+      Department department = await dbContext.Departments
+        .SingleOrDefaultAsync(x => x.Id == id, cancellationToken)
+        ?? throw new EntityNotFoundException<Department>(id);
+
+      dbContext.Departments.Remove(department);
+      await dbContext.SaveChangesAsync(cancellationToken);
+
+      return Ok(mapper.Map<DepartmentModel>(department));
+    }
+
     [HttpGet("{id}")]
     public async Task<ActionResult<DepartmentModel>> GetAsync(int id, CancellationToken cancellationToken)
     {
@@ -112,20 +125,6 @@ namespace Faktur.Web.Controllers
         .AsNoTracking()
         .SingleOrDefaultAsync(x => x.Id == id, cancellationToken)
         ?? throw new EntityNotFoundException<Department>(id);
-
-      return Ok(mapper.Map<DepartmentModel>(department));
-    }
-
-    [HttpPatch("{id}/delete")]
-    public async Task<ActionResult<DepartmentModel>> SetDeletedAsync(int id, CancellationToken cancellationToken)
-    {
-      Department department = await dbContext.Departments
-        .SingleOrDefaultAsync(x => x.Id == id, cancellationToken)
-        ?? throw new EntityNotFoundException<Department>(id);
-
-      department.Delete(userContext.Id);
-
-      await dbContext.SaveChangesAsync(cancellationToken);
 
       return Ok(mapper.Map<DepartmentModel>(department));
     }
