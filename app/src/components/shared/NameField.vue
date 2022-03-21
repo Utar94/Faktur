@@ -1,13 +1,5 @@
 <template>
-  <form-field
-    :id="id"
-    label="name.label"
-    :max-length="maxLength"
-    placeholder="name.placeholder"
-    :required="required"
-    :value="value"
-    @input="$emit('input', $event)"
-  >
+  <form-field :id="id" :label="label" :max-length="maxLength" :placeholder="placeholder" :required="required" :value="value" @input="$emit('input', $event)">
     <slot />
   </form-field>
 </template>
@@ -19,9 +11,17 @@ export default {
       type: String,
       default: 'name'
     },
+    label: {
+      type: String,
+      default: 'name.label'
+    },
     maxLength: {
       type: Number,
       default: 100
+    },
+    placeholder: {
+      type: String,
+      default: 'name.placeholder'
     },
     required: {
       type: Boolean,

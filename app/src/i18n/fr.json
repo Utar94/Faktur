@@ -104,6 +104,10 @@
       "label": "Département",
       "placeholder": "Sélectionnez un département"
     },
+    "flags": {
+      "label": "Marqueurs",
+      "placeholder": "Entrez les marqueurs"
+    },
     "label": {
       "label": "Étiquette",
       "placeholder": "Entrez une étiquette"
@@ -116,6 +120,14 @@
     "store": {
       "label": "Succursale",
       "placeholder": "Sélectionnez une succursale"
+    },
+    "unitPrice": {
+      "label": "Prix unitaire",
+      "placeholder": "Entrez un prix unitaire"
+    },
+    "unitType": {
+      "label": "Type unitaire",
+      "placeholder": "Entrez un type unitaire"
     }
   },
   "products": {

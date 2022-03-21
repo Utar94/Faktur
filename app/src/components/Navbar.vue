@@ -10,22 +10,24 @@
 
       <b-collapse id="nav-collapse" is-nav>
         <b-navbar-nav>
-          <b-nav-item :to="{ name: 'Articles' }">
-            <font-awesome-icon icon="carrot" />
-            {{ $t('articles.title') }}
-          </b-nav-item>
-          <b-nav-item :to="{ name: 'Banners' }">
-            <font-awesome-icon icon="flag" />
-            {{ $t('banners.title') }}
-          </b-nav-item>
-          <b-nav-item :to="{ name: 'Stores' }">
-            <font-awesome-icon icon="store" />
-            {{ $t('stores.title') }}
-          </b-nav-item>
-          <b-nav-item :to="{ name: 'Products' }">
-            <font-awesome-icon icon="shopping-cart" />
-            {{ $t('products.title') }}
-          </b-nav-item>
+          <template v-if="token">
+            <b-nav-item :to="{ name: 'Articles' }">
+              <font-awesome-icon icon="carrot" />
+              {{ $t('articles.title') }}
+            </b-nav-item>
+            <b-nav-item :to="{ name: 'Banners' }">
+              <font-awesome-icon icon="flag" />
+              {{ $t('banners.title') }}
+            </b-nav-item>
+            <b-nav-item :to="{ name: 'Stores' }">
+              <font-awesome-icon icon="store" />
+              {{ $t('stores.title') }}
+            </b-nav-item>
+            <b-nav-item :to="{ name: 'Products' }">
+              <font-awesome-icon icon="shopping-cart" />
+              {{ $t('products.title') }}
+            </b-nav-item>
+          </template>
         </b-navbar-nav>
 
         <b-navbar-nav class="ml-auto">
@@ -38,7 +40,7 @@
             </b-input-group>
           </b-nav-form> -->
 
-          <b-nav-item-dropdown :text="localeName" right>
+          <b-nav-item-dropdown v-if="otherLocales.length" :text="localeName" right>
             <b-dropdown-item v-for="locale in otherLocales" :key="locale.value" :active="locale.value === $i18n.locale" @click="translate(locale.value)">
               {{ locale.text }}
             </b-dropdown-item>
