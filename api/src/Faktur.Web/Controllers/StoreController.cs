@@ -98,6 +98,19 @@ namespace Faktur.Web.Controllers
       return Ok(new ListModel<StoreModel>(mapper.Map<IEnumerable<StoreModel>>(stores), total));
     }
 
+    [HttpDelete("{id}")]
+    public async Task<ActionResult<StoreModel>> DeleteAsync(int id, CancellationToken cancellationToken)
+    {
+      Store store = await dbContext.Stores
+        .SingleOrDefaultAsync(x => x.Id == id, cancellationToken)
+        ?? throw new EntityNotFoundException<Store>(id);
+
+      dbContext.Stores.Remove(store);
+      await dbContext.SaveChangesAsync(cancellationToken);
+
+      return Ok(mapper.Map<StoreModel>(store));
+    }
+
     [HttpGet("{id}")]
     public async Task<ActionResult<StoreModel>> GetAsync(int id, CancellationToken cancellationToken)
     {
@@ -105,20 +118,6 @@ namespace Faktur.Web.Controllers
         .AsNoTracking()
         .SingleOrDefaultAsync(x => x.Id == id, cancellationToken)
         ?? throw new EntityNotFoundException<Store>(id);
-
-      return Ok(mapper.Map<StoreModel>(store));
-    }
-
-    [HttpPatch("{id}/delete")]
-    public async Task<ActionResult<StoreModel>> SetDeletedAsync(int id, CancellationToken cancellationToken)
-    {
-      Store store = await dbContext.Stores
-        .SingleOrDefaultAsync(x => x.Id == id, cancellationToken)
-        ?? throw new EntityNotFoundException<Store>(id);
-
-      store.Delete(userContext.Id);
-
-      await dbContext.SaveChangesAsync(cancellationToken);
 
       return Ok(mapper.Map<StoreModel>(store));
     }
