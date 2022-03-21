@@ -3,7 +3,7 @@
     <validation-observer ref="form">
       <b-form @submit.prevent="submit">
         <article-select required v-model="articleId" />
-        <store-select v-if="!selectedStoreId" required v-model="storeId" />
+        <store-select v-if="selectStore" required v-model="storeId" />
       </b-form>
     </validation-observer>
   </create-modal>
@@ -24,14 +24,12 @@ export default {
       type: String,
       default: 'createProduct'
     },
-    selectedArticleId: {
-      type: Number,
-      default: null
+    selectStore: {
+      type: Boolean,
+      default: true
     },
-    selectedStoreId: {
-      type: Number,
-      default: null
-    }
+    selectedArticleId: { default: null },
+    selectedStoreId: { default: null }
   },
   components: {
     ArticleSelect,
@@ -63,7 +61,11 @@ export default {
             }
           }
         } catch (e) {
-          this.handleError(e)
+          if (e.status === 409 && e.data?.field === 'ArticleId') {
+            this.toast('product.conflict.title', 'product.conflict.body', 'warning')
+          } else {
+            this.handleError(e)
+          }
         } finally {
           this.loading = false
         }
@@ -71,8 +73,17 @@ export default {
     }
   },
   watch: {
-    selectedArticleId(articleId) {
-      this.articleId = articleId
+    selectedArticleId: {
+      immediate: true,
+      handler(articleId) {
+        this.articleId = articleId ?? null
+      }
+    },
+    selectedStoreId: {
+      immediate: true,
+      handler(storeId) {
+        this.storeId = storeId ?? null
+      }
     }
   }
 }

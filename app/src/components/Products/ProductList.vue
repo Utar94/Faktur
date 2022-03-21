@@ -6,9 +6,10 @@
       <icon-button class="mx-1" icon="plus" text="actions.create" variant="success" v-b-modal.createProduct />
       <create-product-modal
         id="createProduct"
-        :department-id="departmentId"
-        :selected-article-id="articleId"
-        :selected-store-id="storeId || selectedStoreId"
+        :departmentId="departmentId"
+        :selectStore="selectStore"
+        :selectedArticleId="articleId"
+        :selectedStoreId="storeId || selectedStoreId"
         @created="onCreate"
       />
     </div>
@@ -16,7 +17,12 @@
       <b-row>
         <article-select class="col" v-model="articleId" />
         <store-select v-if="!selectedStoreId" class="col" v-model="storeId" />
-        <department-select v-if="storeId || selectedStoreId" class="col" :store-id="storeId || selectedStoreId" v-model="departmentId" />
+        <department-select
+          v-if="(storeId || selectedStoreId) && !selectedDepartmentId"
+          class="col"
+          :storeId="storeId || selectedStoreId"
+          v-model="departmentId"
+        />
       </b-row>
       <b-row>
         <search-field class="col" v-model="search" />
@@ -77,7 +83,12 @@ export default {
     StoreSelect
   },
   props: {
-    selectedStoreId: {}
+    selectStore: {
+      type: Boolean,
+      default: true
+    },
+    selectedDepartmentId: { default: null },
+    selectedStoreId: { default: null }
   },
   data: () => ({
     articleId: null,
@@ -100,7 +111,7 @@ export default {
       return {
         articleId: this.articleId,
         deleted: false,
-        departmentId: this.storeId ? this.departmentId : null,
+        departmentId: this.storeId || this.selectedStoreId ? this.departmentId ?? this.selectedDepartmentId : null,
         search: this.search,
         storeId: this.storeId || this.selectedStoreId,
         sort: this.sort,

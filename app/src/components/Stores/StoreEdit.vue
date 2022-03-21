@@ -6,7 +6,7 @@
       <validation-observer ref="form">
         <b-form @submit.prevent="submit">
           <b-tabs content-class="mt-3">
-            <b-tab :title="$t('store.properties')">
+            <b-tab :title="$t('properties')">
               <name-field v-model="name" />
               <b-row>
                 <number-field class="col" v-model="number" />
@@ -43,10 +43,10 @@
               </b-row>
             </b-tab>
             <b-tab :title="$t('departments.title')">
-              <department-list :store-id="store.id" />
+              <department-list :storeId="store.id" />
             </b-tab>
             <b-tab :title="$t('products.title')">
-              <product-list :selected-store-id="store.id" />
+              <product-list :selectStore="false" :selectedStoreId="store.id" />
             </b-tab>
           </b-tabs>
           <div>

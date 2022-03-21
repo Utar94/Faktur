@@ -3,7 +3,7 @@
     <div class="my-2">
       <icon-button class="mx-1" :disabled="loading" icon="sync-alt" :loading="loading" text="actions.refresh" variant="primary" @click="refresh()" />
       <icon-button class="mx-1" icon="plus" text="actions.create" variant="success" v-b-modal.createDepartment />
-      <create-department-modal id="createDepartment" :store-id="storeId" @created="refresh()" />
+      <create-department-modal id="createDepartment" :storeId="storeId" @created="refresh()" />
     </div>
     <b-form>
       <b-row>

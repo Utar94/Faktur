@@ -96,6 +96,10 @@
       "label": "Article",
       "placeholder": "Sélectionnez un article"
     },
+    "conflict": {
+      "body": "L'article est déjà associé à un produit dans ce magasin.",
+      "title": "Erreur"
+    },
     "department": {
       "label": "Département",
       "placeholder": "Sélectionnez un département"
@@ -128,6 +132,7 @@
     },
     "title": "Produits"
   },
+  "properties": "Propriétés",
   "recoverPassword": {
     "description": "Entrez votre adresse courriel ou votre nom d'utilisateur dans le champ ci-dessous. Un message contenant des instructions de réinitialisation de mot de passe sera envoyé à votre adresse courriel.",
     "submit": "Envoyer",
@@ -193,7 +198,6 @@
       "label": "Code postal",
       "placeholder": "Entrez le code postal"
     },
-    "properties": "Propriétés",
     "saved": "La succursale a été enregistrée.",
     "state": {
       "label": "Province",

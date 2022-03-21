@@ -5,13 +5,20 @@
       <audit-info :entity="department" />
       <validation-observer ref="form">
         <b-form @submit.prevent="submit">
-          <name-field v-model="name" />
-          <number-field v-model="number" />
-          <description-field v-model="description" />
-          <div>
-            <icon-submit class="mx-1" :disabled="!hasChanges || loading" icon="save" :loading="loading" text="actions.save" variant="primary" />
-            <icon-button class="mx-1" icon="ban" text="actions.cancel" :to="{ name: 'Store', params: { id: $route.params.storeId } }" />
-          </div>
+          <b-tabs content-class="mt-3">
+            <b-tab :title="$t('properties')">
+              <name-field v-model="name" />
+              <number-field v-model="number" />
+              <description-field v-model="description" />
+              <div>
+                <icon-submit class="mx-1" :disabled="!hasChanges || loading" icon="save" :loading="loading" text="actions.save" variant="primary" />
+                <icon-button class="mx-1" icon="ban" text="actions.cancel" :to="{ name: 'Store', params: { id: $route.params.storeId } }" />
+              </div>
+            </b-tab>
+            <b-tab :title="$t('products.title')">
+              <product-list :selectedDepartmentId="department.id" :selectStore="false" :selectedStoreId="Number($route.params.storeId)" />
+            </b-tab>
+          </b-tabs>
         </b-form>
       </validation-observer>
     </template>
@@ -19,9 +26,13 @@
 </template>
 
 <script>
+import ProductList from '../Products/ProductList.vue'
 import { getDepartment, updateDepartment } from '@/api/departments'
 
 export default {
+  components: {
+    ProductList
+  },
   data: () => ({
     department: null,
     description: null,
