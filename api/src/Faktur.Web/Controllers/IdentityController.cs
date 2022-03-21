@@ -128,7 +128,7 @@ namespace Faktur.Web.Controllers
 
       if (result.Token != null)
       {
-        await emailService.SendSignUpAsync(result, cancellationToken);
+        //await emailService.SendSignUpAsync(result, cancellationToken); // TODO(fpion): implement
       }
 
       return NoContent();

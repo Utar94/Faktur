@@ -59,7 +59,7 @@ namespace Faktur.Core.Receipts.Commands
 
       var receipt = new Receipt(store, userContext.Id)
       {
-        IssuedAt = request.Payload.IssuedAt ?? DateTime.UtcNow,
+        IssuedAt = request.Payload.IssuedAt?.ToUniversalTime() ?? DateTime.UtcNow,
         Number = request.Payload.Number?.CleanTrim()
       };
 
