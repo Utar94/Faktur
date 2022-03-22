@@ -1,0 +1,35 @@
+name: Deploy Production API to Azure
+
+on:
+  push:
+    branches:
+      - 'hotfix_**'
+      - 'release_**'
+    paths:
+      - 'api/**'
+  workflow_dispatch:
+
+defaults:
+  run:
+    working-directory: ./api/src
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: azure/docker-login@v1
+        with:
+          login-server: francispion.azurecr.io
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+      - run: |
+          docker build . -t francispion.azurecr.io/faktur-api:${{ github.sha }} -f Faktur.Web/Dockerfile
+          docker push francispion.azurecr.io/faktur-api:${{ github.sha }}
+
+      - uses: azure/webapps-deploy@v2
+        with:
+          app-name: 'api-faktur'
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_PRODUCTION }}
+          images: 'francispion.azurecr.io/faktur-api:${{ github.sha }}'
