@@ -1,9 +1,10 @@
-name: Deploy Staging APP to Azure
+name: Deploy Production APP to Azure
 
 on:
   push:
     branches:
-      - develop
+      - 'hotfix_**'
+      - 'release_**'
     paths:
       - 'app/**'
   workflow_dispatch:
@@ -20,9 +21,9 @@ jobs:
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
         with:
-          azure_static_web_apps_api_token: ${{ secrets.AZURE_WEBAPP_DEPLOYMENT_TOKEN_STAGING }}
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_WEBAPP_DEPLOYMENT_TOKEN_PRODUCTION }}
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: 'upload'
           app_location: '/app'
-          app_build_command: 'npm run build:staging'
+          app_build_command: 'npm run build:production'
           output_location: 'dist'
