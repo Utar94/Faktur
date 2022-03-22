@@ -139,6 +139,8 @@ export default {
         if (locale) {
           this.$i18n.locale = locale
           localize(locale)
+        } else {
+          localize(this.$i18n.locale)
         }
       }
     }
