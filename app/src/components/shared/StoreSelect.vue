@@ -43,8 +43,8 @@ export default {
   }),
   computed: {
     options() {
-      return this.stores.map(({ id, name }) => ({
-        text: name,
+      return this.stores.map(({ id, name, number }) => ({
+        text: number ? `${name} (#${number})` : name,
         value: id
       }))
     }
