@@ -27,6 +27,10 @@ namespace Faktur.Core.Receipts.Queries
       {
         query = query.Where(x => x.Deleted == request.Deleted.Value);
       }
+      if (request.Processed.HasValue)
+      {
+        query = query.Where(x => x.Processed == request.Processed.Value);
+      }
       if (request.Search != null)
       {
         query = query.Where(x => x.Number != null && x.Number.Contains(request.Search));
@@ -44,6 +48,7 @@ namespace Faktur.Core.Receipts.Queries
         {
           ReceiptSort.IssuedAt => request.Desc ? query.OrderByDescending(x => x.IssuedAt) : query.OrderBy(x => x.IssuedAt),
           ReceiptSort.Number => request.Desc ? query.OrderByDescending(x => x.Number) : query.OrderBy(x => x.Number),
+          ReceiptSort.ProcessedAt => request.Desc ? query.OrderByDescending(x => x.ProcessedAt) : query.OrderBy(x => x.ProcessedAt),
           ReceiptSort.UpdatedAt => request.Desc ? query.OrderByDescending(x => x.UpdatedAt ?? x.CreatedAt) : query.OrderBy(x => x.UpdatedAt ?? x.CreatedAt),
           _ => throw new ArgumentException($"The receipt sort \"{request.Sort}\" is not valid.", nameof(request)),
         };

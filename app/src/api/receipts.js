@@ -4,9 +4,10 @@ export async function getReceipt(id) {
   return await get(`/receipts/${id}`)
 }
 
-export async function getReceipts({ deleted, search, storeId, sort, desc, index, count }) {
+export async function getReceipts({ deleted, processed, search, storeId, sort, desc, index, count }) {
   const query = [
     ['deleted', deleted],
+    ['processed', processed],
     ['search', search],
     ['storeId', storeId],
     ['sort', sort],

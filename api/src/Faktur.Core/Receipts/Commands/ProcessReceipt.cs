@@ -1,9 +1,10 @@
-﻿using Faktur.Core.Receipts.Payloads;
+﻿using Faktur.Core.Receipts.Models;
+using Faktur.Core.Receipts.Payloads;
 using MediatR;
 
 namespace Faktur.Core.Receipts.Commands
 {
-  public class ProcessReceipt : IRequest
+  public class ProcessReceipt : IRequest<ReceiptModel>
   {
     public ProcessReceipt(int id, ProcessReceiptPayload payload)
     {

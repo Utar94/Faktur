@@ -25,6 +25,7 @@ namespace Faktur.Web.Controllers
     [HttpGet]
     public async Task<ActionResult<ListModel<ReceiptModel>>> GetAsync(
       bool? deleted,
+      bool? processed,
       string? search,
       int? storeId,
       ReceiptSort? sort,
@@ -37,6 +38,7 @@ namespace Faktur.Web.Controllers
       return Ok(await mediator.Send(new GetReceipts
       {
         Deleted = deleted,
+        Processed = processed,
         Search = search,
         StoreId = storeId,
         Sort = sort,
@@ -78,15 +80,13 @@ namespace Faktur.Web.Controllers
     }
 
     [HttpPut("{id}/process")]
-    public async Task<ActionResult> ProcessAsync(
+    public async Task<ActionResult<ReceiptModel>> ProcessAsync(
       int id,
       [FromBody] ProcessReceiptPayload payload,
       CancellationToken cancellationToken
     )
     {
-      await mediator.Send(new ProcessReceipt(id, payload), cancellationToken);
-
-      return NoContent();
+      return Ok(await mediator.Send(new ProcessReceipt(id, payload), cancellationToken));
     }
 
     [HttpPut("items/{id}")]

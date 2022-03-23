@@ -173,7 +173,15 @@
     },
     "numberFormat": "Reçu #{number}",
     "processed": "Le reçu a été traité.",
+    "processedAt": "Date de traitement",
+    "processedFormat": "Traité le {date}",
     "shared": "Partagé",
+    "status": {
+      "label": "Statut",
+      "placeholder": "Sélectionnez un statut",
+      "processed": "Traité",
+      "unprocessed": "Non traité"
+    },
     "subTotalFormat": "Sous-total : {amount}",
     "taxFormat": "{code} : {taxableAmount} × {rate} = {amount}",
     "total": "Total",
@@ -187,10 +195,12 @@
       "title": "Suppression"
     },
     "import": "Importer un reçu",
+    "new": "Nouveau",
     "none": "Aucun reçu à afficher.",
     "sort": {
       "IssuedAt": "Date d'émission",
       "Number": "Numéro",
+      "ProcessedAt": "Date de traitement",
       "UpdatedAt": "Date de modification"
     },
     "title": "Reçus"

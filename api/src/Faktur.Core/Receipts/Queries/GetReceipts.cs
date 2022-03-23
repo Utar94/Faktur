@@ -7,6 +7,7 @@ namespace Faktur.Core.Receipts.Queries
   public class GetReceipts : IRequest<ListModel<ReceiptModel>>
   {
     public bool? Deleted { get; set; }
+    public bool? Processed { get; set; }
     public string? Search { get; set; }
     public int? StoreId { get; set; }
 
