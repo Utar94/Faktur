@@ -15,6 +15,7 @@ namespace Faktur.Infrastructure.Configurations
 
       builder.Property(x => x.IssuedAt).HasDefaultValueSql("now()");
       builder.Property(x => x.Number).HasMaxLength(32);
+      builder.Property(x => x.Processed).HasDefaultValue(false);
       builder.Property(x => x.SubTotal).HasColumnType("money");
       builder.Property(x => x.Total).HasColumnType("money");
     }

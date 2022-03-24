@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Faktur.Infrastructure.Migrations
 {
     [DbContext(typeof(FakturDbContext))]
-    [Migration("20220323223531_AddedProcessedReceipts")]
+    [Migration("20220323233223_AddedProcessedReceipts")]
     partial class AddedProcessedReceipts
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -413,7 +413,9 @@ namespace Faktur.Infrastructure.Migrations
                         .HasColumnType("character varying(32)");
 
                     b.Property<bool>("Processed")
-                        .HasColumnType("boolean");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
 
                     b.Property<DateTime?>("ProcessedAt")
                         .HasColumnType("timestamp with time zone");

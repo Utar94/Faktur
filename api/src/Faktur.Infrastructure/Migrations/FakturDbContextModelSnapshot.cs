@@ -411,7 +411,9 @@ namespace Faktur.Infrastructure.Migrations
                         .HasColumnType("character varying(32)");
 
                     b.Property<bool>("Processed")
-                        .HasColumnType("boolean");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
 
                     b.Property<DateTime?>("ProcessedAt")
                         .HasColumnType("timestamp with time zone");
