@@ -7,7 +7,10 @@
       <import-receipt-modal v-if="storeId" id="importReceipt" :storeId="storeId" @created="refresh()" />
     </div>
     <b-form>
-      <store-select v-model="storeId" />
+      <b-row>
+        <store-select class="col" v-model="storeId" />
+        <status-select class="col" v-model="processed" />
+      </b-row>
       <b-row>
         <search-field class="col" v-model="search" />
         <sort-select class="col" :desc="desc" :options="sortOptions" v-model="sort" @desc="desc = $event" />
@@ -19,6 +22,7 @@
         <thead>
           <tr>
             <th scope="col" v-t="'number.label'" />
+            <th scope="col" v-t="'receipt.processedAt'" />
             <th scope="col" v-t="'receipt.issuedAt'" />
             <th scope="col" v-t="'receipt.total'" />
             <th scope="col" v-t="'updatedAt'" />
@@ -29,6 +33,12 @@
           <tr v-for="receipt in receipts" :key="receipt.id">
             <td>
               <router-link :to="{ name: 'Receipt', params: { id: receipt.id } }" v-text="receipt.number || $t('none')" />
+            </td>
+            <td>
+              <template v-if="receipt.processedAt">
+                {{ $d(new Date(receipt.processedAt), 'medium') }}
+              </template>
+              <b-badge v-else class="mx-1" variant="warning">{{ $t('receipts.new') }}</b-badge>
             </td>
             <td>{{ $d(new Date(receipt.issuedAt), 'medium') }}</td>
             <td>{{ $n(receipt.total, 'currency') }}</td>
@@ -57,18 +67,21 @@
 <script>
 import ImportReceiptModal from './ImportReceiptModal.vue'
 import StoreSelect from '../shared/StoreSelect.vue'
+import StatusSelect from './StatusSelect.vue'
 import { getReceipts, setReceiptDeleted } from '@/api/receipts'
 
 export default {
   components: {
     ImportReceiptModal,
-    StoreSelect
+    StoreSelect,
+    StatusSelect
   },
   data: () => ({
     count: 10,
     desc: true,
     loading: false,
     page: 1,
+    processed: null,
     receipts: [],
     search: null,
     sort: 'IssuedAt',
@@ -79,6 +92,7 @@ export default {
     params() {
       return {
         deleted: false,
+        processed: this.processed,
         search: this.search,
         storeId: this.storeId,
         sort: this.sort,

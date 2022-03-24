@@ -1,38 +1,39 @@
-﻿using Logitar.Identity.Core;
+﻿using AutoMapper;
+using Faktur.Core.Receipts.Models;
+using Faktur.Core.Stores;
+using Logitar.Identity.Core;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace Faktur.Core.Receipts.Commands
 {
-  public class ProcessReceiptHandler : IRequestHandler<ProcessReceipt>
+  public class ProcessReceiptHandler : IRequestHandler<ProcessReceipt, ReceiptModel>
   {
     private readonly IDbContext dbContext;
+    private readonly IMapper mapper;
     private readonly IUserContext userContext;
 
-    public ProcessReceiptHandler(IDbContext dbContext, IUserContext userContext)
+    public ProcessReceiptHandler(IDbContext dbContext, IMapper mapper, IUserContext userContext)
     {
       this.dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+      this.mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
       this.userContext = userContext ?? throw new ArgumentNullException(nameof(userContext));
     }
 
-    public async Task<MediatR.Unit> Handle(ProcessReceipt request, CancellationToken cancellationToken)
+    public async Task<ReceiptModel> Handle(ProcessReceipt request, CancellationToken cancellationToken)
     {
       Receipt receipt = await dbContext.Receipts
-        .Include(x => x.Store).ThenInclude(x => x!.Banner)
+        .Include(x => x.Items).ThenInclude(x => x.Product).ThenInclude(x => x!.Article)
+        .Include(x => x.Items).ThenInclude(x => x.Product).ThenInclude(x => x!.Department)
+        .Include(x => x.Store)
         .Include(x => x.Taxes)
         .SingleOrDefaultAsync(x => x.Id == request.Id, cancellationToken)
         ?? throw new EntityNotFoundException<Receipt>(request.Id);
 
-      if (receipt.Store == null)
-      {
-        throw new InvalidOperationException($"The {nameof(receipt.Store)} is required.");
-      }
+      Store store = receipt.Store
+        ?? throw new InvalidOperationException($"The {nameof(receipt.Store)} is required.");
 
-      Dictionary<int, Item> items = await dbContext.Items
-        .Include(x => x.Product).ThenInclude(x => x!.Article)
-        .Include(x => x.Product).ThenInclude(x => x!.Department)
-        .Where(x => x.ReceiptId == receipt.Id)
-        .ToDictionaryAsync(x => x.Id, x => x, cancellationToken);
+      Dictionary<int, Item> items = receipt.Items.ToDictionary(x => x.Id, x => x);
 
       Dictionary<int, Line> lines = await dbContext.Lines
         .Where(x => x.ReceiptId == receipt.Id)
@@ -65,15 +66,15 @@ namespace Faktur.Core.Receipts.Commands
                 ItemId = item.Id,
                 ProductId = item.Product.Id,
                 ReceiptId = receipt.Id,
-                StoreId = receipt.Store.Id
+                StoreId = store.Id
               };
               lines.Add(item.Id, line);
               dbContext.Lines.Add(line);
             }
 
             line.ArticleName = item.Product.Article.Name;
-            line.BannerId = receipt.Store.Banner?.Id;
-            line.BannerName = receipt.Store.Banner?.Name;
+            line.BannerId = store.Banner?.Id;
+            line.BannerName = store.Banner?.Name;
             line.Category = category;
             line.DepartmentId = item.Product.Department?.Id;
             line.DepartmentName = item.Product.Department?.Name;
@@ -86,17 +87,19 @@ namespace Faktur.Core.Receipts.Commands
             line.Quantity = item.Quantity ?? 1;
             line.ReceiptNumber = receipt.Number;
             line.Sku = item.Product.Sku;
-            line.StoreName = receipt.Store.Name;
-            line.StoreNumber = receipt.Store.Number;
+            line.StoreName = store.Name;
+            line.StoreNumber = store.Number;
             line.UnitPrice = item.UnitPrice;
             line.UnitType = item.Product.UnitType;
           }
         }
       }
 
+      receipt.Process(userContext.Id);
+
       await dbContext.SaveChangesAsync(cancellationToken);
 
-      return MediatR.Unit.Value;
+      return mapper.Map<ReceiptModel>(receipt);
     }
   }
 }

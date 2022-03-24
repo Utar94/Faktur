@@ -18,6 +18,9 @@ namespace Faktur.Core.Receipts
     public DateTime IssuedAt { get; set; }
     public ICollection<Item> Items { get; set; } = new List<Item>();
     public string? Number { get; set; }
+    public bool Processed { get; set; }
+    public DateTime? ProcessedAt { get; set; }
+    public Guid? ProcessedById { get; set; }
     public Store? Store { get; set; }
     public int StoreId { get; set; }
     public decimal SubTotal { get; set; }
@@ -66,6 +69,13 @@ namespace Faktur.Core.Receipts
       Total = Math.Round(SubTotal + Taxes.Sum(x => x.Amount), 2);
 
       return Total;
+    }
+
+    public void Process(Guid userId)
+    {
+      Processed = true;
+      ProcessedAt = DateTime.UtcNow;
+      ProcessedById = userId;
     }
   }
 }
