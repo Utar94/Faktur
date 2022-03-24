@@ -5,7 +5,7 @@
         <b-input-group>
           <b-form-input id="left-header" :placeholder="$t('receipt.headerPlaceholder')" v-model="headers.left" />
           <template #append>
-            <icon-button type="submit" icon="save" :disabled="!headers.left" />
+            <icon-submit :disabled="!headers.left" icon="save" variant="primary" />
           </template>
         </b-input-group>
       </b-form>
@@ -19,7 +19,7 @@
         <b-input-group>
           <b-form-input id="right-header" :placeholder="$t('receipt.headerPlaceholder')" v-model="headers.right" />
           <template #append>
-            <icon-button type="submit" icon="save" :disabled="!headers.right" />
+            <icon-submit :disabled="!headers.right" icon="save" variant="primary" />
           </template>
         </b-input-group>
       </b-form>

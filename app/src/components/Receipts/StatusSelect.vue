@@ -27,7 +27,7 @@ export default {
           value: 'true'
         },
         {
-          text: this.$i18n.t('receipt.status.unprocessed'),
+          text: this.$i18n.t('receipt.status.new'),
           value: 'false'
         }
       ].sort((a, b) => (a.text < b.text ? -1 : a.text > b.text ? 1 : 0))
