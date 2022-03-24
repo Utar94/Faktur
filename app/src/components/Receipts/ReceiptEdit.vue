@@ -8,7 +8,15 @@
         <edit-receipt-modal id="editReceipt" :receipt="receipt" @updated="setModel" />
       </div>
       <audit-info :entity="receipt">
-        <p v-if="receipt.number">{{ $t('receipt.issuedFormat', { date: $d(new Date(receipt.issuedAt), 'medium') }) }}</p>
+        <p v-if="receipt.number || receipt.processedAt">
+          <template v-if="receipt.number">
+            {{ $t('receipt.issuedFormat', { date: $d(new Date(receipt.issuedAt), 'medium') }) }}
+            <br v-if="receipt.processedAt" />
+          </template>
+          <template v-if="receipt.processedAt">
+            {{ $t('receipt.processedFormat', { date: $d(new Date(receipt.processedAt), 'medium') }) }}
+          </template>
+        </p>
       </audit-info>
       <h2 v-t="'receipt.items'" />
       <headers v-model="headers" />
@@ -107,7 +115,8 @@ export default {
         }
         items['Shared'] = this.receipt.items.filter(item => Object.values(this.columns).every(column => !column[item.id])).map(item => item.id)
         try {
-          await processReceipt(this.receipt.id, { items })
+          const { data } = await processReceipt(this.receipt.id, { items })
+          this.setModel(data)
           this.toast('success', 'receipt.processed')
         } catch (e) {
           console.error(e)

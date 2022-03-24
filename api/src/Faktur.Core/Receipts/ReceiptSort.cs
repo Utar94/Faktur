@@ -4,6 +4,7 @@
   {
     UpdatedAt = 0,
     IssuedAt = 1,
-    Number = 2
+    Number = 2,
+    ProcessedAt = 3
   }
 }
