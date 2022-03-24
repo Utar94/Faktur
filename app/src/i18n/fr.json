@@ -148,6 +148,7 @@
     "edit": "Éditer un reçu",
     "editItem": "Éditer un article",
     "error": "Ligne {line} : {error}",
+    "hasMissingHeaders": "Une ou plusieurs entêtes de colonnes sont manquantes.",
     "headerPlaceholder": "Entrez une catégorie",
     "issuedAt": "Date d'émission",
     "issuedFormat": "Émis le {date}",
@@ -178,9 +179,9 @@
     "shared": "Partagé",
     "status": {
       "label": "Statut",
+      "new": "Nouveau",
       "placeholder": "Sélectionnez un statut",
-      "processed": "Traité",
-      "unprocessed": "Non traité"
+      "processed": "Traité"
     },
     "subTotalFormat": "Sous-total : {amount}",
     "taxFormat": "{code} : {taxableAmount} × {rate} = {amount}",

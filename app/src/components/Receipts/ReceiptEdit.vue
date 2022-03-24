@@ -18,6 +18,9 @@
           </template>
         </p>
       </audit-info>
+      <b-alert dismissible :show="hasMissingHeaders" variant="warning">
+        <strong v-t="'receipt.hasMissingHeaders'" />
+      </b-alert>
       <h2 v-t="'receipt.items'" />
       <headers v-model="headers" />
       <div v-for="(items, department) in groups" :key="department">
@@ -25,13 +28,15 @@
         <b-row v-for="item in items" :key="item.id">
           <!-- Left -->
           <receipt-item v-if="contains(item, 'left')" :item="item" @updated="setModel" />
-          <b-col v-else class="clickable" @click="move(item, 'left')" />
+          <b-col v-else-if="headers.left" class="clickable" @click="move(item, 'left')" />
+          <b-col v-else />
           <!-- Center -->
           <receipt-item v-if="!contains(item)" :item="item" @updated="setModel" />
           <b-col v-else class="clickable" @click="move(item)" />
           <!-- Right -->
           <receipt-item v-if="contains(item, 'right')" :item="item" @updated="setModel" />
-          <b-col v-else class="clickable" @click="move(item, 'right')" />
+          <b-col v-else-if="headers.right" class="clickable" @click="move(item, 'right')" />
+          <b-col v-else />
         </b-row>
       </div>
       <h2 v-t="'receipt.totals'" />
@@ -39,7 +44,15 @@
       <split :columns="columns" :headers="headers" :items="receipt.items" :tax-rates="taxRates" />
       <receipt-summary :number="receipt.number" :issuedAt="new Date(receipt.issuedAt)" />
       <div>
-        <icon-button class="mx-1" :disabled="loading" icon="dollar-sign" :loading="loading" text="actions.process" variant="primary" @click="process" />
+        <icon-button
+          class="mx-1"
+          :disabled="hasMissingHeaders || loading"
+          icon="dollar-sign"
+          :loading="loading"
+          text="actions.process"
+          variant="primary"
+          @click="process"
+        />
         <icon-button class="mx-1" icon="ban" text="actions.cancel" :to="{ name: 'Receipts' }" />
         <icon-button class="mx-1 float-right" icon="arrow-up" text="actions.back" variant="info" @click="scrollToTop" />
       </div>
@@ -82,6 +95,9 @@ export default {
     receipt: null
   }),
   computed: {
+    hasMissingHeaders() {
+      return Object.values(this.headers).some(value => !value)
+    },
     taxRates() {
       return Object.fromEntries(this.receipt.taxes.map(({ code, rate }) => [code, rate]))
     }
