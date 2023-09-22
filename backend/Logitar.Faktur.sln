@@ -9,7 +9,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.editorconfig = .editorconfig
 		.gitattributes = .gitattributes
 		.gitignore = .gitignore
-		README.md = README.md
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Faktur.Web", "src\Faktur.Web\Faktur.Web.csproj", "{C0E9BFD1-6FCC-4C53-A8F7-402633E11C48}"
@@ -17,6 +16,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Faktur.Core", "src\Faktur.Core\Faktur.Core.csproj", "{36A6D43C-286E-4F75-A446-E7031B7CA261}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Faktur.Infrastructure", "src\Faktur.Infrastructure\Faktur.Infrastructure.csproj", "{00F92B3D-4610-46EB-A304-8AA5155E4B94}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "v1", "v1", "{70786E73-5E9E-4D73-8FCC-E3E24C22158A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +40,11 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{C0E9BFD1-6FCC-4C53-A8F7-402633E11C48} = {70786E73-5E9E-4D73-8FCC-E3E24C22158A}
+		{36A6D43C-286E-4F75-A446-E7031B7CA261} = {70786E73-5E9E-4D73-8FCC-E3E24C22158A}
+		{00F92B3D-4610-46EB-A304-8AA5155E4B94} = {70786E73-5E9E-4D73-8FCC-E3E24C22158A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4EA66CFE-102C-434C-9A8B-1F7CDB64E486}
