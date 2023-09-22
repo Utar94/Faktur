@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Nothing yet.
 
+## [1.7.2] - 2023-09-22
+
+### Fixed
+
+- Fixed CHANGELOG.
+
 ## [1.7.1] - 2022-03-23
 
 ### Added
@@ -20,5 +26,6 @@ Nothing yet.
 - Implemented product management.
 - Implemented receipt management.
 
-[unreleased]: https://github.com/Utar94/Faktur/compare/v1.7.1...HEAD
+[unreleased]: https://github.com/Utar94/Faktur/compare/v1.7.2...HEAD
+[1.7.2]: https://github.com/Utar94/Faktur/compare/v1.7.1...v1.7.2
 [1.7.1]: https://github.com/Utar94/Faktur/releases/tag/v1.7.1
