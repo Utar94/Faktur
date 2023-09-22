@@ -20,5 +20,5 @@ Nothing yet.
 - Implemented product management.
 - Implemented receipt management.
 
-[unreleased]: https://github.com/Logitar/Portal/compare/v1.7.1...HEAD
-[1.7.1]: https://github.com/Logitar/Portal/releases/tag/v1.7.1
+[unreleased]: https://github.com/Logitar/Faktur/compare/v1.7.1...HEAD
+[1.7.1]: https://github.com/Logitar/Faktur/releases/tag/v1.7.1
