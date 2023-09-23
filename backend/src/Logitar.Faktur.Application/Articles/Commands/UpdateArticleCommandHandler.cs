@@ -32,7 +32,7 @@ internal class UpdateArticleCommandHandler : IRequestHandler<UpdateArticleComman
 
     if (payload.Gtin != null)
     {
-      article.Gtin = GtinUnit.TryCreate(payload.Gtin.Value);
+      article.Gtin = GtinUnit.TryCreate(payload.Gtin.Value); // TODO(fpion): ensure unicity
     }
     if (!string.IsNullOrWhiteSpace(payload.DisplayName))
     {

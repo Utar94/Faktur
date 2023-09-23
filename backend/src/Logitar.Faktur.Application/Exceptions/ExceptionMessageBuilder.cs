@@ -2,7 +2,7 @@
 
 namespace Logitar.Faktur.Application.Exceptions;
 
-internal class ExceptionMessageBuilder
+public class ExceptionMessageBuilder
 {
   private readonly StringBuilder message;
 

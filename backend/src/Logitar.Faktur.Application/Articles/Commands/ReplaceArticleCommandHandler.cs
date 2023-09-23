@@ -38,7 +38,7 @@ internal class ReplaceArticleCommandHandler : IRequestHandler<ReplaceArticleComm
 
     if (reference == null || (payload.Gtin?.CleanTrim() != reference.Gtin?.Value))
     {
-      article.Gtin = GtinUnit.TryCreate(payload.Gtin);
+      article.Gtin = GtinUnit.TryCreate(payload.Gtin); // TODO(fpion): ensure unicity
     }
     if (reference == null || (payload.DisplayName.Trim() != reference.DisplayName.Value))
     {

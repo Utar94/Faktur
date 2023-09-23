@@ -2,6 +2,7 @@
 using Logitar.Faktur.Contracts.Articles;
 using Logitar.Faktur.Contracts.Search;
 using Logitar.Faktur.Web.Extensions;
+using Logitar.Faktur.Web.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Logitar.Faktur.Web.Controllers;
@@ -46,9 +47,9 @@ public class ArticleController : ControllerBase
   }
 
   [HttpGet]
-  public async Task<ActionResult<SearchResults<Article>>> SearchAsync(CancellationToken cancellationToken)
+  public async Task<ActionResult<SearchResults<Article>>> SearchAsync([FromQuery] SearchArticlesQuery query, CancellationToken cancellationToken)
   {
-    return Ok(await articleService.SearchAsync(payload: new(), cancellationToken)); // TODO(fpion): implement
+    return Ok(await articleService.SearchAsync(query.ToPayload(), cancellationToken));
   }
 
   [HttpPatch("{id}")]
