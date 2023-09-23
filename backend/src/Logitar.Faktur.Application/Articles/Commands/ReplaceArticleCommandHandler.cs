@@ -38,7 +38,17 @@ internal class ReplaceArticleCommandHandler : IRequestHandler<ReplaceArticleComm
 
     if (reference == null || (payload.Gtin?.CleanTrim() != reference.Gtin?.Value))
     {
-      article.Gtin = GtinUnit.TryCreate(payload.Gtin); // TODO(fpion): ensure unicity
+      GtinUnit? gtin = GtinUnit.TryCreate(payload.Gtin);
+      if (gtin != null)
+      {
+        ArticleAggregate? other = await articleRepository.LoadAsync(gtin, cancellationToken);
+        if (other?.Equals(article) == false)
+        {
+          throw new GtinAlreadyUsedException(gtin, nameof(payload.Gtin));
+        }
+      }
+
+      article.Gtin = gtin;
     }
     if (reference == null || (payload.DisplayName.Trim() != reference.DisplayName.Value))
     {

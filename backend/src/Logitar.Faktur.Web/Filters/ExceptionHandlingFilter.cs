@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using Logitar.Faktur.Application.Articles;
 using Logitar.Faktur.Application.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -7,14 +8,15 @@ namespace Logitar.Faktur.Web.Filters;
 
 internal class ExceptionHandlingFilter : ExceptionFilterAttribute
 {
-  private readonly Dictionary<Type, Func<ExceptionContext, IActionResult>> _handlers = new()
+  private readonly Dictionary<Type, Func<ExceptionContext, IActionResult>> handlers = new()
   {
+    [typeof(GtinAlreadyUsedException)] = HandleConflictFailureException,
     [typeof(ValidationException)] = HandleValidationException
   };
 
   public override void OnException(ExceptionContext context)
   {
-    if (_handlers.TryGetValue(context.Exception.GetType(), out Func<ExceptionContext, IActionResult>? handler))
+    if (handlers.TryGetValue(context.Exception.GetType(), out Func<ExceptionContext, IActionResult>? handler))
     {
       context.Result = handler(context);
       context.ExceptionHandled = true;
@@ -24,15 +26,20 @@ internal class ExceptionHandlingFilter : ExceptionFilterAttribute
       context.Result = new NotFoundObjectResult(aggregateNotFound.Failure);
       context.ExceptionHandled = true;
     }
-    else if (context.Exception is IdentifierAlreadyUsedException identifierAlreadyUsed)
+    else if (context.Exception is IdentifierAlreadyUsedException)
     {
-      context.Result = new ConflictObjectResult(identifierAlreadyUsed.Failure);
+      context.Result = HandleConflictFailureException(context);
       context.ExceptionHandled = true;
     }
     else
     {
       base.OnException(context);
     }
+  }
+
+  private static IActionResult HandleConflictFailureException(ExceptionContext context)
+  {
+    return new ConflictObjectResult(((IFailureException)context.Exception).Failure);
   }
 
   private static IActionResult HandleValidationException(ExceptionContext context)

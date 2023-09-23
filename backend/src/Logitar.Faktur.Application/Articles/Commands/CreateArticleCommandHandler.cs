@@ -26,7 +26,12 @@ internal class CreateArticleCommandHandler : IRequestHandler<CreateArticleComman
     CreateArticlePayload payload = command.Payload;
     new CreateArticlePayloadValidator().ValidateAndThrow(payload);
 
-    GtinUnit? gtin = GtinUnit.TryCreate(payload.Gtin); // TODO(fpion): ensure unicity
+    GtinUnit? gtin = GtinUnit.TryCreate(payload.Gtin);
+    if (gtin != null && await articleRepository.LoadAsync(gtin, cancellationToken) != null)
+    {
+      throw new GtinAlreadyUsedException(gtin, nameof(payload.Gtin));
+    }
+
     ArticleId id;
     if (string.IsNullOrWhiteSpace(payload.Id))
     {

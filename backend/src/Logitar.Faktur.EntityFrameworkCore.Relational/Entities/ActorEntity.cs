@@ -14,6 +14,17 @@ internal class ActorEntity : Entity
   public string? EmailAddress { get; private set; }
   public string? PictureUrl { get; private set; }
 
+  public ActorEntity(Actor actor)
+  {
+    Id = actor.Id;
+    Type = actor.Type;
+    IsDeleted = actor.IsDeleted;
+
+    DisplayName = actor.DisplayName;
+    EmailAddress = actor.EmailAddress;
+    PictureUrl = actor.PictureUrl;
+  }
+
   private ActorEntity()
   {
   }

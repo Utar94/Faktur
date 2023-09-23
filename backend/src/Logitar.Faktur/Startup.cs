@@ -8,35 +8,37 @@ namespace Logitar.Faktur;
 
 internal class Startup : StartupBase
 {
-  private readonly IConfiguration _configuration;
-  private readonly bool _enableOpenApi;
+  private readonly IConfiguration configuration;
+  private readonly bool enableOpenApi;
 
   public Startup(IConfiguration configuration)
   {
-    _configuration = configuration;
-    _enableOpenApi = configuration.GetValue<bool>("EnableOpenApi");
+    this.configuration = configuration;
+    enableOpenApi = configuration.GetValue<bool>("EnableOpenApi");
   }
 
   public override void ConfigureServices(IServiceCollection services)
   {
     base.ConfigureServices(services);
 
-    services.AddLogitarFakturWeb(_configuration);
+    services.AddLogitarFakturWeb(configuration);
 
     services.AddApplicationInsightsTelemetry();
     IHealthChecksBuilder healthChecks = services.AddHealthChecks();
 
-    if (_enableOpenApi)
+    if (enableOpenApi)
     {
       services.AddOpenApi();
     }
 
-    DatabaseProvider databaseProvider = _configuration.GetValue<DatabaseProvider?>("DatabaseProvider")
+    string connectionString;
+    DatabaseProvider databaseProvider = configuration.GetValue<DatabaseProvider?>("DatabaseProvider")
       ?? DatabaseProvider.EntityFrameworkCorePostgreSQL;
     switch (databaseProvider)
     {
       case DatabaseProvider.EntityFrameworkCoreSqlServer:
-        services.AddLogitarFakturWithEntityFrameworkCoreSqlServer(_configuration);
+        connectionString = configuration.GetValue<string>("SQLCONNSTR_Faktur") ?? string.Empty;
+        services.AddLogitarFakturWithEntityFrameworkCoreSqlServer(connectionString);
         healthChecks.AddDbContextCheck<EventContext>();
         healthChecks.AddDbContextCheck<FakturContext>();
         break;
@@ -47,7 +49,7 @@ internal class Startup : StartupBase
 
   public override void Configure(IApplicationBuilder builder)
   {
-    if (_enableOpenApi)
+    if (enableOpenApi)
     {
       builder.UseOpenApi();
     }

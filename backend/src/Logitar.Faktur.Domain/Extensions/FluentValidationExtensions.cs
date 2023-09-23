@@ -9,6 +9,6 @@ public static class FluentValidationExtensions
     return propertyName == null ? options :
       options
         .OverridePropertyName(propertyName)
-        .WithPropertyName(propertyName);
+        .WithName(propertyName);
   }
 }

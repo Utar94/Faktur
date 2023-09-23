@@ -7,7 +7,7 @@ namespace Logitar.Faktur.Domain.Articles;
 
 public class ArticleAggregate : AggregateRoot
 {
-  private readonly ArticleUpdatedEvent updated = new();
+  private ArticleUpdatedEvent updated = new();
 
   public new ArticleId Id => new(base.Id);
 
@@ -71,8 +71,13 @@ public class ArticleAggregate : AggregateRoot
 
   public void Update(ActorId actorId = default)
   {
-    updated.ActorId = actorId;
-    ApplyChange(updated);
+    if (updated.HasChanges)
+    {
+      updated.ActorId = actorId;
+      ApplyChange(updated);
+
+      updated = new();
+    }
   }
   protected virtual void Apply(ArticleUpdatedEvent e)
   {
@@ -89,4 +94,6 @@ public class ArticleAggregate : AggregateRoot
       description = e.Description.Value == null ? null : new DescriptionUnit(e.Description.Value);
     }
   }
+
+  public override string ToString() => $"{DisplayName.Value} | {base.ToString()}";
 }

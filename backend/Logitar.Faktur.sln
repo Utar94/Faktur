@@ -29,11 +29,17 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logitar.Faktur.Domain", "sr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logitar.Faktur.EntityFrameworkCore.Relational", "src\Logitar.Faktur.EntityFrameworkCore.Relational\Logitar.Faktur.EntityFrameworkCore.Relational.csproj", "{81268A11-3EBE-4342-AFAC-C7E9E7FE62A1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.Faktur.Infrastructure", "src\Logitar.Faktur.Infrastructure\Logitar.Faktur.Infrastructure.csproj", "{3C80733C-29FC-4CED-A3CE-4B341297E1E5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logitar.Faktur.Infrastructure", "src\Logitar.Faktur.Infrastructure\Logitar.Faktur.Infrastructure.csproj", "{3C80733C-29FC-4CED-A3CE-4B341297E1E5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.Faktur.EntityFrameworkCore.SqlServer", "src\Logitar.Faktur.EntityFrameworkCore.SqlServer\Logitar.Faktur.EntityFrameworkCore.SqlServer.csproj", "{1522D230-1400-416B-80D4-C0DF22CDC792}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logitar.Faktur.EntityFrameworkCore.SqlServer", "src\Logitar.Faktur.EntityFrameworkCore.SqlServer\Logitar.Faktur.EntityFrameworkCore.SqlServer.csproj", "{1522D230-1400-416B-80D4-C0DF22CDC792}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.Faktur", "src\Logitar.Faktur\Logitar.Faktur.csproj", "{F2706259-C237-4DD4-A294-D5832BDCB06A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logitar.Faktur", "src\Logitar.Faktur\Logitar.Faktur.csproj", "{F2706259-C237-4DD4-A294-D5832BDCB06A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{D8754EAB-04D0-490B-9552-CFB0288DFE1E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logitar.Faktur.IntegrationTests", "tests\Logitar.Faktur.IntegrationTests\Logitar.Faktur.IntegrationTests.csproj", "{2B8CECAF-86D8-4E01-AF7A-1B53B3E10889}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.Faktur.Tests", "tests\Logitar.Faktur.Tests\Logitar.Faktur.Tests.csproj", "{69E0C393-D484-488D-B64A-872D66C7AAFB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -85,6 +91,14 @@ Global
 		{F2706259-C237-4DD4-A294-D5832BDCB06A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F2706259-C237-4DD4-A294-D5832BDCB06A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F2706259-C237-4DD4-A294-D5832BDCB06A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2B8CECAF-86D8-4E01-AF7A-1B53B3E10889}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2B8CECAF-86D8-4E01-AF7A-1B53B3E10889}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2B8CECAF-86D8-4E01-AF7A-1B53B3E10889}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2B8CECAF-86D8-4E01-AF7A-1B53B3E10889}.Release|Any CPU.Build.0 = Release|Any CPU
+		{69E0C393-D484-488D-B64A-872D66C7AAFB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{69E0C393-D484-488D-B64A-872D66C7AAFB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{69E0C393-D484-488D-B64A-872D66C7AAFB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{69E0C393-D484-488D-B64A-872D66C7AAFB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -93,6 +107,8 @@ Global
 		{C0E9BFD1-6FCC-4C53-A8F7-402633E11C48} = {70786E73-5E9E-4D73-8FCC-E3E24C22158A}
 		{36A6D43C-286E-4F75-A446-E7031B7CA261} = {70786E73-5E9E-4D73-8FCC-E3E24C22158A}
 		{00F92B3D-4610-46EB-A304-8AA5155E4B94} = {70786E73-5E9E-4D73-8FCC-E3E24C22158A}
+		{2B8CECAF-86D8-4E01-AF7A-1B53B3E10889} = {D8754EAB-04D0-490B-9552-CFB0288DFE1E}
+		{69E0C393-D484-488D-B64A-872D66C7AAFB} = {D8754EAB-04D0-490B-9552-CFB0288DFE1E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4EA66CFE-102C-434C-9A8B-1F7CDB64E486}

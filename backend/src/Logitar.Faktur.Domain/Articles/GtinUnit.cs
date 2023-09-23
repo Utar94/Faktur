@@ -7,7 +7,7 @@ public record GtinUnit
   public const int MaximumLength = 14;
 
   public string Value { get; }
-  public long LongValue => long.Parse(Value);
+  public long NormalizedValue => long.Parse(Value);
 
   public GtinUnit(string value)
   {

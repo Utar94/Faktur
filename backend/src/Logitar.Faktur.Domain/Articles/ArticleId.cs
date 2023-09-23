@@ -7,6 +7,7 @@ namespace Logitar.Faktur.Domain.Articles;
 public record ArticleId
 {
   public AggregateId AggregateId { get; }
+  public string Value => AggregateId.Value;
 
   private ArticleId(string value) : this(new AggregateId(value))
   {
