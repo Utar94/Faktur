@@ -19,6 +19,16 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Faktur.Infrastructure", "sr
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "v1", "v1", "{70786E73-5E9E-4D73-8FCC-E3E24C22158A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.Faktur.Contracts", "src\Logitar.Faktur.Contracts\Logitar.Faktur.Contracts.csproj", "{1999E57B-0ED3-4FA2-9C56-B404DB6B7AC9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.Faktur.Application", "src\Logitar.Faktur.Application\Logitar.Faktur.Application.csproj", "{364274B5-2ADF-4B0F-B343-473ED42FFD6F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.Faktur.Web", "src\Logitar.Faktur.Web\Logitar.Faktur.Web.csproj", "{4AD09545-C1E1-4A0B-B0F5-6ECB891C434F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.Faktur.Domain", "src\Logitar.Faktur.Domain\Logitar.Faktur.Domain.csproj", "{CC97D6C0-EACD-4D7F-A22D-41749918079E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logitar.Faktur.EntityFrameworkCore.Relational", "src\Logitar.Faktur.EntityFrameworkCore.Relational\Logitar.Faktur.EntityFrameworkCore.Relational.csproj", "{81268A11-3EBE-4342-AFAC-C7E9E7FE62A1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -37,6 +47,26 @@ Global
 		{00F92B3D-4610-46EB-A304-8AA5155E4B94}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{00F92B3D-4610-46EB-A304-8AA5155E4B94}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{00F92B3D-4610-46EB-A304-8AA5155E4B94}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1999E57B-0ED3-4FA2-9C56-B404DB6B7AC9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1999E57B-0ED3-4FA2-9C56-B404DB6B7AC9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1999E57B-0ED3-4FA2-9C56-B404DB6B7AC9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1999E57B-0ED3-4FA2-9C56-B404DB6B7AC9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{364274B5-2ADF-4B0F-B343-473ED42FFD6F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{364274B5-2ADF-4B0F-B343-473ED42FFD6F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{364274B5-2ADF-4B0F-B343-473ED42FFD6F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{364274B5-2ADF-4B0F-B343-473ED42FFD6F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4AD09545-C1E1-4A0B-B0F5-6ECB891C434F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4AD09545-C1E1-4A0B-B0F5-6ECB891C434F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4AD09545-C1E1-4A0B-B0F5-6ECB891C434F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4AD09545-C1E1-4A0B-B0F5-6ECB891C434F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CC97D6C0-EACD-4D7F-A22D-41749918079E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CC97D6C0-EACD-4D7F-A22D-41749918079E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CC97D6C0-EACD-4D7F-A22D-41749918079E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CC97D6C0-EACD-4D7F-A22D-41749918079E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{81268A11-3EBE-4342-AFAC-C7E9E7FE62A1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{81268A11-3EBE-4342-AFAC-C7E9E7FE62A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{81268A11-3EBE-4342-AFAC-C7E9E7FE62A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{81268A11-3EBE-4342-AFAC-C7E9E7FE62A1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
