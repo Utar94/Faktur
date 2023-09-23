@@ -11,8 +11,8 @@ public static class DependencyInjectionExtensions
   public static IServiceCollection AddLogitarFakturWeb(this IServiceCollection services, IConfiguration configuration)
   {
     services
-     .AddControllersWithViews(options => options.Filters.Add<ExceptionHandlingFilter>())
-     .AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
+      .AddControllersWithViews(options => options.Filters.Add<ExceptionHandlingFilter>())
+      .AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 
     CorsSettings corsSettings = configuration.GetSection("Cors").Get<CorsSettings>() ?? new();
     services.AddSingleton(corsSettings);
