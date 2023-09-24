@@ -1,6 +1,13 @@
-﻿namespace Logitar.Faktur.Application.Exceptions;
+﻿using Logitar.Faktur.Contracts;
 
-internal static class ExceptionExtensions
+namespace Logitar.Faktur.Application.Exceptions;
+
+public static class ExceptionExtensions
 {
   public static string GetErrorCode(this Exception exception) => exception.GetType().Name.Remove(nameof(Exception));
+  public static ErrorDetail GetErrorDetail(this Exception exception) => new()
+  {
+    ErrorCode = exception.GetErrorCode(),
+    ErrorMessage = exception.Message
+  };
 }

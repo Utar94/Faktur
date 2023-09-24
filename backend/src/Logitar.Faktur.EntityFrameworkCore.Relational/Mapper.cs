@@ -2,6 +2,7 @@
 using Logitar.Faktur.Contracts;
 using Logitar.Faktur.Contracts.Actors;
 using Logitar.Faktur.Contracts.Articles;
+using Logitar.Faktur.Contracts.Banners;
 using Logitar.Faktur.EntityFrameworkCore.Relational.Entities;
 
 namespace Logitar.Faktur.EntityFrameworkCore.Relational;
@@ -39,6 +40,19 @@ internal class Mapper
     Article destination = new()
     {
       Gtin = source.Gtin,
+      DisplayName = source.DisplayName,
+      Description = source.Description
+    };
+
+    MapAggregate(source, destination);
+
+    return destination;
+  }
+
+  public Banner ToBanner(BannerEntity source)
+  {
+    Banner destination = new()
+    {
       DisplayName = source.DisplayName,
       Description = source.Description
     };

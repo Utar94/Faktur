@@ -26,9 +26,9 @@ internal class ArticleService : IArticleService
     return await mediator.Send(new DeleteArticleCommand(id), cancellationToken);
   }
 
-  public async Task<Article?> ReadAsync(string id, CancellationToken cancellationToken)
+  public async Task<Article?> ReadAsync(string? id, string? gtin, CancellationToken cancellationToken)
   {
-    return await mediator.Send(new ReadArticleQuery(id), cancellationToken);
+    return await mediator.Send(new ReadArticleQuery(id, gtin), cancellationToken);
   }
 
   public async Task<AcceptedCommand> ReplaceAsync(string id, ReplaceArticlePayload payload, long? version, CancellationToken cancellationToken)

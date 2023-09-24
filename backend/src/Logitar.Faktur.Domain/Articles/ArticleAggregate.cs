@@ -79,19 +79,19 @@ public class ArticleAggregate : AggregateRoot
       updated = new();
     }
   }
-  protected virtual void Apply(ArticleUpdatedEvent e)
+  protected virtual void Apply(ArticleUpdatedEvent @event)
   {
-    if (e.Gtin != null)
+    if (@event.Gtin != null)
     {
-      gtin = e.Gtin.Value == null ? null : new GtinUnit(e.Gtin.Value);
+      gtin = @event.Gtin.Value == null ? null : new GtinUnit(@event.Gtin.Value);
     }
-    if (e.DisplayName != null)
+    if (@event.DisplayName != null)
     {
-      displayName = e.DisplayName == null ? null : new DisplayNameUnit(e.DisplayName);
+      displayName = @event.DisplayName == null ? null : new DisplayNameUnit(@event.DisplayName);
     }
-    if (e.Description != null)
+    if (@event.Description != null)
     {
-      description = e.Description.Value == null ? null : new DescriptionUnit(e.Description.Value);
+      description = @event.Description.Value == null ? null : new DescriptionUnit(@event.Description.Value);
     }
   }
 
