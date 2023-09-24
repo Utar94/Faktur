@@ -13,12 +13,12 @@ namespace Logitar.Faktur.Application.Banners.Commands;
 internal class UpdateBannerCommandHandler : IRequestHandler<UpdateBannerCommand, AcceptedCommand>
 {
   private readonly IApplicationContext applicationContext;
-  private readonly IBannerRepository articleRepository;
+  private readonly IBannerRepository bannerRepository;
 
-  public UpdateBannerCommandHandler(IApplicationContext applicationContext, IBannerRepository articleRepository)
+  public UpdateBannerCommandHandler(IApplicationContext applicationContext, IBannerRepository bannerRepository)
   {
     this.applicationContext = applicationContext;
-    this.articleRepository = articleRepository;
+    this.bannerRepository = bannerRepository;
   }
 
   public async Task<AcceptedCommand> Handle(UpdateBannerCommand command, CancellationToken cancellationToken)
@@ -27,22 +27,22 @@ internal class UpdateBannerCommandHandler : IRequestHandler<UpdateBannerCommand,
     new UpdateBannerPayloadValidator().ValidateAndThrow(payload);
 
     BannerId id = BannerId.Parse(command.Id, nameof(command.Id));
-    BannerAggregate article = await articleRepository.LoadAsync(id, cancellationToken)
+    BannerAggregate banner = await bannerRepository.LoadAsync(id, cancellationToken)
       ?? throw new AggregateNotFoundException<BannerAggregate>(id.AggregateId, nameof(command.Id));
 
     if (!string.IsNullOrWhiteSpace(payload.DisplayName))
     {
-      article.DisplayName = new DisplayNameUnit(payload.DisplayName);
+      banner.DisplayName = new DisplayNameUnit(payload.DisplayName);
     }
     if (payload.Description != null)
     {
-      article.Description = DescriptionUnit.TryCreate(payload.Description.Value);
+      banner.Description = DescriptionUnit.TryCreate(payload.Description.Value);
     }
 
-    article.Update(applicationContext.ActorId);
+    banner.Update(applicationContext.ActorId);
 
-    await articleRepository.SaveAsync(article, cancellationToken);
+    await bannerRepository.SaveAsync(banner, cancellationToken);
 
-    return applicationContext.AcceptCommand(article);
+    return applicationContext.AcceptCommand(banner);
   }
 }

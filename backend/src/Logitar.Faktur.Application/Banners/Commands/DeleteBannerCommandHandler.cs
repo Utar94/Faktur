@@ -9,25 +9,25 @@ namespace Logitar.Faktur.Application.Banners.Commands;
 internal class DeleteBannerCommandHandler : IRequestHandler<DeleteBannerCommand, AcceptedCommand>
 {
   private readonly IApplicationContext applicationContext;
-  private readonly IBannerRepository articleRepository;
+  private readonly IBannerRepository bannerRepository;
 
-  public DeleteBannerCommandHandler(IApplicationContext applicationContext, IBannerRepository articleRepository)
+  public DeleteBannerCommandHandler(IApplicationContext applicationContext, IBannerRepository bannerRepository)
   {
     this.applicationContext = applicationContext;
-    this.articleRepository = articleRepository;
+    this.bannerRepository = bannerRepository;
   }
 
   public async Task<AcceptedCommand> Handle(DeleteBannerCommand command, CancellationToken cancellationToken)
   {
     BannerId id = BannerId.Parse(command.Id, nameof(command.Id));
-    BannerAggregate article = await articleRepository.LoadAsync(id, cancellationToken)
+    BannerAggregate banner = await bannerRepository.LoadAsync(id, cancellationToken)
       ?? throw new AggregateNotFoundException<BannerAggregate>(id.AggregateId, nameof(command.Id));
 
-    article.Delete(applicationContext.ActorId);
+    banner.Delete(applicationContext.ActorId);
     // TODO(fpion): remove banner from referencing stores
 
-    await articleRepository.SaveAsync(article, cancellationToken);
+    await bannerRepository.SaveAsync(banner, cancellationToken);
 
-    return applicationContext.AcceptCommand(article);
+    return applicationContext.AcceptCommand(banner);
   }
 }
