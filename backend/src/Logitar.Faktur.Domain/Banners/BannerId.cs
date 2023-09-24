@@ -9,12 +9,13 @@ public record BannerId
   public AggregateId AggregateId { get; }
   public string Value => AggregateId.Value;
 
-  private BannerId(string value) : this(new AggregateId(value))
-  {
-  }
   public BannerId(AggregateId aggregateId)
   {
     AggregateId = aggregateId;
+  }
+
+  private BannerId(string value) : this(new AggregateId(value))
+  {
   }
 
   public static BannerId Parse(string value, string propertyName)
