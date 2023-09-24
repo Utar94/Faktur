@@ -1,16 +1,16 @@
 ﻿using FluentValidation;
 using Logitar.Faktur.Domain.Extensions;
 
-namespace Logitar.Faktur.Domain.Articles;
+namespace Logitar.Faktur.Domain.Stores;
 
-public class GtinValidator : AbstractValidator<string>
+public class StoreNumberValidator : AbstractValidator<string>
 {
-  public GtinValidator(string? propertyName = null)
+  public StoreNumberValidator(string? propertyName = null)
   {
     RuleFor(x => x).NotEmpty()
-      .MaximumLength(GtinUnit.MaximumLength)
+      .MaximumLength(StoreNumberUnit.MaximumLength)
       .Must(x => x.All(char.IsDigit)) // TODO(fpion): refactor
-        .WithErrorCode("GtinValidator")
+        .WithErrorCode("StoreNumberValidator")
         .WithMessage("'{PropertyName}' may only contain digits.")
       .WithPropertyName(propertyName);
   }

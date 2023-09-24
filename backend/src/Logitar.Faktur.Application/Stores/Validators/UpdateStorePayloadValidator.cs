@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using Logitar.Faktur.Contracts.Stores;
+using Logitar.Faktur.Domain.Stores;
 using Logitar.Faktur.Domain.Validators;
 
 namespace Logitar.Faktur.Application.Stores.Validators;
@@ -8,6 +9,9 @@ internal class UpdateStorePayloadValidator : AbstractValidator<UpdateStorePayloa
 {
   public UpdateStorePayloadValidator()
   {
+    When(p => !string.IsNullOrWhiteSpace(p.Number?.Value),
+      () => RuleFor(p => p.Number!.Value!).SetValidator(new StoreNumberValidator()));
+
     When(p => !string.IsNullOrWhiteSpace(p.DisplayName),
       () => RuleFor(p => p.DisplayName!).SetValidator(new DisplayNameValidator()));
 

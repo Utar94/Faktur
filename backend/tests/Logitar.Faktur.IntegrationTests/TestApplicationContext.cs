@@ -14,7 +14,7 @@ internal class TestApplicationContext : IApplicationContext
   {
     Actor = new()
     {
-      Id = person.UserName,
+      Id = ActorId.NewId().Value,
       Type = ActorType.User,
       DisplayName = person.FullName,
       EmailAddress = person.Email,

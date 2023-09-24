@@ -68,6 +68,7 @@ internal class Mapper
     Store destination = new()
     {
       DisplayName = source.DisplayName,
+      Number = source.Number,
       Description = source.Description
     };
 

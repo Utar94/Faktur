@@ -23,7 +23,11 @@ public class StoreServiceTests : IntegrationTests
     storeRepository = ServiceProvider.GetRequiredService<IStoreRepository>();
     storeService = ServiceProvider.GetRequiredService<IStoreService>();
 
-    store = new(new DisplayNameUnit("Maxi Drummondville"), ApplicationContext.ActorId);
+    store = new(new DisplayNameUnit("Maxi Drummondville"), ApplicationContext.ActorId)
+    {
+      Number = new StoreNumberUnit("08772")
+    };
+    store.Update(ApplicationContext.ActorId);
   }
 
   public override async Task InitializeAsync()
@@ -39,6 +43,7 @@ public class StoreServiceTests : IntegrationTests
     CreateStorePayload payload = new()
     {
       Id = "  IGA  ",
+      Number = "08984",
       DisplayName = "  IGA Drummondville  ",
       Description = "    "
     };
@@ -59,6 +64,7 @@ public class StoreServiceTests : IntegrationTests
     AssertAreNear(command.Timestamp, AsUniversalTime(store.CreatedOn));
     AssertAreNear(command.Timestamp, AsUniversalTime(store.UpdatedOn));
 
+    Assert.Equal(payload.Number.Trim(), store.Number);
     Assert.Equal(payload.DisplayName.Trim(), store.DisplayName);
     Assert.Null(store.Description);
   }
@@ -140,12 +146,13 @@ public class StoreServiceTests : IntegrationTests
   {
     long version = this.store.Version;
 
-    this.store.DisplayName = new DisplayNameUnit("Maxi Drummondville");
+    this.store.DisplayName = new DisplayNameUnit("Maxi Drummondville (#08772)");
     this.store.Update(ApplicationContext.ActorId);
     await storeRepository.SaveAsync(this.store);
 
     ReplaceStorePayload payload = new()
     {
+      Number = "08772",
       DisplayName = "Maxi Drummondville",
       Description = "  Supermarché à proximité de la bibliothèque municipale et du terminus d'autobus.  "
     };
@@ -158,7 +165,8 @@ public class StoreServiceTests : IntegrationTests
 
     StoreEntity? store = await FakturContext.Stores.AsNoTracking().SingleOrDefaultAsync(x => x.AggregateId == this.store.Id.Value);
     Assert.NotNull(store);
-    Assert.Equal("Maxi Drummondville", store.DisplayName);
+    Assert.Equal(8772, store.NumberNormalized);
+    Assert.Equal("Maxi Drummondville (#08772)", store.DisplayName);
     Assert.Equal(payload.Description.Trim(), store.Description);
   }
 
@@ -285,6 +293,7 @@ public class StoreServiceTests : IntegrationTests
   {
     UpdateStorePayload payload = new()
     {
+      Number = new Modification<string>("08984"),
       Description = new Modification<string>("  Supermarché à proximité de la bibliothèque municipale et du terminus d'autobus.  ")
     };
 
@@ -296,6 +305,7 @@ public class StoreServiceTests : IntegrationTests
 
     StoreEntity? store = await FakturContext.Stores.AsNoTracking().SingleOrDefaultAsync(x => x.AggregateId == this.store.Id.Value);
     Assert.NotNull(store);
+    Assert.Equal(payload.Number.Value, store.Number);
     Assert.Equal(payload.Description.Value?.Trim(), store.Description);
   }
 }

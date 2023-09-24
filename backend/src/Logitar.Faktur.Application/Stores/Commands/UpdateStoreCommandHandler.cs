@@ -30,6 +30,10 @@ internal class UpdateStoreCommandHandler : IRequestHandler<UpdateStoreCommand, A
     StoreAggregate store = await storeRepository.LoadAsync(id, cancellationToken)
       ?? throw new AggregateNotFoundException<StoreAggregate>(id.AggregateId, nameof(command.Id));
 
+    if (payload.Number != null)
+    {
+      store.Number = StoreNumberUnit.TryCreate(payload.Number.Value);
+    }
     if (!string.IsNullOrWhiteSpace(payload.DisplayName))
     {
       store.DisplayName = new DisplayNameUnit(payload.DisplayName);

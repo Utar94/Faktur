@@ -11,6 +11,19 @@ public class StoreAggregate : AggregateRoot
 
   public new StoreId Id => new(base.Id);
 
+  private StoreNumberUnit? number = null;
+  public StoreNumberUnit? Number
+  {
+    get => number;
+    set
+    {
+      if (value != number)
+      {
+        updated.Number = new Modification<string>(value?.Value);
+        number = value;
+      }
+    }
+  }
   private DisplayNameUnit? displayName = null;
   public DisplayNameUnit DisplayName
   {
@@ -68,6 +81,10 @@ public class StoreAggregate : AggregateRoot
   }
   protected virtual void Apply(StoreUpdatedEvent @event)
   {
+    if (@event.Number != null)
+    {
+      number = @event.Number.Value == null ? null : new StoreNumberUnit(@event.Number.Value);
+    }
     if (@event.DisplayName != null)
     {
       displayName = @event.DisplayName == null ? null : new DisplayNameUnit(@event.DisplayName);

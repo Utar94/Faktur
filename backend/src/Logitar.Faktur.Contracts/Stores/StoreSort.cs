@@ -3,5 +3,6 @@
 public enum StoreSort
 {
   DisplayName,
+  Number,
   UpdatedOn
 }

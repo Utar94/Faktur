@@ -6,6 +6,8 @@ internal class StoreEntity : AggregateEntity
 {
   public int StoreId { get; private set; }
 
+  public string? Number { get; private set; }
+  public int? NumberNormalized { get; private set; }
   public string DisplayName { get; private set; } = string.Empty;
   public string? Description { get; private set; }
 
@@ -22,6 +24,11 @@ internal class StoreEntity : AggregateEntity
   {
     base.Update(@event);
 
+    if (@event.Number != null)
+    {
+      Number = @event.Number.Value;
+      NumberNormalized = @event.Number.Value == null ? null : int.Parse(@event.Number.Value);
+    }
     if (@event.DisplayName != null)
     {
       DisplayName = @event.DisplayName;

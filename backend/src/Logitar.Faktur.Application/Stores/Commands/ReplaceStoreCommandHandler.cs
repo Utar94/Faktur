@@ -36,6 +36,10 @@ internal class ReplaceStoreCommandHandler : IRequestHandler<ReplaceStoreCommand,
       reference = await storeRepository.LoadAsync(store.Id, command.Version.Value, cancellationToken);
     }
 
+    if (reference == null || (payload.Number?.CleanTrim() != reference.Number?.Value))
+    {
+      store.Number = StoreNumberUnit.TryCreate(payload.Number);
+    }
     if (reference == null || (payload.DisplayName.Trim() != reference.DisplayName.Value))
     {
       store.DisplayName = new DisplayNameUnit(payload.DisplayName);
