@@ -5,6 +5,7 @@ using Logitar.Faktur.Application.Articles;
 using Logitar.Faktur.Contracts.Actors;
 using Logitar.Faktur.Contracts.Articles;
 using Logitar.Faktur.Contracts.Search;
+using Logitar.Faktur.Domain.Articles;
 using Logitar.Faktur.EntityFrameworkCore.Relational.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -29,6 +30,16 @@ internal class ArticleQuerier : IArticleQuerier
 
     ArticleEntity? article = await articles.AsNoTracking()
       .SingleOrDefaultAsync(x => x.AggregateId == id, cancellationToken);
+
+    return article == null ? null : await MapAsync(article, cancellationToken);
+  }
+
+  public async Task<Article?> ReadAsync(GtinUnit gtin, CancellationToken cancellationToken)
+  {
+    long gtinNormalized = gtin.NormalizedValue;
+
+    ArticleEntity? article = await articles.AsNoTracking()
+      .SingleOrDefaultAsync(x => x.GtinNormalized == gtinNormalized, cancellationToken);
 
     return article == null ? null : await MapAsync(article, cancellationToken);
   }

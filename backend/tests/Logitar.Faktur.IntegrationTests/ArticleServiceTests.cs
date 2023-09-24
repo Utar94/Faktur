@@ -1,4 +1,6 @@
-﻿using Logitar.Faktur.Contracts;
+﻿using Logitar.Faktur.Application.Articles;
+using Logitar.Faktur.Application.Exceptions;
+using Logitar.Faktur.Contracts;
 using Logitar.Faktur.Contracts.Articles;
 using Logitar.Faktur.Contracts.Search;
 using Logitar.Faktur.Domain.Articles;
@@ -76,6 +78,46 @@ public class ArticleServiceTests : IntegrationTests
     Assert.Null(article.Description);
   }
 
+  [Fact(DisplayName = "CreateAsync: it should throw GtinAlreadyUsedException when the Gtin is already used.")]
+  public async Task CreateAsync_it_should_throw_GtinAlreadyUsedException_when_the_Gtin_is_already_used()
+  {
+    Assert.NotNull(article.Gtin);
+    CreateArticlePayload payload = new()
+    {
+      Gtin = article.Gtin.Value,
+      DisplayName = article.DisplayName.Value
+    };
+
+    var exception = await Assert.ThrowsAsync<GtinAlreadyUsedException>(async () => await articleService.CreateAsync(payload));
+    Assert.Equal(article.Gtin, exception.Gtin);
+    Assert.Equal(nameof(payload.Gtin), exception.PropertyName);
+  }
+
+  [Fact(DisplayName = "CreateAsync: it should throw IdentifierAlreadyUsedException when the Gtin is already used.")]
+  public async Task CreateAsync_it_should_throw_IdentifierAlreadyUsedException_when_the_Gtin_is_already_used()
+  {
+    CreateArticlePayload payload = new()
+    {
+      Id = article.Id.Value,
+      DisplayName = article.DisplayName.Value
+    };
+
+    var exception = await Assert.ThrowsAsync<IdentifierAlreadyUsedException<ArticleAggregate>>(async () => await articleService.CreateAsync(payload));
+    Assert.Equal(article.Id.AggregateId, exception.Id);
+    Assert.Equal(nameof(payload.Id), exception.PropertyName);
+  }
+
+  [Fact(DisplayName = "CreateAsync: it should throw ValidationException when the payload is not valid.")]
+  public async Task CreateAsync_it_should_throw_ValidationException_when_the_payload_is_not_valid()
+  {
+    CreateArticlePayload payload = new()
+    {
+      Gtin = "ABC123"
+    };
+
+    await Assert.ThrowsAsync<FluentValidation.ValidationException>(async () => await articleService.CreateAsync(payload));
+  }
+
   [Fact(DisplayName = "DeleteAsync: it should delete the correct article.")]
   public async Task DeleteAsync_it_should_delete_the_correct_article()
   {
@@ -97,10 +139,31 @@ public class ArticleServiceTests : IntegrationTests
     Assert.NotNull(await FakturContext.Articles.AsNoTracking().SingleOrDefaultAsync(x => x.AggregateId == this.article.Id.Value));
   }
 
-  [Fact(DisplayName = "ReadAsync: it should read the correct article.")]
-  public async Task ReadAsync_it_should_read_the_correct_article()
+  [Fact(DisplayName = "DeleteAsync: it should throw AggregateNotFoundException when the article could not be found.")]
+  public async Task DeleteAsync_it_should_throw_AggregateNotFoundException_when_the_article_could_not_be_found()
   {
-    Article? article = await articleService.ReadAsync(this.article.Id.Value);
+    string id = Guid.Empty.ToString();
+
+    var exception = await Assert.ThrowsAsync<AggregateNotFoundException<ArticleAggregate>>(
+      async () => await articleService.DeleteAsync(id)
+    );
+    Assert.Equal(id, exception.Id.Value);
+    Assert.Equal("Id", exception.PropertyName);
+  }
+
+  [Fact(DisplayName = "ReadAsync: it should read the correct article by GTIN.")]
+  public async Task ReadAsync_it_should_read_the_correct_article_by_Gtin()
+  {
+    Assert.NotNull(this.article.Gtin);
+    Article? article = await articleService.ReadAsync(gtin: this.article.Gtin.Value);
+    Assert.NotNull(article);
+    Assert.Equal(this.article.Id.Value, article.Id);
+  }
+
+  [Fact(DisplayName = "ReadAsync: it should read the correct article by ID.")]
+  public async Task ReadAsync_it_should_read_the_correct_article_by_id()
+  {
+    Article? article = await articleService.ReadAsync(id: this.article.Id.Value);
     Assert.NotNull(article);
 
     Assert.Equal(this.article.Id.Value, article.Id);
@@ -112,6 +175,32 @@ public class ArticleServiceTests : IntegrationTests
 
     Assert.Equal(this.article.Gtin?.Value, article.Gtin);
     Assert.Equal(this.article.DisplayName.Value, article.DisplayName);
+  }
+
+  [Fact(DisplayName = "ReadAsync: it should return null when no article are found.")]
+  public async Task ReadAsync_it_should_return_null_when_no_article_are_found()
+  {
+    Assert.Null(await articleService.ReadAsync(id: Guid.Empty.ToString(), gtin: "006740000018"));
+  }
+
+  [Fact(DisplayName = "ReadAsync: it should throw TooManyResultsException when many articles are found.")]
+  public async Task ReadAsync_it_should_throw_TooManyResultsException_when_many_articles_are_found()
+  {
+    DisplayNameUnit displayName = new("AGRO CAMEMBERT");
+    GtinUnit gtin = new("006740000018");
+    ArticleId id = new(gtin);
+    ArticleAggregate article = new(displayName, ApplicationContext.ActorId, id)
+    {
+      Gtin = gtin
+    };
+    article.Update(ApplicationContext.ActorId);
+    await articleRepository.SaveAsync(article);
+
+    var exception = await Assert.ThrowsAsync<TooManyResultsException<Article>>(
+      async () => await articleService.ReadAsync(this.article.Id.Value, gtin.Value)
+    );
+    Assert.Equal(1, exception.Expected);
+    Assert.Equal(2, exception.Actual);
   }
 
   [Fact(DisplayName = "ReplaceAsync: it should replace the correct article.")]
@@ -141,6 +230,73 @@ public class ArticleServiceTests : IntegrationTests
     Assert.Equal(payload.Gtin, article.Gtin);
     Assert.Equal("ANANAS", article.DisplayName);
     Assert.Equal(payload.Description.Trim(), article.Description);
+  }
+
+  [Fact(DisplayName = "ReplaceAsync: it should throw AggregateNotFoundException when the article could not be found.")]
+  public async Task ReplaceAsync_it_should_throw_AggregateNotFoundException_when_the_article_could_not_be_found()
+  {
+    string id = Guid.Empty.ToString();
+    ReplaceArticlePayload payload = new()
+    {
+      DisplayName = article.DisplayName.Value
+    };
+
+    var exception = await Assert.ThrowsAsync<AggregateNotFoundException<ArticleAggregate>>(
+      async () => await articleService.ReplaceAsync(id, payload)
+    );
+    Assert.Equal(id, exception.Id.Value);
+    Assert.Equal("Id", exception.PropertyName);
+  }
+
+  [Fact(DisplayName = "ReplaceAsync: it should throw GtinAlreadyUsedException when the Gtin is already used.")]
+  public async Task ReplaceAsync_it_should_throw_GtinAlreadyUsedException_when_the_Gtin_is_already_used()
+  {
+    ArticleAggregate article = new(new DisplayNameUnit("AGRO CAMEMBERT"))
+    {
+      Gtin = new GtinUnit("006740000018")
+    };
+    article.Update(ApplicationContext.ActorId);
+    await articleRepository.SaveAsync(article);
+
+    ReplaceArticlePayload payload = new()
+    {
+      Gtin = article.Gtin.Value,
+      DisplayName = this.article.DisplayName.Value
+    };
+
+    var exception = await Assert.ThrowsAsync<GtinAlreadyUsedException>(
+      async () => await articleService.ReplaceAsync(this.article.Id.Value, payload)
+    );
+    Assert.Equal(article.Gtin, exception.Gtin);
+    Assert.Equal(nameof(payload.Gtin), exception.PropertyName);
+  }
+
+  [Fact(DisplayName = "ReplaceAsync: it should throw ValidationException when the payload is not valid.")]
+  public async Task ReplaceAsync_it_should_throw_ValidationException_when_the_payload_is_not_valid()
+  {
+    ReplaceArticlePayload payload = new();
+
+    await Assert.ThrowsAsync<FluentValidation.ValidationException>(async () => await articleService.ReplaceAsync(article.Id.Value, payload));
+  }
+
+  [Fact(DisplayName = "SearchAsync: it should return empty results when none are matching.")]
+  public async Task SearchAsync_it_should_return_empty_results_when_none_are_matching()
+  {
+    SearchArticlesPayload payload = new()
+    {
+      Id = new TextSearch
+      {
+        Terms = new List<SearchTerm>()
+        {
+          new(Guid.Empty.ToString())
+        }
+      }
+    };
+
+    SearchResults<Article> articles = await articleService.SearchAsync(payload);
+
+    Assert.Empty(articles.Results);
+    Assert.Equal(0, articles.Total);
   }
 
   [Fact(DisplayName = "SearchAsync: it should return the correct results.")]
@@ -208,6 +364,52 @@ public class ArticleServiceTests : IntegrationTests
     {
       Assert.Equal(expected[i].Id.Value, articles.Results[i].Id);
     }
+  }
+
+  [Fact(DisplayName = "UpdateAsync: it should throw AggregateNotFoundException when the article could not be found.")]
+  public async Task UpdateAsync_it_should_throw_AggregateNotFoundException_when_the_article_could_not_be_found()
+  {
+    string id = Guid.Empty.ToString();
+    UpdateArticlePayload payload = new();
+    var exception = await Assert.ThrowsAsync<AggregateNotFoundException<ArticleAggregate>>(
+      async () => await articleService.UpdateAsync(id, payload)
+    );
+
+    Assert.Equal(id, exception.Id.Value);
+    Assert.Equal("Id", exception.PropertyName);
+  }
+
+  [Fact(DisplayName = "UpdateAsync: it should throw GtinAlreadyUsedException when the Gtin is already used.")]
+  public async Task UpdateAsync_it_should_throw_GtinAlreadyUsedException_when_the_Gtin_is_already_used()
+  {
+    ArticleAggregate article = new(new DisplayNameUnit("AGRO CAMEMBERT"))
+    {
+      Gtin = new GtinUnit("006740000018")
+    };
+    article.Update(ApplicationContext.ActorId);
+    await articleRepository.SaveAsync(article);
+
+    UpdateArticlePayload payload = new()
+    {
+      Gtin = new Modification<string>(article.Gtin.Value)
+    };
+
+    var exception = await Assert.ThrowsAsync<GtinAlreadyUsedException>(
+      async () => await articleService.UpdateAsync(this.article.Id.Value, payload)
+    );
+    Assert.Equal(article.Gtin, exception.Gtin);
+    Assert.Equal(nameof(payload.Gtin), exception.PropertyName);
+  }
+
+  [Fact(DisplayName = "UpdateAsync: it should throw ValidationException when the payload is not valid.")]
+  public async Task UpdateAsync_it_should_throw_ValidationException_when_the_payload_is_not_valid()
+  {
+    UpdateArticlePayload payload = new()
+    {
+      Gtin = new Modification<string>("ABC123")
+    };
+
+    await Assert.ThrowsAsync<FluentValidation.ValidationException>(async () => await articleService.UpdateAsync(article.Id.Value, payload));
   }
 
   [Fact(DisplayName = "UpdateAsync: it should update the correct article.")]

@@ -3,4 +3,4 @@ using MediatR;
 
 namespace Logitar.Faktur.Application.Articles.Queries;
 
-internal record ReadArticleQuery(string Id) : IRequest<Article?>;
+internal record ReadArticleQuery(string? Id, string? Gtin) : IRequest<Article?>;

@@ -31,10 +31,20 @@ internal class ExceptionHandlingFilter : ExceptionFilterAttribute
       context.Result = HandleConflictFailureException(context);
       context.ExceptionHandled = true;
     }
+    else if (context.Exception is TooManyResultsException)
+    {
+      context.Result = HandleBadRequestDetailException(context);
+      context.ExceptionHandled = true;
+    }
     else
     {
       base.OnException(context);
     }
+  }
+
+  private static IActionResult HandleBadRequestDetailException(ExceptionContext context)
+  {
+    return new BadRequestObjectResult(context.Exception.GetErrorDetail());
   }
 
   private static IActionResult HandleConflictFailureException(ExceptionContext context)

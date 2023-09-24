@@ -1,4 +1,4 @@
-﻿using Logitar.EventSourcing;
+﻿using Logitar.Faktur.Application.Exceptions;
 using Logitar.Faktur.Contracts;
 using Logitar.Faktur.Contracts.Banners;
 using Logitar.Faktur.Contracts.Search;
@@ -23,7 +23,7 @@ public class BannerServiceTests : IntegrationTests
     bannerRepository = ServiceProvider.GetRequiredService<IBannerRepository>();
     bannerService = ServiceProvider.GetRequiredService<IBannerService>();
 
-    banner = new(new DisplayNameUnit("MAXI"), ApplicationContext.ActorId);
+    banner = new(new DisplayNameUnit("MAXI"), ApplicationContext.ActorId, BannerId.Parse("MAXI", "Id"));
     banner.Update(ApplicationContext.ActorId);
   }
 
@@ -39,14 +39,14 @@ public class BannerServiceTests : IntegrationTests
   {
     CreateBannerPayload payload = new()
     {
-      Id = "    ",
-      DisplayName = "  IGA  ",
+      Id = "  IGA  ",
+      DisplayName = "  IGA EXTRA  ",
       Description = "    "
     };
 
     AcceptedCommand command = await bannerService.CreateAsync(payload);
 
-    Assert.NotEqual(Guid.Empty, new AggregateId(command.AggregateId).ToGuid());
+    Assert.Equal(payload.Id.Trim(), command.AggregateId);
     Assert.True(command.AggregateVersion >= 1);
     Assert.Equal(ApplicationContext.Actor, command.Actor);
     AssertIsNear(command.Timestamp);
@@ -64,26 +64,61 @@ public class BannerServiceTests : IntegrationTests
     Assert.Null(banner.Description);
   }
 
+  [Fact(DisplayName = "CreateAsync: it should throw IdentifierAlreadyUsedException when the Gtin is already used.")]
+  public async Task CreateAsync_it_should_throw_IdentifierAlreadyUsedException_when_the_Gtin_is_already_used()
+  {
+    CreateBannerPayload payload = new()
+    {
+      Id = banner.Id.Value,
+      DisplayName = banner.DisplayName.Value
+    };
+
+    var exception = await Assert.ThrowsAsync<IdentifierAlreadyUsedException<BannerAggregate>>(async () => await bannerService.CreateAsync(payload));
+    Assert.Equal(banner.Id.AggregateId, exception.Id);
+    Assert.Equal(nameof(payload.Id), exception.PropertyName);
+  }
+
+  [Fact(DisplayName = "CreateAsync: it should throw ValidationException when the payload is not valid.")]
+  public async Task CreateAsync_it_should_throw_ValidationException_when_the_payload_is_not_valid()
+  {
+    CreateBannerPayload payload = new();
+
+    await Assert.ThrowsAsync<FluentValidation.ValidationException>(async () => await bannerService.CreateAsync(payload));
+  }
+
   [Fact(DisplayName = "DeleteAsync: it should delete the correct banner.")]
   public async Task DeleteAsync_it_should_delete_the_correct_banner()
   {
-    BannerAggregate banner = new(new DisplayNameUnit("IGA"), ApplicationContext.ActorId);
+    BannerId id = BannerId.Parse("METRO", "Id");
+    BannerAggregate banner = new(new DisplayNameUnit("METRO INC."), ApplicationContext.ActorId, id);
     await bannerRepository.SaveAsync(banner);
 
-    AcceptedCommand command = await bannerService.DeleteAsync(banner.Id.Value);
-    Assert.Equal(banner.Id.Value, command.AggregateId);
+    AcceptedCommand command = await bannerService.DeleteAsync(id.Value);
+    Assert.Equal(id.Value, command.AggregateId);
     Assert.True(command.AggregateVersion > banner.Version);
     Assert.Equal(ApplicationContext.Actor, command.Actor);
     AssertIsNear(command.Timestamp);
 
-    Assert.Null(await FakturContext.Banners.AsNoTracking().SingleOrDefaultAsync(x => x.AggregateId == banner.Id.Value));
+    Assert.Null(await FakturContext.Banners.AsNoTracking().SingleOrDefaultAsync(x => x.AggregateId == id.Value));
     Assert.NotNull(await FakturContext.Banners.AsNoTracking().SingleOrDefaultAsync(x => x.AggregateId == this.banner.Id.Value));
   }
 
-  [Fact(DisplayName = "ReadAsync: it should read the correct banner.")]
-  public async Task ReadAsync_it_should_read_the_correct_banner()
+  [Fact(DisplayName = "DeleteAsync: it should throw AggregateNotFoundException when the banner could not be found.")]
+  public async Task DeleteAsync_it_should_throw_AggregateNotFoundException_when_the_banner_could_not_be_found()
   {
-    Banner? banner = await bannerService.ReadAsync(this.banner.Id.Value);
+    string id = Guid.Empty.ToString();
+
+    var exception = await Assert.ThrowsAsync<AggregateNotFoundException<BannerAggregate>>(
+      async () => await bannerService.DeleteAsync(id)
+    );
+    Assert.Equal(id, exception.Id.Value);
+    Assert.Equal("Id", exception.PropertyName);
+  }
+
+  [Fact(DisplayName = "ReadAsync: it should read the correct banner by ID.")]
+  public async Task ReadAsync_it_should_read_the_correct_banner_by_id()
+  {
+    Banner? banner = await bannerService.ReadAsync(id: this.banner.Id.Value);
     Assert.NotNull(banner);
 
     Assert.Equal(this.banner.Id.Value, banner.Id);
@@ -94,6 +129,12 @@ public class BannerServiceTests : IntegrationTests
     AssertAreNear(this.banner.UpdatedOn, banner.UpdatedOn);
 
     Assert.Equal(this.banner.DisplayName.Value, banner.DisplayName);
+  }
+
+  [Fact(DisplayName = "ReadAsync: it should return null when no banner are found.")]
+  public async Task ReadAsync_it_should_return_null_when_no_banner_are_found()
+  {
+    Assert.Null(await bannerService.ReadAsync(id: Guid.Empty.ToString()));
   }
 
   [Fact(DisplayName = "ReplaceAsync: it should replace the correct banner.")]
@@ -123,12 +164,56 @@ public class BannerServiceTests : IntegrationTests
     Assert.Equal(payload.Description.Trim(), banner.Description);
   }
 
+  [Fact(DisplayName = "ReplaceAsync: it should throw AggregateNotFoundException when the banner could not be found.")]
+  public async Task ReplaceAsync_it_should_throw_AggregateNotFoundException_when_the_banner_could_not_be_found()
+  {
+    string id = Guid.Empty.ToString();
+    ReplaceBannerPayload payload = new()
+    {
+      DisplayName = banner.DisplayName.Value
+    };
+
+    var exception = await Assert.ThrowsAsync<AggregateNotFoundException<BannerAggregate>>(
+      async () => await bannerService.ReplaceAsync(id, payload)
+    );
+    Assert.Equal(id, exception.Id.Value);
+    Assert.Equal("Id", exception.PropertyName);
+  }
+
+  [Fact(DisplayName = "ReplaceAsync: it should throw ValidationException when the payload is not valid.")]
+  public async Task ReplaceAsync_it_should_throw_ValidationException_when_the_payload_is_not_valid()
+  {
+    ReplaceBannerPayload payload = new();
+
+    await Assert.ThrowsAsync<FluentValidation.ValidationException>(async () => await bannerService.ReplaceAsync(banner.Id.Value, payload));
+  }
+
+  [Fact(DisplayName = "SearchAsync: it should return empty results when none are matching.")]
+  public async Task SearchAsync_it_should_return_empty_results_when_none_are_matching()
+  {
+    SearchBannersPayload payload = new()
+    {
+      Id = new TextSearch
+      {
+        Terms = new List<SearchTerm>()
+        {
+          new(Guid.Empty.ToString())
+        }
+      }
+    };
+
+    SearchResults<Banner> banners = await bannerService.SearchAsync(payload);
+
+    Assert.Empty(banners.Results);
+    Assert.Equal(0, banners.Total);
+  }
+
   [Fact(DisplayName = "SearchAsync: it should return the correct results.")]
   public async Task SearchAsync_it_should_return_the_correct_results()
   {
-    BannerAggregate iga = new(new DisplayNameUnit("IGA"));
+    BannerAggregate iga = new(new DisplayNameUnit("IGA EXTRA"));
     BannerAggregate loblaws = new(new DisplayNameUnit("LOBLAWS"));
-    BannerAggregate metro = new(new DisplayNameUnit("METRO"));
+    BannerAggregate metro = new(new DisplayNameUnit("METRO INC."));
     BannerAggregate provigo = new(new DisplayNameUnit("PROVIGO"));
     BannerAggregate superC = new(new DisplayNameUnit("SUPER C"));
 
@@ -178,12 +263,36 @@ public class BannerServiceTests : IntegrationTests
     }
   }
 
+  [Fact(DisplayName = "UpdateAsync: it should throw AggregateNotFoundException when the banner could not be found.")]
+  public async Task UpdateAsync_it_should_throw_AggregateNotFoundException_when_the_banner_could_not_be_found()
+  {
+    string id = Guid.Empty.ToString();
+    UpdateBannerPayload payload = new();
+    var exception = await Assert.ThrowsAsync<AggregateNotFoundException<BannerAggregate>>(
+      async () => await bannerService.UpdateAsync(id, payload)
+    );
+
+    Assert.Equal(id, exception.Id.Value);
+    Assert.Equal("Id", exception.PropertyName);
+  }
+
+  [Fact(DisplayName = "UpdateAsync: it should throw ValidationException when the payload is not valid.")]
+  public async Task UpdateAsync_it_should_throw_ValidationException_when_the_payload_is_not_valid()
+  {
+    UpdateBannerPayload payload = new()
+    {
+      DisplayName = Faker.Random.String(DisplayNameUnit.MaximumLength + 1, minChar: 'A', maxChar: 'Z')
+    };
+
+    await Assert.ThrowsAsync<FluentValidation.ValidationException>(async () => await bannerService.UpdateAsync(banner.Id.Value, payload));
+  }
+
   [Fact(DisplayName = "UpdateAsync: it should update the correct banner.")]
   public async Task UpdateAsync_it_should_update_the_correct_banner()
   {
     UpdateBannerPayload payload = new()
     {
-      Description = new Modification<string>("  Metro inc. est une entreprise de distribution alimentaire et pharmaceutique au Canada.  ")
+      Description = new Modification<string>("  Maxi est une bannière québécoise de supermarchés à rabais. Fondée en 1984 par Provigo, elle appartient depuis 1998 à Loblaw.  ")
     };
 
     AcceptedCommand command = await bannerService.UpdateAsync(this.banner.Id.Value, payload);

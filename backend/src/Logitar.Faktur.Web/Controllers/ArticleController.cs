@@ -36,7 +36,14 @@ public class ArticleController : ControllerBase
   [HttpGet("{id}")]
   public async Task<ActionResult<Article>> ReadAsync(string id, CancellationToken cancellationToken)
   {
-    Article? article = await articleService.ReadAsync(id, cancellationToken);
+    Article? article = await articleService.ReadAsync(id: id, cancellationToken: cancellationToken);
+    return article == null ? NotFound() : Ok(article);
+  }
+
+  [HttpGet("gtin:{gtin}")]
+  public async Task<ActionResult<Article>> ReadByGtinAsync(string gtin, CancellationToken cancellationToken)
+  {
+    Article? article = await articleService.ReadAsync(gtin: gtin, cancellationToken: cancellationToken);
     return article == null ? NotFound() : Ok(article);
   }
 
