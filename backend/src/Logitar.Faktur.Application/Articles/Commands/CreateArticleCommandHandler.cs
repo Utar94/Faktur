@@ -32,18 +32,18 @@ internal class CreateArticleCommandHandler : IRequestHandler<CreateArticleComman
       throw new GtinAlreadyUsedException(gtin, nameof(payload.Gtin));
     }
 
-    ArticleId id;
-    if (string.IsNullOrWhiteSpace(payload.Id))
-    {
-      id = ArticleId.NewId(gtin);
-    }
-    else
+    ArticleId? id = null;
+    if (!string.IsNullOrWhiteSpace(payload.Id))
     {
       id = ArticleId.Parse(payload.Id, nameof(payload.Id));
       if (await articleRepository.LoadAsync(id, cancellationToken) != null)
       {
         throw new IdentifierAlreadyUsedException<ArticleAggregate>(id.AggregateId, nameof(payload.Id));
       }
+    }
+    else if (gtin != null)
+    {
+      id = new(gtin);
     }
 
     DisplayNameUnit displayName = new(payload.DisplayName);

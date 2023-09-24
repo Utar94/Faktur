@@ -9,19 +9,17 @@ public record ArticleId
   public AggregateId AggregateId { get; }
   public string Value => AggregateId.Value;
 
-  private ArticleId(string value) : this(new AggregateId(value))
+  public ArticleId(GtinUnit gtin) : this($"{gtin.Value}-{DateTimeOffset.UtcNow.ToUnixTimeSeconds()}")
   {
   }
+
   public ArticleId(AggregateId aggregateId)
   {
     AggregateId = aggregateId;
   }
 
-  public static ArticleId NewId(GtinUnit? gtin = null)
+  private ArticleId(string value) : this(new AggregateId(value))
   {
-    return gtin == null
-      ? new(AggregateId.NewId())
-      : new($"{gtin.Value}-{DateTimeOffset.UtcNow.ToUnixTimeSeconds()}");
   }
 
   public static ArticleId Parse(string value, string propertyName)

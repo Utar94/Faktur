@@ -2,7 +2,7 @@
 
 namespace Logitar.Faktur.Contracts.Articles;
 
-public interface IArticleService
+public interface IArticleService // TODO(fpion): read by Gtin
 {
   Task<AcceptedCommand> CreateAsync(CreateArticlePayload payload, CancellationToken cancellationToken = default);
   Task<AcceptedCommand> DeleteAsync(string id, CancellationToken cancellationToken = default);

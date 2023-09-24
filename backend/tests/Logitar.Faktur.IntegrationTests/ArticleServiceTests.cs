@@ -24,7 +24,7 @@ public class ArticleServiceTests : IntegrationTests
 
     DisplayNameUnit displayName = new("NOTRE-DAME BRIE");
     GtinUnit gtin = new("006740000010");
-    ArticleId id = ArticleId.NewId(gtin);
+    ArticleId id = new(gtin);
     article = new(displayName, ApplicationContext.ActorId, id)
     {
       Gtin = gtin
@@ -80,7 +80,7 @@ public class ArticleServiceTests : IntegrationTests
   public async Task DeleteAsync_it_should_delete_the_correct_article()
   {
     GtinUnit gtin = new("006740000018");
-    ArticleId id = ArticleId.NewId(gtin);
+    ArticleId id = new(gtin);
     ArticleAggregate article = new(new DisplayNameUnit("AGRO CAMEMBERT"), ApplicationContext.ActorId, id)
     {
       Gtin = gtin

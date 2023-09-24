@@ -1,29 +1,16 @@
 ﻿using Logitar.EventSourcing;
 using Logitar.Faktur.Contracts;
-using Logitar.Faktur.Domain.Articles.Events;
+using Logitar.Faktur.Domain.Banners.Events;
 using Logitar.Faktur.Domain.ValueObjects;
 
-namespace Logitar.Faktur.Domain.Articles;
+namespace Logitar.Faktur.Domain.Banners;
 
-public class ArticleAggregate : AggregateRoot
+public class BannerAggregate : AggregateRoot
 {
-  private ArticleUpdatedEvent updated = new();
+  private BannerUpdatedEvent updated = new();
 
-  public new ArticleId Id => new(base.Id);
+  public new BannerId Id => new(base.Id);
 
-  private GtinUnit? gtin = null;
-  public GtinUnit? Gtin
-  {
-    get => gtin;
-    set
-    {
-      if (value != gtin)
-      {
-        updated.Gtin = new Modification<string>(value?.Value);
-        gtin = value;
-      }
-    }
-  }
   private DisplayNameUnit? displayName = null;
   public DisplayNameUnit DisplayName
   {
@@ -51,23 +38,23 @@ public class ArticleAggregate : AggregateRoot
     }
   }
 
-  public ArticleAggregate(AggregateId id) : base(id)
+  public BannerAggregate(AggregateId id) : base(id)
   {
   }
 
-  public ArticleAggregate(DisplayNameUnit displayName, ActorId actorId = default, ArticleId? id = null) : base(id?.AggregateId)
+  public BannerAggregate(DisplayNameUnit displayName, ActorId actorId = default, BannerId? id = null) : base(id?.AggregateId)
   {
-    ApplyChange(new ArticleCreatedEvent(actorId)
+    ApplyChange(new BannerCreatedEvent(actorId)
     {
       DisplayName = displayName.Value
     });
   }
-  protected virtual void Apply(ArticleCreatedEvent @event)
+  protected virtual void Apply(BannerCreatedEvent @event)
   {
     displayName = new(@event.DisplayName);
   }
 
-  public void Delete(ActorId actorId = default) => ApplyChange(new ArticleDeletedEvent(actorId));
+  public void Delete(ActorId actorId = default) => ApplyChange(new BannerDeletedEvent(actorId));
 
   public void Update(ActorId actorId = default)
   {
@@ -79,12 +66,8 @@ public class ArticleAggregate : AggregateRoot
       updated = new();
     }
   }
-  protected virtual void Apply(ArticleUpdatedEvent @event)
+  protected virtual void Apply(BannerUpdatedEvent @event)
   {
-    if (@event.Gtin != null)
-    {
-      gtin = @event.Gtin.Value == null ? null : new GtinUnit(@event.Gtin.Value);
-    }
     if (@event.DisplayName != null)
     {
       displayName = @event.DisplayName == null ? null : new DisplayNameUnit(@event.DisplayName);

@@ -1,13 +1,13 @@
-﻿using Logitar.Faktur.Contracts.Articles;
+﻿using Logitar.Faktur.Contracts.Banners;
 using Logitar.Faktur.Contracts.Search;
 
 namespace Logitar.Faktur.Web.Models;
 
-public record SearchArticlesQuery : SearchQuery
+public record SearchBannersQuery : SearchQuery
 {
-  public SearchArticlesPayload ToPayload() // TODO(fpion): refactor
+  public SearchBannersPayload ToPayload() // TODO(fpion): refactor
   {
-    SearchArticlesPayload payload = new()
+    SearchBannersPayload payload = new()
     {
       Skip = Skip,
       Limit = Limit
@@ -17,7 +17,7 @@ public record SearchArticlesQuery : SearchQuery
     payload.Search.Terms = SearchTerms.Select(term => new SearchTerm(term)).ToList();
     payload.Search.Operator = SearchOperator;
 
-    List<ArticleSortOption> sort = new(capacity: Sort.Count);
+    List<BannerSortOption> sort = new(capacity: Sort.Count);
     foreach (string sortOption in Sort)
     {
       string[] values = sortOption.Split('.');
@@ -26,14 +26,14 @@ public record SearchArticlesQuery : SearchQuery
         continue;
       }
 
-      if (!Enum.TryParse(values.Length == 2 ? values.Last() : values.Single(), out ArticleSort field))
+      if (!Enum.TryParse(values.Length == 2 ? values.Last() : values.Single(), out BannerSort field))
       {
         continue;
       }
 
       bool isDescending = values.Length == 2 && values.First().ToLower() == "desc";
 
-      sort.Add(new ArticleSortOption(field, isDescending));
+      sort.Add(new BannerSortOption(field, isDescending));
     }
     payload.Sort = sort;
 
