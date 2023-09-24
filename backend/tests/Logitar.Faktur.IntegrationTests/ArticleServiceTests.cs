@@ -325,7 +325,6 @@ public class ArticleServiceTests : IntegrationTests
     {
       newArticle.Update();
     }
-
     await articleRepository.SaveAsync(newArticles);
 
     ArticleId[] ids = new[] { article.Id, asparagus.Id, babyBokChoy.Id, broccoli.Id, pineapple.Id };

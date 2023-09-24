@@ -24,7 +24,6 @@ public class BannerServiceTests : IntegrationTests
     bannerService = ServiceProvider.GetRequiredService<IBannerService>();
 
     banner = new(new DisplayNameUnit("MAXI"), ApplicationContext.ActorId, BannerId.Parse("MAXI", "Id"));
-    banner.Update(ApplicationContext.ActorId);
   }
 
   public override async Task InitializeAsync()
@@ -218,11 +217,6 @@ public class BannerServiceTests : IntegrationTests
     BannerAggregate superC = new(new DisplayNameUnit("SUPER C"));
 
     BannerAggregate[] newBanners = new[] { iga, loblaws, metro, provigo, superC };
-    foreach (BannerAggregate newBanner in newBanners)
-    {
-      newBanner.Update();
-    }
-
     await bannerRepository.SaveAsync(newBanners);
 
     BannerId[] ids = new[] { banner.Id, iga.Id, loblaws.Id, metro.Id, superC.Id };

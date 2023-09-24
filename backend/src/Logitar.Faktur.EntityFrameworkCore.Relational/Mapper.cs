@@ -3,6 +3,7 @@ using Logitar.Faktur.Contracts;
 using Logitar.Faktur.Contracts.Actors;
 using Logitar.Faktur.Contracts.Articles;
 using Logitar.Faktur.Contracts.Banners;
+using Logitar.Faktur.Contracts.Stores;
 using Logitar.Faktur.EntityFrameworkCore.Relational.Entities;
 
 namespace Logitar.Faktur.EntityFrameworkCore.Relational;
@@ -52,6 +53,19 @@ internal class Mapper
   public Banner ToBanner(BannerEntity source)
   {
     Banner destination = new()
+    {
+      DisplayName = source.DisplayName,
+      Description = source.Description
+    };
+
+    MapAggregate(source, destination);
+
+    return destination;
+  }
+
+  public Store ToStore(StoreEntity source)
+  {
+    Store destination = new()
     {
       DisplayName = source.DisplayName,
       Description = source.Description

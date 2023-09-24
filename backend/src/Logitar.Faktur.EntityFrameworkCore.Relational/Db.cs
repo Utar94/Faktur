@@ -36,4 +36,12 @@ internal static class Db
     public static readonly ColumnId AggregateId = new(nameof(EventEntity.AggregateId), Table);
     public static readonly ColumnId AggregateType = new(nameof(EventEntity.AggregateType), Table);
   }
+
+  internal static class Stores
+  {
+    public static readonly TableId Table = new(nameof(FakturContext.Stores));
+
+    public static readonly ColumnId AggregateId = new(nameof(StoreEntity.AggregateId), Table);
+    public static readonly ColumnId DisplayName = new(nameof(StoreEntity.DisplayName), Table);
+  }
 }
