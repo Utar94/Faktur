@@ -1,6 +1,8 @@
 ﻿using Logitar.EventSourcing;
 using Logitar.Faktur.Contracts;
 using Logitar.Faktur.Domain.Banners;
+using Logitar.Faktur.Domain.Departments;
+using Logitar.Faktur.Domain.Departments.Events;
 using Logitar.Faktur.Domain.Stores.Events;
 using Logitar.Faktur.Domain.ValueObjects;
 
@@ -8,6 +10,8 @@ namespace Logitar.Faktur.Domain.Stores;
 
 public class StoreAggregate : AggregateRoot
 {
+  private readonly Dictionary<string, DepartmentUnit> departments = new();
+
   private StoreUpdatedEvent updated = new();
 
   public new StoreId Id => new(base.Id);
@@ -81,6 +85,8 @@ public class StoreAggregate : AggregateRoot
     }
   }
 
+  public IReadOnlyDictionary<string, DepartmentUnit> Departments => departments.AsReadOnly();
+
   public StoreAggregate(AggregateId id) : base(id)
   {
   }
@@ -99,6 +105,19 @@ public class StoreAggregate : AggregateRoot
 
   public void Delete(ActorId actorId = default) => ApplyChange(new StoreDeletedEvent(actorId));
 
+  public bool RemoveDepartment(DepartmentNumberUnit number, ActorId actorId = default)
+  {
+    if (!departments.ContainsKey(number.Value))
+    {
+      return false;
+    }
+
+    ApplyChange(new DepartmentRemovedEvent(actorId, number));
+
+    return true;
+  }
+  protected virtual void Apply(DepartmentRemovedEvent @event) => departments.Remove(@event.Number.Value);
+
   public void SetBanner(BannerAggregate? banner)
   {
     if (banner?.Id != BannerId)
@@ -107,6 +126,15 @@ public class StoreAggregate : AggregateRoot
       BannerId = banner?.Id;
     }
   }
+
+  public void SetDepartment(DepartmentUnit department, ActorId actorId = default)
+  {
+    if (!departments.TryGetValue(department.Number.Value, out DepartmentUnit? existingDepartment) || department != existingDepartment)
+    {
+      ApplyChange(new DepartmentSavedEvent(actorId, department));
+    }
+  }
+  protected virtual void Apply(DepartmentSavedEvent @event) => departments[@event.Department.Number.Value] = @event.Department;
 
   public void Update(ActorId actorId = default)
   {
