@@ -24,7 +24,6 @@ internal class DeleteArticleCommandHandler : IRequestHandler<DeleteArticleComman
       ?? throw new AggregateNotFoundException<ArticleAggregate>(id.AggregateId, nameof(command.Id));
 
     article.Delete(applicationContext.ActorId);
-    // TODO(fpion): delete products referencing this article
 
     await articleRepository.SaveAsync(article, cancellationToken);
 

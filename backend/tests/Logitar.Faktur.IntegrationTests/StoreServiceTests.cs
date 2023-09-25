@@ -1,4 +1,5 @@
-﻿using Logitar.Faktur.Application.Exceptions;
+﻿using Logitar.EventSourcing;
+using Logitar.Faktur.Application.Exceptions;
 using Logitar.Faktur.Contracts;
 using Logitar.Faktur.Contracts.Search;
 using Logitar.Faktur.Contracts.Stores;
@@ -28,7 +29,13 @@ public class StoreServiceTests : IntegrationTests
     storeService = ServiceProvider.GetRequiredService<IStoreService>();
 
     banner = new(new DisplayNameUnit("Maxi"), ApplicationContext.ActorId, BannerId.Parse("MAXI", "Id"));
-    store = new(new DisplayNameUnit("Maxi Drummondville"), ApplicationContext.ActorId);
+
+    StoreNumberUnit number = new("01234");
+    store = new(new DisplayNameUnit("Maxi Drummondville"), ApplicationContext.ActorId, new StoreId(banner, number))
+    {
+      Number = number
+    };
+    store.Update(ApplicationContext.ActorId);
   }
 
   public override async Task InitializeAsync()
@@ -44,28 +51,32 @@ public class StoreServiceTests : IntegrationTests
   {
     CreateStorePayload payload = new()
     {
-      Id = "  IGA  ",
+      Id = "    ",
       BannerId = $"  {banner.Id.Value}  ",
       Number = "08984",
-      DisplayName = "  IGA Drummondville  ",
+      DisplayName = "  Maxi Drummondville St-Joseph  ",
       Description = "    ",
       Address = new AddressPayload
       {
-        Street = "  1870 boul Saint-Joseph  ",
+        Street = "  325 boul Saint-Joseph  ",
         Locality = "  Drummondville  ",
         Region = "QC",
-        PostalCode = " J2B 1R2 ",
+        PostalCode = " J2C 8P7 ",
         Country = "CA"
       },
       Phone = new PhonePayload
       {
-        Number = "  819-472-1197  "
+        Number = "  819-477-4695  "
       }
     };
 
     AcceptedCommand command = await storeService.CreateAsync(payload);
 
-    Assert.Equal(payload.Id.Trim(), command.AggregateId);
+    string[] values = command.AggregateId.Split('-');
+    Assert.Equal(2, values.Length);
+    Assert.Equal(banner.Id.Value, values.First());
+    Assert.Equal(payload.Number, values.Last());
+
     Assert.True(command.AggregateVersion >= 1);
     Assert.Equal(ApplicationContext.Actor, command.Actor);
     AssertIsNear(command.Timestamp);
@@ -96,6 +107,21 @@ public class StoreServiceTests : IntegrationTests
 
     Assert.NotNull(store.Banner);
     Assert.Equal(banner.Id.Value, store.Banner.AggregateId);
+  }
+
+  [Fact(DisplayName = "CreateAsync: it should generate a new Id when the default is already used.")]
+  public async Task CreateAsync_it_should_generate_a_new_Id_when_the_default_is_already_used()
+  {
+    Assert.NotNull(store.Number);
+    CreateStorePayload payload = new()
+    {
+      BannerId = banner.Id.Value,
+      Number = store.Number.Value,
+      DisplayName = store.DisplayName.Value
+    };
+
+    AcceptedCommand command = await storeService.CreateAsync(payload);
+    Assert.NotEqual(Guid.Empty, new AggregateId(command.AggregateId).ToGuid());
   }
 
   [Fact(DisplayName = "CreateAsync: it should throw IdentifierAlreadyUsedException when the Gtin is already used.")]

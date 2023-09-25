@@ -29,6 +29,16 @@ internal class CreateStoreCommandHandler : IRequestHandler<CreateStoreCommand, A
     CreateStorePayload payload = command.Payload;
     new CreateStorePayloadValidator().ValidateAndThrow(payload);
 
+    BannerAggregate? banner = null;
+    if (!string.IsNullOrWhiteSpace(payload.BannerId))
+    {
+      BannerId bannerId = BannerId.Parse(payload.BannerId, nameof(payload.BannerId));
+      banner = await bannerRepository.LoadAsync(bannerId, cancellationToken)
+        ?? throw new AggregateNotFoundException<BannerAggregate>(bannerId.AggregateId, nameof(payload.BannerId));
+    }
+
+    StoreNumberUnit? number = StoreNumberUnit.TryCreate(payload.Number);
+
     StoreId? id = null;
     if (!string.IsNullOrWhiteSpace(payload.Id))
     {
@@ -38,24 +48,24 @@ internal class CreateStoreCommandHandler : IRequestHandler<CreateStoreCommand, A
         throw new IdentifierAlreadyUsedException<StoreAggregate>(id.AggregateId, nameof(payload.Id));
       }
     }
+    else if (banner != null && number != null)
+    {
+      id = new(banner, number);
+      if (await storeRepository.LoadAsync(id, cancellationToken) != null)
+      {
+        id = null;
+      }
+    }
 
     DisplayNameUnit displayName = new(payload.DisplayName);
     StoreAggregate store = new(displayName, applicationContext.ActorId, id)
     {
-      Number = StoreNumberUnit.TryCreate(payload.Number),
+      Number = number,
       Description = DescriptionUnit.TryCreate(payload.Description),
       Address = payload.Address?.ToAddressUnit(),
       Phone = payload.Phone?.ToPhoneUnit()
     };
-
-    if (!string.IsNullOrWhiteSpace(payload.BannerId))
-    {
-      BannerId bannerId = BannerId.Parse(payload.BannerId, nameof(payload.BannerId));
-      BannerAggregate banner = await bannerRepository.LoadAsync(bannerId, cancellationToken)
-        ?? throw new AggregateNotFoundException<BannerAggregate>(bannerId.AggregateId, nameof(payload.BannerId));
-      store.SetBanner(banner);
-    }
-
+    store.SetBanner(banner);
     store.Update(applicationContext.ActorId);
 
     await storeRepository.SaveAsync(store, cancellationToken);

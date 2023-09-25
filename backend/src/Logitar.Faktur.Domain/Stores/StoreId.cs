@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using Logitar.EventSourcing;
+using Logitar.Faktur.Domain.Banners;
 using Logitar.Faktur.Domain.Validators;
 
 namespace Logitar.Faktur.Domain.Stores;
@@ -8,6 +9,10 @@ public record StoreId
 {
   public AggregateId AggregateId { get; }
   public string Value => AggregateId.Value;
+
+  public StoreId(BannerAggregate banner, StoreNumberUnit number) : this($"{banner.Id.Value}-{number.Value}")
+  {
+  }
 
   public StoreId(AggregateId aggregateId)
   {
