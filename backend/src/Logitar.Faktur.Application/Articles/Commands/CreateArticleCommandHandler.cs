@@ -44,6 +44,10 @@ internal class CreateArticleCommandHandler : IRequestHandler<CreateArticleComman
     else if (gtin != null)
     {
       id = new(gtin);
+      if (await articleRepository.LoadAsync(id, cancellationToken) != null)
+      {
+        id = null;
+      }
     }
 
     DisplayNameUnit displayName = new(payload.DisplayName);

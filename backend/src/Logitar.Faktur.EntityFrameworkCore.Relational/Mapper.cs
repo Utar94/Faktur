@@ -3,6 +3,7 @@ using Logitar.Faktur.Contracts;
 using Logitar.Faktur.Contracts.Actors;
 using Logitar.Faktur.Contracts.Articles;
 using Logitar.Faktur.Contracts.Banners;
+using Logitar.Faktur.Contracts.Stores;
 using Logitar.Faktur.EntityFrameworkCore.Relational.Entities;
 
 namespace Logitar.Faktur.EntityFrameworkCore.Relational;
@@ -58,6 +59,44 @@ internal class Mapper
     };
 
     MapAggregate(source, destination);
+
+    return destination;
+  }
+
+  public Store ToStore(StoreEntity source)
+  {
+    Store destination = new()
+    {
+      DisplayName = source.DisplayName,
+      Number = source.Number,
+      Description = source.Description,
+      Banner = source.Banner == null ? null : ToBanner(source.Banner)
+    };
+
+    MapAggregate(source, destination);
+
+    if (source.AddressStreet != null && source.AddressLocality != null && source.AddressCountry != null && source.AddressFormatted != null)
+    {
+      destination.Address = new Address
+      {
+        Street = source.AddressStreet,
+        Locality = source.AddressLocality,
+        Region = source.AddressRegion,
+        PostalCode = source.AddressPostalCode,
+        Country = source.AddressCountry,
+        Formatted = source.AddressFormatted
+      };
+    }
+    if (source.PhoneNumber != null && source.PhoneE164Formatted != null)
+    {
+      destination.Phone = new Phone
+      {
+        CountryCode = source.PhoneCountryCode,
+        Number = source.PhoneNumber,
+        Extension = source.PhoneExtension,
+        E164Formatted = source.PhoneE164Formatted
+      };
+    }
 
     return destination;
   }

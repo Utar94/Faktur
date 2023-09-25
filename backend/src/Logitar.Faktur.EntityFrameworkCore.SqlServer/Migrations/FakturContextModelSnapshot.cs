@@ -206,6 +206,142 @@ namespace Logitar.Faktur.EntityFrameworkCore.SqlServer.Migrations
 
                     b.ToTable("Banners", (string)null);
                 });
+
+            modelBuilder.Entity("Logitar.Faktur.EntityFrameworkCore.Relational.Entities.StoreEntity", b =>
+                {
+                    b.Property<int>("StoreId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("StoreId"));
+
+                    b.Property<string>("AddressCountry")
+                        .HasMaxLength(2)
+                        .HasColumnType("nvarchar(2)");
+
+                    b.Property<string>("AddressFormatted")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("AddressLocality")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("AddressPostalCode")
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<string>("AddressRegion")
+                        .HasMaxLength(2)
+                        .HasColumnType("nvarchar(2)");
+
+                    b.Property<string>("AddressStreet")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("AggregateId")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<int?>("BannerId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("DisplayName")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Number")
+                        .HasMaxLength(9)
+                        .HasColumnType("nvarchar(9)");
+
+                    b.Property<int?>("NumberNormalized")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PhoneCountryCode")
+                        .HasMaxLength(2)
+                        .HasColumnType("nvarchar(2)");
+
+                    b.Property<string>("PhoneE164Formatted")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("PhoneExtension")
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("UpdatedBy")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<DateTime>("UpdatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long>("Version")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("StoreId");
+
+                    b.HasIndex("AddressFormatted");
+
+                    b.HasIndex("AggregateId")
+                        .IsUnique();
+
+                    b.HasIndex("BannerId");
+
+                    b.HasIndex("CreatedBy");
+
+                    b.HasIndex("CreatedOn");
+
+                    b.HasIndex("DisplayName");
+
+                    b.HasIndex("Number");
+
+                    b.HasIndex("NumberNormalized");
+
+                    b.HasIndex("PhoneE164Formatted");
+
+                    b.HasIndex("UpdatedBy");
+
+                    b.HasIndex("UpdatedOn");
+
+                    b.HasIndex("Version");
+
+                    b.ToTable("Stores", (string)null);
+                });
+
+            modelBuilder.Entity("Logitar.Faktur.EntityFrameworkCore.Relational.Entities.StoreEntity", b =>
+                {
+                    b.HasOne("Logitar.Faktur.EntityFrameworkCore.Relational.Entities.BannerEntity", "Banner")
+                        .WithMany("Stores")
+                        .HasForeignKey("BannerId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Banner");
+                });
+
+            modelBuilder.Entity("Logitar.Faktur.EntityFrameworkCore.Relational.Entities.BannerEntity", b =>
+                {
+                    b.Navigation("Stores");
+                });
 #pragma warning restore 612, 618
         }
     }

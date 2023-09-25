@@ -50,7 +50,7 @@ internal class ArticleQuerier : IArticleQuerier
     sqlHelper.ApplyTextSearch(builder, payload.Id, Db.Articles.AggregateId);
     sqlHelper.ApplyTextSearch(builder, payload.Search, Db.Articles.Gtin, Db.Articles.DisplayName);
 
-    IQueryable<ArticleEntity> query = this.articles.FromQuery(builder);
+    IQueryable<ArticleEntity> query = this.articles.FromQuery(builder).AsNoTracking();
 
     long total = await query.LongCountAsync(cancellationToken);
 

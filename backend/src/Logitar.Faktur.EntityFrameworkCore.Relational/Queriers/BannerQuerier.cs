@@ -27,10 +27,10 @@ internal class BannerQuerier : IBannerQuerier
   {
     id = id.Trim();
 
-    BannerEntity? article = await banners.AsNoTracking()
+    BannerEntity? banner = await banners.AsNoTracking()
       .SingleOrDefaultAsync(x => x.AggregateId == id, cancellationToken);
 
-    return article == null ? null : await MapAsync(article, cancellationToken);
+    return banner == null ? null : await MapAsync(banner, cancellationToken);
   }
 
   public async Task<SearchResults<Banner>> SearchAsync(SearchBannersPayload payload, CancellationToken cancellationToken)
@@ -39,7 +39,7 @@ internal class BannerQuerier : IBannerQuerier
     sqlHelper.ApplyTextSearch(builder, payload.Id, Db.Banners.AggregateId);
     sqlHelper.ApplyTextSearch(builder, payload.Search, Db.Banners.DisplayName);
 
-    IQueryable<BannerEntity> query = this.banners.FromQuery(builder);
+    IQueryable<BannerEntity> query = this.banners.FromQuery(builder).AsNoTracking();
 
     long total = await query.LongCountAsync(cancellationToken);
 
@@ -70,14 +70,14 @@ internal class BannerQuerier : IBannerQuerier
     return new SearchResults<Banner>(results, total);
   }
 
-  private async Task<Banner> MapAsync(BannerEntity article, CancellationToken cancellationToken)
-    => (await MapAsync(new[] { article }, cancellationToken)).Single();
-  private async Task<IEnumerable<Banner>> MapAsync(IEnumerable<BannerEntity> articles, CancellationToken cancellationToken)
+  private async Task<Banner> MapAsync(BannerEntity banner, CancellationToken cancellationToken)
+    => (await MapAsync(new[] { banner }, cancellationToken)).Single();
+  private async Task<IEnumerable<Banner>> MapAsync(IEnumerable<BannerEntity> banners, CancellationToken cancellationToken)
   {
-    IEnumerable<ActorId> ids = articles.SelectMany(article => article.GetActorIds());
+    IEnumerable<ActorId> ids = banners.SelectMany(banner => banner.GetActorIds());
     IEnumerable<Actor> actors = await actorService.FindAsync(ids, cancellationToken);
     Mapper mapper = new(actors);
 
-    return articles.Select(mapper.ToBanner);
+    return banners.Select(mapper.ToBanner);
   }
 }

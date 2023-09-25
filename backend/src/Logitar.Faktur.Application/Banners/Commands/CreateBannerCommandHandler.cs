@@ -13,12 +13,12 @@ namespace Logitar.Faktur.Application.Banners.Commands;
 internal class CreateBannerCommandHandler : IRequestHandler<CreateBannerCommand, AcceptedCommand>
 {
   private readonly IApplicationContext applicationContext;
-  private readonly IBannerRepository articleRepository;
+  private readonly IBannerRepository bannerRepository;
 
-  public CreateBannerCommandHandler(IApplicationContext applicationContext, IBannerRepository articleRepository)
+  public CreateBannerCommandHandler(IApplicationContext applicationContext, IBannerRepository bannerRepository)
   {
     this.applicationContext = applicationContext;
-    this.articleRepository = articleRepository;
+    this.bannerRepository = bannerRepository;
   }
 
   public async Task<AcceptedCommand> Handle(CreateBannerCommand command, CancellationToken cancellationToken)
@@ -30,21 +30,21 @@ internal class CreateBannerCommandHandler : IRequestHandler<CreateBannerCommand,
     if (!string.IsNullOrWhiteSpace(payload.Id))
     {
       id = BannerId.Parse(payload.Id, nameof(payload.Id));
-      if (await articleRepository.LoadAsync(id, cancellationToken) != null)
+      if (await bannerRepository.LoadAsync(id, cancellationToken) != null)
       {
         throw new IdentifierAlreadyUsedException<BannerAggregate>(id.AggregateId, nameof(payload.Id));
       }
     }
 
     DisplayNameUnit displayName = new(payload.DisplayName);
-    BannerAggregate article = new(displayName, applicationContext.ActorId, id)
+    BannerAggregate banner = new(displayName, applicationContext.ActorId, id)
     {
       Description = DescriptionUnit.TryCreate(payload.Description)
     };
-    article.Update(applicationContext.ActorId);
+    banner.Update(applicationContext.ActorId);
 
-    await articleRepository.SaveAsync(article, cancellationToken);
+    await bannerRepository.SaveAsync(banner, cancellationToken);
 
-    return applicationContext.AcceptCommand(article);
+    return applicationContext.AcceptCommand(banner);
   }
 }

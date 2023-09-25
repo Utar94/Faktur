@@ -13,12 +13,12 @@ namespace Logitar.Faktur.Application.Banners.Commands;
 internal class ReplaceBannerCommandHandler : IRequestHandler<ReplaceBannerCommand, AcceptedCommand>
 {
   private readonly IApplicationContext applicationContext;
-  private readonly IBannerRepository articleRepository;
+  private readonly IBannerRepository bannerRepository;
 
-  public ReplaceBannerCommandHandler(IApplicationContext applicationContext, IBannerRepository articleRepository)
+  public ReplaceBannerCommandHandler(IApplicationContext applicationContext, IBannerRepository bannerRepository)
   {
     this.applicationContext = applicationContext;
-    this.articleRepository = articleRepository;
+    this.bannerRepository = bannerRepository;
   }
 
   public async Task<AcceptedCommand> Handle(ReplaceBannerCommand command, CancellationToken cancellationToken)
@@ -27,28 +27,28 @@ internal class ReplaceBannerCommandHandler : IRequestHandler<ReplaceBannerComman
     new ReplaceBannerPayloadValidator().ValidateAndThrow(payload);
 
     BannerId id = BannerId.Parse(command.Id, nameof(command.Id));
-    BannerAggregate article = await articleRepository.LoadAsync(id, cancellationToken)
+    BannerAggregate banner = await bannerRepository.LoadAsync(id, cancellationToken)
       ?? throw new AggregateNotFoundException<BannerAggregate>(id.AggregateId, nameof(command.Id));
 
     BannerAggregate? reference = null;
     if (command.Version.HasValue)
     {
-      reference = await articleRepository.LoadAsync(article.Id, command.Version.Value, cancellationToken);
+      reference = await bannerRepository.LoadAsync(banner.Id, command.Version.Value, cancellationToken);
     }
 
     if (reference == null || (payload.DisplayName.Trim() != reference.DisplayName.Value))
     {
-      article.DisplayName = new DisplayNameUnit(payload.DisplayName);
+      banner.DisplayName = new DisplayNameUnit(payload.DisplayName);
     }
     if (reference == null || (payload.Description?.CleanTrim() != reference.Description?.Value))
     {
-      article.Description = DescriptionUnit.TryCreate(payload.Description);
+      banner.Description = DescriptionUnit.TryCreate(payload.Description);
     }
 
-    article.Update(applicationContext.ActorId);
+    banner.Update(applicationContext.ActorId);
 
-    await articleRepository.SaveAsync(article, cancellationToken);
+    await bannerRepository.SaveAsync(banner, cancellationToken);
 
-    return applicationContext.AcceptCommand(article);
+    return applicationContext.AcceptCommand(banner);
   }
 }

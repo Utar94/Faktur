@@ -9,7 +9,7 @@ public record ArticleId
   public AggregateId AggregateId { get; }
   public string Value => AggregateId.Value;
 
-  public ArticleId(GtinUnit gtin) : this($"{gtin.Value}-{DateTimeOffset.UtcNow.ToUnixTimeSeconds()}")
+  public ArticleId(GtinUnit gtin) : this(gtin.Value)
   {
   }
 

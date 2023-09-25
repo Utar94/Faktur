@@ -2,8 +2,10 @@
 using Logitar.Faktur.Application.Actors;
 using Logitar.Faktur.Application.Articles;
 using Logitar.Faktur.Application.Banners;
+using Logitar.Faktur.Application.Stores;
 using Logitar.Faktur.Domain.Articles;
 using Logitar.Faktur.Domain.Banners;
+using Logitar.Faktur.Domain.Stores;
 using Logitar.Faktur.EntityFrameworkCore.Relational.Actors;
 using Logitar.Faktur.EntityFrameworkCore.Relational.Queriers;
 using Logitar.Faktur.EntityFrameworkCore.Relational.Repositories;
@@ -32,13 +34,15 @@ public static class DependencyInjectionExtensions
   {
     return services
       .AddScoped<IArticleQuerier, ArticleQuerier>()
-      .AddScoped<IBannerQuerier, BannerQuerier>();
+      .AddScoped<IBannerQuerier, BannerQuerier>()
+      .AddScoped<IStoreQuerier, StoreQuerier>();
   }
 
   private static IServiceCollection AddRepositories(this IServiceCollection services)
   {
     return services
       .AddScoped<IArticleRepository, ArticleRepository>()
-      .AddScoped<IBannerRepository, BannerRepository>();
+      .AddScoped<IBannerRepository, BannerRepository>()
+      .AddScoped<IStoreRepository, StoreRepository>();
   }
 }

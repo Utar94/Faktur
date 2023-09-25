@@ -1,4 +1,5 @@
-﻿using Logitar.Faktur.Application.Articles;
+﻿using Logitar.EventSourcing;
+using Logitar.Faktur.Application.Articles;
 using Logitar.Faktur.Application.Exceptions;
 using Logitar.Faktur.Contracts;
 using Logitar.Faktur.Contracts.Articles;
@@ -24,10 +25,8 @@ public class ArticleServiceTests : IntegrationTests
     articleRepository = ServiceProvider.GetRequiredService<IArticleRepository>();
     articleService = ServiceProvider.GetRequiredService<IArticleService>();
 
-    DisplayNameUnit displayName = new("NOTRE-DAME BRIE");
     GtinUnit gtin = new("006740000010");
-    ArticleId id = new(gtin);
-    article = new(displayName, ApplicationContext.ActorId, id)
+    article = new(new DisplayNameUnit("NOTRE-DAME BRIE"), ApplicationContext.ActorId, new ArticleId(gtin))
     {
       Gtin = gtin
     };
@@ -53,12 +52,7 @@ public class ArticleServiceTests : IntegrationTests
     };
 
     AcceptedCommand command = await articleService.CreateAsync(payload);
-
-    string[] values = command.AggregateId.Split('-');
-    Assert.Equal(2, values.Length);
-    Assert.Equal(payload.Gtin, values.First());
-    AssertIsNear(AsUniversalTime(DateTimeOffset.FromUnixTimeSeconds(long.Parse(values.Last())).DateTime));
-
+    Assert.Equal(payload.Gtin, command.AggregateId);
     Assert.True(command.AggregateVersion >= 1);
     Assert.Equal(ApplicationContext.Actor, command.Actor);
     AssertIsNear(command.Timestamp);
@@ -76,6 +70,24 @@ public class ArticleServiceTests : IntegrationTests
     Assert.Equal(long.Parse(payload.Gtin), article.GtinNormalized);
     Assert.Equal(payload.DisplayName.Trim(), article.DisplayName);
     Assert.Null(article.Description);
+  }
+
+  [Fact(DisplayName = "CreateAsync: it should generate a new Id when the default is already used.")]
+  public async Task CreateAsync_it_should_generate_a_new_Id_when_the_default_is_already_used()
+  {
+    Assert.NotNull(article.Gtin);
+    CreateArticlePayload payload = new()
+    {
+      Gtin = article.Gtin.Value,
+      DisplayName = article.DisplayName.Value
+    };
+
+    article.Gtin = null;
+    article.Update(ApplicationContext.ActorId);
+    await articleRepository.SaveAsync(article);
+
+    AcceptedCommand command = await articleService.CreateAsync(payload);
+    Assert.NotEqual(Guid.Empty, new AggregateId(command.AggregateId).ToGuid());
   }
 
   [Fact(DisplayName = "CreateAsync: it should throw GtinAlreadyUsedException when the Gtin is already used.")]
@@ -325,7 +337,6 @@ public class ArticleServiceTests : IntegrationTests
     {
       newArticle.Update();
     }
-
     await articleRepository.SaveAsync(newArticles);
 
     ArticleId[] ids = new[] { article.Id, asparagus.Id, babyBokChoy.Id, broccoli.Id, pineapple.Id };
