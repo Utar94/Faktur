@@ -30,6 +30,15 @@ internal static class Db
     public static readonly ColumnId DisplayName = new(nameof(BannerEntity.DisplayName), Table);
   }
 
+  internal static class Departments
+  {
+    public static readonly TableId Table = new(nameof(FakturContext.Departments));
+
+    public static readonly ColumnId DisplayName = new(nameof(DepartmentEntity.DisplayName), Table);
+    public static readonly ColumnId Number = new(nameof(DepartmentEntity.Number), Table);
+    public static readonly ColumnId StoreId = new(nameof(DepartmentEntity.StoreId), Table);
+  }
+
   internal static class Events
   {
     public static readonly TableId Table = new(nameof(EventContext.Events));
@@ -48,5 +57,6 @@ internal static class Db
     public static readonly ColumnId DisplayName = new(nameof(StoreEntity.DisplayName), Table);
     public static readonly ColumnId Number = new(nameof(StoreEntity.Number), Table);
     public static readonly ColumnId PhoneE164Formatted = new(nameof(StoreEntity.PhoneE164Formatted), Table);
+    public static readonly ColumnId StoreId = new(nameof(StoreEntity.StoreId), Table);
   }
 }

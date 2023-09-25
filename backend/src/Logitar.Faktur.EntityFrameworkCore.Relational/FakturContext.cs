@@ -12,6 +12,7 @@ public class FakturContext : DbContext
   internal DbSet<ActorEntity> Actors { get; private set; }
   internal DbSet<ArticleEntity> Articles { get; private set; }
   internal DbSet<BannerEntity> Banners { get; private set; }
+  internal DbSet<DepartmentEntity> Departments { get; private set; }
   internal DbSet<StoreEntity> Stores { get; private set; }
 
   protected override void OnModelCreating(ModelBuilder modelBuilder)

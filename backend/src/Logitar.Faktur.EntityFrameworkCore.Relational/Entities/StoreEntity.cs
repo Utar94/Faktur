@@ -28,6 +28,8 @@ internal class StoreEntity : AggregateEntity
   public string? PhoneExtension { get; private set; }
   public string? PhoneE164Formatted { get; private set; }
 
+  public List<DepartmentEntity> Departments { get; private set; } = new();
+
   public StoreEntity(StoreCreatedEvent @event) : base(@event)
   {
     DisplayName = @event.DisplayName;
@@ -37,7 +39,9 @@ internal class StoreEntity : AggregateEntity
   {
   }
 
-  public override IEnumerable<ActorId> GetActorIds() => base.GetActorIds().Concat(Banner?.GetActorIds() ?? Enumerable.Empty<ActorId>());
+  public override IEnumerable<ActorId> GetActorIds() => base.GetActorIds()
+    .Concat(Banner?.GetActorIds() ?? Enumerable.Empty<ActorId>())
+    .Concat(Departments.SelectMany(department => department.GetActorIds()));
 
   public void Update(StoreUpdatedEvent @event, BannerEntity? banner)
   {

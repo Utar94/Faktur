@@ -29,6 +29,7 @@ internal class StoreQuerier : IStoreQuerier
 
     StoreEntity? store = await stores.AsNoTracking()
       .Include(x => x.Banner)
+      .Include(x => x.Departments)
       .SingleOrDefaultAsync(x => x.AggregateId == id, cancellationToken);
 
     return store == null ? null : await MapAsync(store, cancellationToken);
@@ -46,7 +47,8 @@ internal class StoreQuerier : IStoreQuerier
     sqlHelper.ApplyTextSearch(builder, payload.Search, Db.Stores.Number, Db.Stores.DisplayName, Db.Stores.AddressFormatted, Db.Stores.PhoneE164Formatted);
 
     IQueryable<StoreEntity> query = this.stores.FromQuery(builder).AsNoTracking()
-      .Include(x => x.Banner);
+      .Include(x => x.Banner)
+      .Include(x => x.Departments);
 
     long total = await query.LongCountAsync(cancellationToken);
 

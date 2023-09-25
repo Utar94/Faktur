@@ -3,6 +3,7 @@ using Logitar.Faktur.Contracts;
 using Logitar.Faktur.Contracts.Actors;
 using Logitar.Faktur.Contracts.Articles;
 using Logitar.Faktur.Contracts.Banners;
+using Logitar.Faktur.Contracts.Departments;
 using Logitar.Faktur.Contracts.Stores;
 using Logitar.Faktur.EntityFrameworkCore.Relational.Entities;
 
@@ -63,6 +64,19 @@ internal class Mapper
     return destination;
   }
 
+  public Department ToDepartment(DepartmentEntity source) => new()
+  {
+    Number = source.Number,
+    DisplayName = source.DisplayName,
+    Description = source.Description,
+    Store = source.Store == null ? null : ToStore(source.Store),
+    Version = source.Version,
+    CreatedBy = FindActor(source.CreatedBy),
+    CreatedOn = AsUniversalTime(source.CreatedOn),
+    UpdatedBy = FindActor(source.UpdatedBy),
+    UpdatedOn = AsUniversalTime(source.UpdatedOn)
+  };
+
   public Store ToStore(StoreEntity source)
   {
     Store destination = new()
@@ -70,7 +84,8 @@ internal class Mapper
       DisplayName = source.DisplayName,
       Number = source.Number,
       Description = source.Description,
-      Banner = source.Banner == null ? null : ToBanner(source.Banner)
+      Banner = source.Banner == null ? null : ToBanner(source.Banner),
+      Departments = source.Departments.Select(ToDepartment).ToList()
     };
 
     MapAggregate(source, destination);
