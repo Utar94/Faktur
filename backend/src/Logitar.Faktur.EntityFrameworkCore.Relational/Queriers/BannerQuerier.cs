@@ -39,7 +39,7 @@ internal class BannerQuerier : IBannerQuerier
     sqlHelper.ApplyTextSearch(builder, payload.Id, Db.Banners.AggregateId);
     sqlHelper.ApplyTextSearch(builder, payload.Search, Db.Banners.DisplayName);
 
-    IQueryable<BannerEntity> query = this.banners.FromQuery(builder);
+    IQueryable<BannerEntity> query = this.banners.FromQuery(builder).AsNoTracking();
 
     long total = await query.LongCountAsync(cancellationToken);
 

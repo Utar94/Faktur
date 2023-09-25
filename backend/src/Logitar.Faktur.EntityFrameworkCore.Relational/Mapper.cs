@@ -69,7 +69,8 @@ internal class Mapper
     {
       DisplayName = source.DisplayName,
       Number = source.Number,
-      Description = source.Description
+      Description = source.Description,
+      Banner = source.Banner == null ? null : ToBanner(source.Banner)
     };
 
     MapAggregate(source, destination);

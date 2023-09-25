@@ -28,6 +28,7 @@ internal class StoreQuerier : IStoreQuerier
     id = id.Trim();
 
     StoreEntity? store = await stores.AsNoTracking()
+      .Include(x => x.Banner)
       .SingleOrDefaultAsync(x => x.AggregateId == id, cancellationToken);
 
     return store == null ? null : await MapAsync(store, cancellationToken);
@@ -35,11 +36,17 @@ internal class StoreQuerier : IStoreQuerier
 
   public async Task<SearchResults<Store>> SearchAsync(SearchStoresPayload payload, CancellationToken cancellationToken)
   {
-    IQueryBuilder builder = sqlHelper.QueryFrom(Db.Stores.Table).SelectAll(Db.Stores.Table);
+    string? bannerId = payload.BannerId?.CleanTrim();
+
+    IQueryBuilder builder = sqlHelper.QueryFrom(Db.Stores.Table)
+      .LeftJoin(Db.Banners.BannerId, Db.Stores.BannerId)
+      .Where(Db.Banners.AggregateId, bannerId == null ? Operators.IsNull() : Operators.IsEqualTo(bannerId))
+      .SelectAll(Db.Stores.Table);
     sqlHelper.ApplyTextSearch(builder, payload.Id, Db.Stores.AggregateId);
     sqlHelper.ApplyTextSearch(builder, payload.Search, Db.Stores.Number, Db.Stores.DisplayName, Db.Stores.AddressFormatted, Db.Stores.PhoneE164Formatted);
 
-    IQueryable<StoreEntity> query = this.stores.FromQuery(builder);
+    IQueryable<StoreEntity> query = this.stores.FromQuery(builder).AsNoTracking()
+      .Include(x => x.Banner);
 
     long total = await query.LongCountAsync(cancellationToken);
 
@@ -55,8 +62,8 @@ internal class StoreQuerier : IStoreQuerier
           break;
         case StoreSort.Number:
           ordered = (ordered == null)
-            ? (sort.IsDescending ? query.OrderByDescending(x => x.Number) : query.OrderBy(x => x.Number))
-            : (sort.IsDescending ? ordered.OrderByDescending(x => x.Number) : ordered.OrderBy(x => x.Number));
+            ? (sort.IsDescending ? query.OrderByDescending(x => x.NumberNormalized) : query.OrderBy(x => x.NumberNormalized))
+            : (sort.IsDescending ? ordered.OrderByDescending(x => x.NumberNormalized) : ordered.OrderBy(x => x.NumberNormalized));
           break;
         case StoreSort.PhoneE164Formatted:
           ordered = (ordered == null)

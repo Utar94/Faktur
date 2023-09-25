@@ -1,5 +1,6 @@
 ﻿using Logitar.EventSourcing;
 using Logitar.Faktur.Contracts;
+using Logitar.Faktur.Domain.Banners;
 using Logitar.Faktur.Domain.Stores.Events;
 using Logitar.Faktur.Domain.ValueObjects;
 
@@ -10,6 +11,8 @@ public class StoreAggregate : AggregateRoot
   private StoreUpdatedEvent updated = new();
 
   public new StoreId Id => new(base.Id);
+
+  public BannerId? BannerId { get; private set; }
 
   private StoreNumberUnit? number = null;
   public StoreNumberUnit? Number
@@ -96,6 +99,15 @@ public class StoreAggregate : AggregateRoot
 
   public void Delete(ActorId actorId = default) => ApplyChange(new StoreDeletedEvent(actorId));
 
+  public void SetBanner(BannerAggregate? banner)
+  {
+    if (banner?.Id != BannerId)
+    {
+      updated.BannerId = new Modification<AggregateId?>(banner?.Id.AggregateId);
+      BannerId = banner?.Id;
+    }
+  }
+
   public void Update(ActorId actorId = default)
   {
     if (updated.HasChanges)
@@ -108,6 +120,11 @@ public class StoreAggregate : AggregateRoot
   }
   protected virtual void Apply(StoreUpdatedEvent @event)
   {
+    if (@event.BannerId != null)
+    {
+      BannerId = @event.BannerId.Value.HasValue ? new(@event.BannerId.Value.Value) : null;
+    }
+
     if (@event.Number != null)
     {
       number = @event.Number.Value == null ? null : new StoreNumberUnit(@event.Number.Value);

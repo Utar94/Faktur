@@ -9,6 +9,8 @@ internal class BannerEntity : AggregateEntity
   public string DisplayName { get; private set; } = string.Empty;
   public string? Description { get; private set; }
 
+  public List<StoreEntity> Stores { get; private set; } = new();
+
   public BannerEntity(BannerCreatedEvent @event) : base(@event)
   {
     DisplayName = @event.DisplayName;

@@ -21,7 +21,15 @@ internal class StoreUpdatedEventHandler : INotificationHandler<StoreUpdatedEvent
       .SingleOrDefaultAsync(x => x.AggregateId == @event.AggregateId.Value, cancellationToken)
       ?? throw new EntityNotFoundException<StoreEntity>(@event.AggregateId);
 
-    store.Update(@event);
+    BannerEntity? banner = null;
+    if (@event.BannerId?.Value != null)
+    {
+      banner = await context.Banners
+        .SingleOrDefaultAsync(x => x.AggregateId == @event.BannerId.Value.Value.Value, cancellationToken)
+        ?? throw new EntityNotFoundException<BannerEntity>(@event.BannerId.Value.Value);
+    }
+
+    store.Update(@event, banner);
 
     await context.SaveChangesAsync(cancellationToken);
   }

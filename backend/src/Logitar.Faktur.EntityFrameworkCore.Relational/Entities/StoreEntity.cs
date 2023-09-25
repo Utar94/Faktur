@@ -1,4 +1,5 @@
-﻿using Logitar.Faktur.Domain.Stores;
+﻿using Logitar.EventSourcing;
+using Logitar.Faktur.Domain.Stores;
 using Logitar.Faktur.Domain.Stores.Events;
 
 namespace Logitar.Faktur.EntityFrameworkCore.Relational.Entities;
@@ -6,6 +7,9 @@ namespace Logitar.Faktur.EntityFrameworkCore.Relational.Entities;
 internal class StoreEntity : AggregateEntity
 {
   public int StoreId { get; private set; }
+
+  public BannerEntity? Banner { get; private set; }
+  public int? BannerId { get; private set; }
 
   public string? Number { get; private set; }
   public int? NumberNormalized { get; private set; }
@@ -33,9 +37,17 @@ internal class StoreEntity : AggregateEntity
   {
   }
 
-  public void Update(StoreUpdatedEvent @event)
+  public override IEnumerable<ActorId> GetActorIds() => base.GetActorIds().Concat(Banner?.GetActorIds() ?? Enumerable.Empty<ActorId>());
+
+  public void Update(StoreUpdatedEvent @event, BannerEntity? banner)
   {
-    base.Update(@event);
+    Update(@event);
+
+    if (@event.BannerId != null)
+    {
+      Banner = banner;
+      BannerId = banner?.BannerId;
+    }
 
     if (@event.Number != null)
     {

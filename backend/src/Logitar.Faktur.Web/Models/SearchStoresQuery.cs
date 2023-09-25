@@ -5,11 +5,15 @@ namespace Logitar.Faktur.Web.Models;
 
 public record SearchStoresQuery : SearchQuery
 {
+  public string? BannerId { get; set; }
+
   public new SearchStoresPayload ToPayload()
   {
     SearchStoresPayload payload = new();
 
     ApplyQuery(payload);
+
+    payload.BannerId = BannerId;
 
     List<SortOption> sort = ((SearchPayload)payload).Sort;
     payload.Sort = new List<StoreSortOption>(sort.Capacity);

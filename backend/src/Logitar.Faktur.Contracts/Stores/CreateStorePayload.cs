@@ -4,6 +4,8 @@ public record CreateStorePayload
 {
   public string? Id { get; set; }
 
+  public string? BannerId { get; set; }
+
   public string? Number { get; set; }
   public string DisplayName { get; set; } = string.Empty;
   public string? Description { get; set; }

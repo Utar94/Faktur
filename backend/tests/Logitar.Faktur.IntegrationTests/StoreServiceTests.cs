@@ -2,6 +2,7 @@
 using Logitar.Faktur.Contracts;
 using Logitar.Faktur.Contracts.Search;
 using Logitar.Faktur.Contracts.Stores;
+using Logitar.Faktur.Domain.Banners;
 using Logitar.Faktur.Domain.Stores;
 using Logitar.Faktur.Domain.ValueObjects;
 using Logitar.Faktur.EntityFrameworkCore.Relational.Entities;
@@ -13,27 +14,28 @@ namespace Logitar.Faktur;
 [Trait(Traits.Category, Categories.Integration)]
 public class StoreServiceTests : IntegrationTests
 {
+  private readonly IBannerRepository bannerRepository;
   private readonly IStoreRepository storeRepository;
   private readonly IStoreService storeService;
 
+  private readonly BannerAggregate banner;
   private readonly StoreAggregate store;
 
   public StoreServiceTests() : base()
   {
+    bannerRepository = ServiceProvider.GetRequiredService<IBannerRepository>();
     storeRepository = ServiceProvider.GetRequiredService<IStoreRepository>();
     storeService = ServiceProvider.GetRequiredService<IStoreService>();
 
-    store = new(new DisplayNameUnit("Maxi Drummondville"), ApplicationContext.ActorId)
-    {
-      Number = new StoreNumberUnit("08772")
-    };
-    store.Update(ApplicationContext.ActorId);
+    banner = new(new DisplayNameUnit("Maxi"), ApplicationContext.ActorId, BannerId.Parse("MAXI", "Id"));
+    store = new(new DisplayNameUnit("Maxi Drummondville"), ApplicationContext.ActorId);
   }
 
   public override async Task InitializeAsync()
   {
     await base.InitializeAsync();
 
+    await bannerRepository.SaveAsync(banner);
     await storeRepository.SaveAsync(store);
   }
 
@@ -43,6 +45,7 @@ public class StoreServiceTests : IntegrationTests
     CreateStorePayload payload = new()
     {
       Id = "  IGA  ",
+      BannerId = $"  {banner.Id.Value}  ",
       Number = "08984",
       DisplayName = "  IGA Drummondville  ",
       Description = "    ",
@@ -67,7 +70,9 @@ public class StoreServiceTests : IntegrationTests
     Assert.Equal(ApplicationContext.Actor, command.Actor);
     AssertIsNear(command.Timestamp);
 
-    StoreEntity? store = await FakturContext.Stores.AsNoTracking().SingleOrDefaultAsync(x => x.AggregateId == command.AggregateId);
+    StoreEntity? store = await FakturContext.Stores.AsNoTracking()
+      .Include(x => x.Banner)
+      .SingleOrDefaultAsync(x => x.AggregateId == command.AggregateId);
     Assert.NotNull(store);
     Assert.Equal(command.AggregateId, store.AggregateId);
     Assert.Equal(command.AggregateVersion, store.Version);
@@ -88,6 +93,9 @@ public class StoreServiceTests : IntegrationTests
     Assert.Equal(payload.Address.PostalCode.Trim(), store.AddressPostalCode);
     Assert.Equal(payload.Address.Country.Trim(), store.AddressCountry);
     Assert.Equal(PostalAddressHelper.Format(payload.Address), store.AddressFormatted);
+
+    Assert.NotNull(store.Banner);
+    Assert.Equal(banner.Id.Value, store.Banner.AggregateId);
   }
 
   [Fact(DisplayName = "CreateAsync: it should throw IdentifierAlreadyUsedException when the Gtin is already used.")]
@@ -182,6 +190,7 @@ public class StoreServiceTests : IntegrationTests
 
     ReplaceStorePayload payload = new()
     {
+      BannerId = $"  {banner.Id.Value}  ",
       Number = "08772",
       DisplayName = "Maxi Drummondville",
       Description = "  Supermarché à proximité de la bibliothèque municipale et du terminus d'autobus.  ",
@@ -207,7 +216,9 @@ public class StoreServiceTests : IntegrationTests
     Assert.Equal(ApplicationContext.Actor, command.Actor);
     AssertIsNear(command.Timestamp);
 
-    StoreEntity? store = await FakturContext.Stores.AsNoTracking().SingleOrDefaultAsync(x => x.AggregateId == this.store.Id.Value);
+    StoreEntity? store = await FakturContext.Stores.AsNoTracking()
+      .Include(x => x.Banner)
+      .SingleOrDefaultAsync(x => x.AggregateId == this.store.Id.Value);
     Assert.NotNull(store);
     Assert.Equal(8772, store.NumberNormalized);
     Assert.Equal("Maxi Drummondville (#08772)", store.DisplayName);
@@ -223,6 +234,9 @@ public class StoreServiceTests : IntegrationTests
     Assert.Equal(payload.Phone.CountryCode, store.PhoneCountryCode);
     Assert.Equal(payload.Phone.Number.Trim(), store.PhoneNumber);
     Assert.Equal(payload.Phone.Extension.Trim(), store.PhoneExtension);
+
+    Assert.NotNull(store.Banner);
+    Assert.Equal(banner.Id.Value, store.Banner.AggregateId);
   }
 
   [Fact(DisplayName = "ReplaceAsync: it should throw AggregateNotFoundException when the store could not be found.")]
@@ -272,18 +286,69 @@ public class StoreServiceTests : IntegrationTests
   [Fact(DisplayName = "SearchAsync: it should return the correct results.")]
   public async Task SearchAsync_it_should_return_the_correct_results()
   {
-    StoreAggregate iga = new(new DisplayNameUnit("IGA EXTRA")); // TODO(fpion): refactor
-    StoreAggregate loblaws = new(new DisplayNameUnit("LOBLAWS")); // TODO(fpion): refactor
-    StoreAggregate metro = new(new DisplayNameUnit("METRO INC.")); // TODO(fpion): refactor
-    StoreAggregate provigo = new(new DisplayNameUnit("PROVIGO")); // TODO(fpion): refactor
-    StoreAggregate superC = new(new DisplayNameUnit("SUPER C")); // TODO(fpion): refactor
+    store.SetBanner(banner);
+    store.Update(ApplicationContext.ActorId);
 
-    StoreAggregate[] newStores = new[] { iga, loblaws, metro, provigo, superC };
+    StoreAggregate maxi08772 = new(new DisplayNameUnit("Maxi Drummondville"), ApplicationContext.ActorId, StoreId.Parse("MAXI-08772", "Id"))
+    {
+      Number = new StoreNumberUnit("08772"),
+      Address = new AddressUnit("1870 boul Saint-Joseph", "Drummondville", "CA", "QC", "J2B 1R2"),
+      Phone = new PhoneUnit("819-472-1197")
+    };
+    maxi08772.SetBanner(banner);
+    maxi08772.Update(ApplicationContext.ActorId);
+
+    StoreAggregate maxi08984 = new(new DisplayNameUnit("Maxi Drummondville St-Joseph"), ApplicationContext.ActorId, StoreId.Parse("MAXI-08984", "Id"))
+    {
+      Number = new StoreNumberUnit("08984"),
+      Address = new AddressUnit("325 boul Saint-Joseph", "Drummondville", "CA", "QC", "J2C 8P7"),
+      Phone = new PhoneUnit("819-477-4695")
+    };
+    maxi08984.SetBanner(banner);
+    maxi08984.Update(ApplicationContext.ActorId);
+
+    StoreAggregate maxi04561 = new(new DisplayNameUnit("Maxi Saint-Hyacinthe Casavant"), ApplicationContext.ActorId, StoreId.Parse("MAXI-04561", "Id"))
+    {
+      Number = new StoreNumberUnit("04561"),
+      Address = new AddressUnit("2000 boul Casavant O", "Saint-Hyacinthe", "CA", "QC", "J2S 7K2"),
+      Phone = new PhoneUnit("450-771-6601")
+    };
+    maxi04561.SetBanner(banner);
+    maxi04561.Update(ApplicationContext.ActorId);
+
+    StoreAggregate maxi04349 = new(new DisplayNameUnit("Maxi St-Hyacinthe Saint-Louis"), ApplicationContext.ActorId, StoreId.Parse("MAXI-04349", "Id"))
+    {
+      Number = new StoreNumberUnit("04349"),
+      Address = new AddressUnit("15000 ave Saint-Louis", "Saint-Hyacinthe", "CA", "QC", "J2T 3E2"),
+      Phone = new PhoneUnit("450-771-2737")
+    };
+    maxi04349.SetBanner(banner);
+    maxi04349.Update(ApplicationContext.ActorId);
+
+    StoreAggregate maxi06524 = new(new DisplayNameUnit("Maxi Sherbrooke Portland"), ApplicationContext.ActorId, StoreId.Parse("MAXI-06524", "Id"))
+    {
+      Number = new StoreNumberUnit("06524"),
+      Address = new AddressUnit("3025 boul de Portland", "Sherbrooke", "CA", "QC", "J1L 2Y7"),
+      Phone = new PhoneUnit("819-562-4041")
+    };
+    maxi06524.SetBanner(banner);
+    maxi06524.Update(ApplicationContext.ActorId);
+
+    StoreAggregate iga = new(new DisplayNameUnit("IGA Extra Marché Clément des Forges inc."), ApplicationContext.ActorId, StoreId.Parse("IGA-41910", "Id"))
+    {
+      Number = new StoreNumberUnit("41910"),
+      Address = new AddressUnit("1910 boul St-Joseph", "Drummondville", "CA", "QC", "J2B 1R2"),
+      Phone = new PhoneUnit("819-477-7700")
+    };
+    iga.Update(ApplicationContext.ActorId);
+
+    StoreAggregate[] newStores = new[] { maxi08772, maxi08984, maxi04561, maxi04349, maxi06524, iga };
     await storeRepository.SaveAsync(newStores);
 
-    StoreId[] ids = new[] { store.Id, iga.Id, loblaws.Id, metro.Id, superC.Id };
+    StoreId[] ids = new[] { maxi08772.Id, maxi08984.Id, maxi04561.Id, maxi04349.Id, maxi06524.Id, iga.Id };
     SearchStoresPayload payload = new()
     {
+      BannerId = banner.Id.Value,
       Id = new TextSearch
       {
         Terms = ids.Select(id => new SearchTerm(id.Value)).ToList(),
@@ -293,20 +358,22 @@ public class StoreServiceTests : IntegrationTests
       {
         Terms = new List<SearchTerm>
         {
-          new("%a%"),
-          new("%o%")
+          new("1870%"),
+          new("%St-Joseph%"),
+          new("+14507716601"),
+          new("_4349")
         },
         Operator = SearchOperator.Or
       },
       Sort = new List<StoreSortOption>
       {
-        new StoreSortOption(StoreSort.DisplayName)
+        new StoreSortOption(StoreSort.Number)
       },
       Skip = 1,
       Limit = 2
     };
 
-    StoreAggregate[] expected = new[] { store, iga, loblaws, metro }.OrderBy(x => x.DisplayName.Value)
+    StoreAggregate[] expected = new[] { maxi08772, maxi08984, maxi04561, maxi04349 }.OrderBy(x => x.Number?.NormalizedValue)
       .Skip(payload.Skip).Take(payload.Limit).ToArray();
 
     SearchResults<Store> stores = await storeService.SearchAsync(payload);
@@ -348,6 +415,7 @@ public class StoreServiceTests : IntegrationTests
   {
     UpdateStorePayload payload = new()
     {
+      BannerId = new Modification<string>(banner.Id.Value),
       Number = new Modification<string>("08984"),
       Description = new Modification<string>("  Supermarché à proximité de la bibliothèque municipale et du terminus d'autobus.  "),
       Address = new Modification<AddressPayload>(new()
@@ -370,7 +438,9 @@ public class StoreServiceTests : IntegrationTests
     Assert.Equal(ApplicationContext.Actor, command.Actor);
     AssertIsNear(command.Timestamp);
 
-    StoreEntity? store = await FakturContext.Stores.AsNoTracking().SingleOrDefaultAsync(x => x.AggregateId == this.store.Id.Value);
+    StoreEntity? store = await FakturContext.Stores.AsNoTracking()
+      .Include(x => x.Banner)
+      .SingleOrDefaultAsync(x => x.AggregateId == this.store.Id.Value);
     Assert.NotNull(store);
     Assert.Equal(payload.Number.Value, store.Number);
     Assert.Equal(payload.Description.Value?.Trim(), store.Description);
@@ -385,5 +455,8 @@ public class StoreServiceTests : IntegrationTests
 
     Assert.NotNull(payload.Phone.Value);
     Assert.Equal(payload.Phone.Value.Number, store.PhoneNumber);
+
+    Assert.NotNull(store.Banner);
+    Assert.Equal(banner.Id.Value, store.Banner.AggregateId);
   }
 }

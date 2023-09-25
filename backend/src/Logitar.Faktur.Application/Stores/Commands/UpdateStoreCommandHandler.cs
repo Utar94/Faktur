@@ -4,6 +4,7 @@ using Logitar.Faktur.Application.Extensions;
 using Logitar.Faktur.Application.Stores.Validators;
 using Logitar.Faktur.Contracts;
 using Logitar.Faktur.Contracts.Stores;
+using Logitar.Faktur.Domain.Banners;
 using Logitar.Faktur.Domain.Stores;
 using Logitar.Faktur.Domain.ValueObjects;
 using MediatR;
@@ -13,11 +14,13 @@ namespace Logitar.Faktur.Application.Stores.Commands;
 internal class UpdateStoreCommandHandler : IRequestHandler<UpdateStoreCommand, AcceptedCommand>
 {
   private readonly IApplicationContext applicationContext;
+  private readonly IBannerRepository bannerRepository;
   private readonly IStoreRepository storeRepository;
 
-  public UpdateStoreCommandHandler(IApplicationContext applicationContext, IStoreRepository storeRepository)
+  public UpdateStoreCommandHandler(IApplicationContext applicationContext, IBannerRepository bannerRepository, IStoreRepository storeRepository)
   {
     this.applicationContext = applicationContext;
+    this.bannerRepository = bannerRepository;
     this.storeRepository = storeRepository;
   }
 
@@ -29,6 +32,21 @@ internal class UpdateStoreCommandHandler : IRequestHandler<UpdateStoreCommand, A
     StoreId id = StoreId.Parse(command.Id, nameof(command.Id));
     StoreAggregate store = await storeRepository.LoadAsync(id, cancellationToken)
       ?? throw new AggregateNotFoundException<StoreAggregate>(id.AggregateId, nameof(command.Id));
+
+    if (payload.BannerId != null)
+    {
+      BannerId? bannerId = string.IsNullOrWhiteSpace(payload.BannerId.Value) ? null : BannerId.Parse(payload.BannerId.Value, nameof(payload.BannerId));
+      if (bannerId == null)
+      {
+        store.SetBanner(null);
+      }
+      else if (bannerId != store.BannerId)
+      {
+        BannerAggregate banner = await bannerRepository.LoadAsync(bannerId, cancellationToken)
+          ?? throw new AggregateNotFoundException<BannerAggregate>(bannerId.AggregateId, nameof(payload.BannerId));
+        store.SetBanner(banner);
+      }
+    }
 
     if (payload.Number != null)
     {

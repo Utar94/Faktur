@@ -4,6 +4,7 @@ using Logitar.Faktur.Application.Extensions;
 using Logitar.Faktur.Application.Stores.Validators;
 using Logitar.Faktur.Contracts;
 using Logitar.Faktur.Contracts.Stores;
+using Logitar.Faktur.Domain.Banners;
 using Logitar.Faktur.Domain.Stores;
 using Logitar.Faktur.Domain.ValueObjects;
 using MediatR;
@@ -13,11 +14,13 @@ namespace Logitar.Faktur.Application.Stores.Commands;
 internal class ReplaceStoreCommandHandler : IRequestHandler<ReplaceStoreCommand, AcceptedCommand>
 {
   private readonly IApplicationContext applicationContext;
+  private readonly IBannerRepository bannerRepository;
   private readonly IStoreRepository storeRepository;
 
-  public ReplaceStoreCommandHandler(IApplicationContext applicationContext, IStoreRepository storeRepository)
+  public ReplaceStoreCommandHandler(IApplicationContext applicationContext, IBannerRepository bannerRepository, IStoreRepository storeRepository)
   {
     this.applicationContext = applicationContext;
+    this.bannerRepository = bannerRepository;
     this.storeRepository = storeRepository;
   }
 
@@ -34,6 +37,19 @@ internal class ReplaceStoreCommandHandler : IRequestHandler<ReplaceStoreCommand,
     if (command.Version.HasValue)
     {
       reference = await storeRepository.LoadAsync(store.Id, command.Version.Value, cancellationToken);
+    }
+
+    BannerId? bannerId = string.IsNullOrWhiteSpace(payload.BannerId) ? null : BannerId.Parse(payload.BannerId, nameof(payload.BannerId));
+    if (reference == null || bannerId != reference.BannerId)
+    {
+      BannerAggregate? banner = null;
+      if (bannerId != null)
+      {
+        banner = await bannerRepository.LoadAsync(bannerId, cancellationToken)
+          ?? throw new AggregateNotFoundException<BannerAggregate>(bannerId.AggregateId, nameof(payload.BannerId));
+      }
+
+      store.SetBanner(banner);
     }
 
     if (reference == null || (payload.Number?.CleanTrim() != reference.Number?.Value))

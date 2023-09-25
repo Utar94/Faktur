@@ -21,6 +21,8 @@ internal class StoreConfiguration : AggregateConfiguration<StoreEntity>, IEntity
     builder.HasIndex(x => x.AddressFormatted);
     builder.HasIndex(x => x.PhoneE164Formatted);
 
+    builder.HasOne(x => x.Banner).WithMany(x => x.Stores).OnDelete(DeleteBehavior.Restrict);
+
     builder.Property(x => x.Number).HasMaxLength(StoreNumberUnit.MaximumLength);
     builder.Property(x => x.DisplayName).HasMaxLength(DisplayNameUnit.MaximumLength);
     builder.Property(x => x.Description).HasMaxLength(DescriptionUnit.MaximumLength);
