@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using Logitar.Faktur.Application.Articles;
+using Logitar.Faktur.Application.Departments;
 using Logitar.Faktur.Application.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -10,6 +11,7 @@ internal class ExceptionHandlingFilter : ExceptionFilterAttribute
 {
   private readonly Dictionary<Type, Func<ExceptionContext, IActionResult>> handlers = new()
   {
+    [typeof(DepartmentNotFoundException)] = HandleNotFoundFailureException,
     [typeof(GtinAlreadyUsedException)] = HandleConflictFailureException,
     [typeof(ValidationException)] = HandleValidationException
   };
@@ -21,9 +23,9 @@ internal class ExceptionHandlingFilter : ExceptionFilterAttribute
       context.Result = handler(context);
       context.ExceptionHandled = true;
     }
-    else if (context.Exception is AggregateNotFoundException aggregateNotFound)
+    else if (context.Exception is AggregateNotFoundException)
     {
-      context.Result = new NotFoundObjectResult(aggregateNotFound.Failure);
+      context.Result = HandleNotFoundFailureException(context);
       context.ExceptionHandled = true;
     }
     else if (context.Exception is IdentifierAlreadyUsedException)
@@ -50,6 +52,11 @@ internal class ExceptionHandlingFilter : ExceptionFilterAttribute
   private static IActionResult HandleConflictFailureException(ExceptionContext context)
   {
     return new ConflictObjectResult(((IFailureException)context.Exception).Failure);
+  }
+
+  private static IActionResult HandleNotFoundFailureException(ExceptionContext context)
+  {
+    return new NotFoundObjectResult(((IFailureException)context.Exception).Failure);
   }
 
   private static IActionResult HandleValidationException(ExceptionContext context)
