@@ -3,6 +3,7 @@ using Logitar.Faktur.Contracts;
 using Logitar.Faktur.Contracts.Banners;
 using Logitar.Faktur.Contracts.Search;
 using Logitar.Faktur.Domain.Banners;
+using Logitar.Faktur.Domain.Stores;
 using Logitar.Faktur.Domain.ValueObjects;
 using Logitar.Faktur.EntityFrameworkCore.Relational.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -15,6 +16,7 @@ public class BannerServiceTests : IntegrationTests
 {
   private readonly IBannerRepository bannerRepository;
   private readonly IBannerService bannerService;
+  private readonly IStoreRepository storeRepository;
 
   private readonly BannerAggregate banner;
 
@@ -22,6 +24,7 @@ public class BannerServiceTests : IntegrationTests
   {
     bannerRepository = ServiceProvider.GetRequiredService<IBannerRepository>();
     bannerService = ServiceProvider.GetRequiredService<IBannerService>();
+    storeRepository = ServiceProvider.GetRequiredService<IStoreRepository>();
 
     banner = new(new DisplayNameUnit("MAXI"), ApplicationContext.ActorId, BannerId.Parse("MAXI", "Id"));
   }
@@ -92,6 +95,11 @@ public class BannerServiceTests : IntegrationTests
     BannerAggregate banner = new(new DisplayNameUnit("METRO INC."), ApplicationContext.ActorId, id);
     await bannerRepository.SaveAsync(banner);
 
+    StoreAggregate store = new(new DisplayNameUnit("Metro Plus Drummondville"), ApplicationContext.ActorId);
+    store.SetBanner(banner);
+    store.Update(ApplicationContext.ActorId);
+    await storeRepository.SaveAsync(store);
+
     AcceptedCommand command = await bannerService.DeleteAsync(id.Value);
     Assert.Equal(id.Value, command.AggregateId);
     Assert.True(command.AggregateVersion > banner.Version);
@@ -100,6 +108,10 @@ public class BannerServiceTests : IntegrationTests
 
     Assert.Null(await FakturContext.Banners.AsNoTracking().SingleOrDefaultAsync(x => x.AggregateId == id.Value));
     Assert.NotNull(await FakturContext.Banners.AsNoTracking().SingleOrDefaultAsync(x => x.AggregateId == this.banner.Id.Value));
+
+    StoreEntity? storeEntity = await FakturContext.Stores.AsNoTracking().SingleOrDefaultAsync(x => x.AggregateId == store.Id.Value);
+    Assert.NotNull(storeEntity);
+    Assert.Null(storeEntity.BannerId);
   }
 
   [Fact(DisplayName = "DeleteAsync: it should throw AggregateNotFoundException when the banner could not be found.")]

@@ -2,6 +2,7 @@
 using Logitar.Faktur.Application.Extensions;
 using Logitar.Faktur.Contracts;
 using Logitar.Faktur.Domain.Banners;
+using Logitar.Faktur.Domain.Stores;
 using MediatR;
 
 namespace Logitar.Faktur.Application.Banners.Commands;
@@ -10,11 +11,13 @@ internal class DeleteBannerCommandHandler : IRequestHandler<DeleteBannerCommand,
 {
   private readonly IApplicationContext applicationContext;
   private readonly IBannerRepository bannerRepository;
+  private readonly IStoreRepository storeRepository;
 
-  public DeleteBannerCommandHandler(IApplicationContext applicationContext, IBannerRepository bannerRepository)
+  public DeleteBannerCommandHandler(IApplicationContext applicationContext, IBannerRepository bannerRepository, IStoreRepository storeRepository)
   {
     this.applicationContext = applicationContext;
     this.bannerRepository = bannerRepository;
+    this.storeRepository = storeRepository;
   }
 
   public async Task<AcceptedCommand> Handle(DeleteBannerCommand command, CancellationToken cancellationToken)
@@ -23,11 +26,23 @@ internal class DeleteBannerCommandHandler : IRequestHandler<DeleteBannerCommand,
     BannerAggregate banner = await bannerRepository.LoadAsync(id, cancellationToken)
       ?? throw new AggregateNotFoundException<BannerAggregate>(id.AggregateId, nameof(command.Id));
 
+    await RemoveFromStoresAsync(banner, cancellationToken);
+
     banner.Delete(applicationContext.ActorId);
-    // TODO(fpion): remove banner from referencing stores
 
     await bannerRepository.SaveAsync(banner, cancellationToken);
 
     return applicationContext.AcceptCommand(banner);
+  }
+
+  private async Task RemoveFromStoresAsync(BannerAggregate banner, CancellationToken cancellationToken)
+  {
+    IEnumerable<StoreAggregate> stores = await storeRepository.LoadAsync(banner, cancellationToken);
+    foreach (StoreAggregate store in stores)
+    {
+      store.SetBanner(null);
+      store.Update(applicationContext.ActorId);
+    }
+    await storeRepository.SaveAsync(stores, cancellationToken);
   }
 }
