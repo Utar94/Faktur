@@ -292,16 +292,8 @@ public class StoreServiceTests : IntegrationTests
   [Fact(DisplayName = "SearchAsync: it should return empty results when none are matching.")]
   public async Task SearchAsync_it_should_return_empty_results_when_none_are_matching()
   {
-    SearchStoresPayload payload = new()
-    {
-      Id = new TextSearch
-      {
-        Terms = new List<SearchTerm>()
-        {
-          new(Guid.Empty.ToString())
-        }
-      }
-    };
+    SearchStoresPayload payload = new();
+    payload.Id.Terms.Add(new SearchTerm(Guid.Empty.ToString()));
 
     SearchResults<Store> stores = await storeService.SearchAsync(payload);
 

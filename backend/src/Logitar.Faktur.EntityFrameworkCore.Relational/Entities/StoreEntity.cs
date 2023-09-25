@@ -1,4 +1,5 @@
 ﻿using Logitar.EventSourcing;
+using Logitar.Faktur.Domain.Departments.Events;
 using Logitar.Faktur.Domain.Stores;
 using Logitar.Faktur.Domain.Stores.Events;
 
@@ -28,6 +29,8 @@ internal class StoreEntity : AggregateEntity
   public string? PhoneExtension { get; private set; }
   public string? PhoneE164Formatted { get; private set; }
 
+  public List<DepartmentEntity> Departments { get; private set; } = new();
+
   public StoreEntity(StoreCreatedEvent @event) : base(@event)
   {
     DisplayName = @event.DisplayName;
@@ -37,7 +40,57 @@ internal class StoreEntity : AggregateEntity
   {
   }
 
-  public override IEnumerable<ActorId> GetActorIds() => base.GetActorIds().Concat(Banner?.GetActorIds() ?? Enumerable.Empty<ActorId>());
+  public override IEnumerable<ActorId> GetActorIds() => GetActorIds(addDepartments: true);
+  public IEnumerable<ActorId> GetActorIds(bool addDepartments)
+  {
+    List<ActorId> ids = new(capacity: 4 + (2 * Departments.Count))
+    {
+      new ActorId(CreatedBy),
+      new ActorId(UpdatedBy)
+    };
+
+    if (Banner != null)
+    {
+      ids.AddRange(Banner.GetActorIds());
+    }
+
+    if (addDepartments)
+    {
+      foreach (DepartmentEntity department in Departments)
+      {
+        ids.AddRange(department.GetActorIds(addStore: false));
+      }
+    }
+
+    return ids;
+  }
+
+  public void RemoveDepartment(DepartmentRemovedEvent @event)
+  {
+    Update(@event);
+
+    DepartmentEntity? department = Departments.SingleOrDefault(d => d.NumberNormalized == int.Parse(@event.Number));
+    if (department != null)
+    {
+      Departments.Remove(department);
+    }
+  }
+
+  public void SetDepartment(DepartmentSavedEvent @event)
+  {
+    Update(@event);
+
+    DepartmentEntity? department = Departments.SingleOrDefault(d => d.NumberNormalized == int.Parse(@event.Number));
+    if (department == null)
+    {
+      department = new(@event, this);
+      Departments.Add(department);
+    }
+    else
+    {
+      department.Update(@event);
+    }
+  }
 
   public void Update(StoreUpdatedEvent @event, BannerEntity? banner)
   {

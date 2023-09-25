@@ -60,7 +60,7 @@ public abstract class IntegrationTests : IAsyncLifetime
     await FakturContext.Database.MigrateAsync();
 
     ISqlHelper sqlHelper = ServiceProvider.GetRequiredService<ISqlHelper>();
-    TableId[] tables = new[] { Db.Stores.Table, Db.Banners.Table, Db.Articles.Table, Db.Actors.Table, Db.Events.Table };
+    TableId[] tables = new[] { Db.Departments.Table, Db.Stores.Table, Db.Banners.Table, Db.Articles.Table, Db.Actors.Table, Db.Events.Table };
     foreach (TableId table in tables)
     {
       ICommand command = sqlHelper.DeleteFrom(table).Build();

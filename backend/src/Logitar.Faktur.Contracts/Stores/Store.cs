@@ -1,4 +1,5 @@
 ﻿using Logitar.Faktur.Contracts.Banners;
+using Logitar.Faktur.Contracts.Departments;
 
 namespace Logitar.Faktur.Contracts.Stores;
 
@@ -12,4 +13,5 @@ public class Store : Aggregate
   public Phone? Phone { get; set; }
 
   public Banner? Banner { get; set; }
+  public List<Department> Departments { get; set; } = new();
 }

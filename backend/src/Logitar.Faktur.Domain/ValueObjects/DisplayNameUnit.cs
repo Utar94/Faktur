@@ -14,4 +14,6 @@ public record DisplayNameUnit
     new DisplayNameValidator(nameof(Value)).ValidateAndThrow(value);
     Value = value.Trim();
   }
+
+  public static DisplayNameUnit? TryCreate(string? value) => string.IsNullOrWhiteSpace(value) ? null : new(value);
 }
