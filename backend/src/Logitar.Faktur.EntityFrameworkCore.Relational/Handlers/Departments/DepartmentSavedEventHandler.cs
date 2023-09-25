@@ -22,16 +22,7 @@ internal class DepartmentSavedEventHandler : INotificationHandler<DepartmentSave
       .SingleOrDefaultAsync(x => x.AggregateId == @event.AggregateId.Value, cancellationToken)
       ?? throw new EntityNotFoundException<StoreEntity>(@event.AggregateId);
 
-    DepartmentEntity? department = store.Departments.SingleOrDefault(d => d.NumberNormalized == int.Parse(@event.Number));
-    if (department == null)
-    {
-      department = new(@event, store);
-      store.Departments.Add(department);
-    }
-    else
-    {
-      department.Update(@event);
-    }
+    store.SetDepartment(@event);
 
     await context.SaveChangesAsync(cancellationToken);
   }

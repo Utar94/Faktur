@@ -202,16 +202,8 @@ public class BannerServiceTests : IntegrationTests
   [Fact(DisplayName = "SearchAsync: it should return empty results when none are matching.")]
   public async Task SearchAsync_it_should_return_empty_results_when_none_are_matching()
   {
-    SearchBannersPayload payload = new()
-    {
-      Id = new TextSearch
-      {
-        Terms = new List<SearchTerm>()
-        {
-          new(Guid.Empty.ToString())
-        }
-      }
-    };
+    SearchBannersPayload payload = new();
+    payload.Id.Terms.Add(new SearchTerm(Guid.Empty.ToString()));
 
     SearchResults<Banner> banners = await bannerService.SearchAsync(payload);
 

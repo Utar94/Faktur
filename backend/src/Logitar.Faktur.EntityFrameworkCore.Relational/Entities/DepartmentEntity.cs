@@ -41,8 +41,22 @@ internal class DepartmentEntity : Entity
   {
   }
 
-  public IEnumerable<ActorId> GetActorIds() => new ActorId[] { new(CreatedBy), new(UpdatedBy) }
-    .Concat(Store?.GetActorIds() ?? Enumerable.Empty<ActorId>());
+  public IEnumerable<ActorId> GetActorIds() => GetActorIds(addStore: true);
+  public IEnumerable<ActorId> GetActorIds(bool addStore)
+  {
+    List<ActorId> ids = new(capacity: 6)
+    {
+      new ActorId(CreatedBy),
+      new ActorId(UpdatedBy)
+    };
+
+    if (addStore && Store != null)
+    {
+      ids.AddRange(Store.GetActorIds(addDepartments: false));
+    }
+
+    return ids;
+  }
 
   public void Update(DepartmentSavedEvent @event)
   {

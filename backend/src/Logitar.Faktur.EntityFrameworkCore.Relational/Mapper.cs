@@ -64,20 +64,31 @@ internal class Mapper
     return destination;
   }
 
-  public Department ToDepartment(DepartmentEntity source) => new()
+  public Department ToDepartment(DepartmentEntity source) => ToDepartment(source, mapStore: true);
+  public Department ToDepartment(DepartmentEntity source, bool mapStore)
   {
-    Number = source.Number,
-    DisplayName = source.DisplayName,
-    Description = source.Description,
-    Store = source.Store == null ? null : ToStore(source.Store),
-    Version = source.Version,
-    CreatedBy = FindActor(source.CreatedBy),
-    CreatedOn = AsUniversalTime(source.CreatedOn),
-    UpdatedBy = FindActor(source.UpdatedBy),
-    UpdatedOn = AsUniversalTime(source.UpdatedOn)
-  };
+    Department destination = new()
+    {
+      Number = source.Number,
+      DisplayName = source.DisplayName,
+      Description = source.Description,
+      Version = source.Version,
+      CreatedBy = FindActor(source.CreatedBy),
+      CreatedOn = AsUniversalTime(source.CreatedOn),
+      UpdatedBy = FindActor(source.UpdatedBy),
+      UpdatedOn = AsUniversalTime(source.UpdatedOn)
+    };
 
-  public Store ToStore(StoreEntity source)
+    if (mapStore && source.Store != null)
+    {
+      destination.Store = ToStore(source.Store, mapDepartments: false);
+    }
+
+    return destination;
+  }
+
+  public Store ToStore(StoreEntity source) => ToStore(source, mapDepartments: false);
+  public Store ToStore(StoreEntity source, bool mapDepartments)
   {
     Store destination = new()
     {
@@ -85,7 +96,6 @@ internal class Mapper
       Number = source.Number,
       Description = source.Description,
       Banner = source.Banner == null ? null : ToBanner(source.Banner),
-      Departments = source.Departments.Select(ToDepartment).ToList()
     };
 
     MapAggregate(source, destination);
@@ -111,6 +121,11 @@ internal class Mapper
         Extension = source.PhoneExtension,
         E164Formatted = source.PhoneE164Formatted
       };
+    }
+
+    if (mapDepartments)
+    {
+      destination.Departments = source.Departments.Select(department => ToDepartment(department, mapStore: false)).ToList();
     }
 
     return destination;

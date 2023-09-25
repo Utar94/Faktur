@@ -22,11 +22,7 @@ internal class DepartmentRemovedEventHandler : INotificationHandler<DepartmentRe
       .SingleOrDefaultAsync(x => x.AggregateId == @event.AggregateId.Value, cancellationToken)
       ?? throw new EntityNotFoundException<StoreEntity>(@event.AggregateId);
 
-    DepartmentEntity? department = store.Departments.SingleOrDefault(d => d.NumberNormalized == int.Parse(@event.Number));
-    if (department != null)
-    {
-      store.Departments.Remove(department);
-    }
+    store.RemoveDepartment(@event);
 
     await context.SaveChangesAsync(cancellationToken);
   }
