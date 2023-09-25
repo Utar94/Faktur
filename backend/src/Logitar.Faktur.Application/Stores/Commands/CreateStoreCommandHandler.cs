@@ -41,6 +41,7 @@ internal class CreateStoreCommandHandler : IRequestHandler<CreateStoreCommand, A
     {
       Number = StoreNumberUnit.TryCreate(payload.Number),
       Description = DescriptionUnit.TryCreate(payload.Description),
+      Address = payload.Address?.ToAddressUnit(),
       Phone = payload.Phone?.ToPhoneUnit()
     };
     store.Update(applicationContext.ActorId);

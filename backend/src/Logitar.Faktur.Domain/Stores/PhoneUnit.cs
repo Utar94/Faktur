@@ -19,6 +19,6 @@ public record PhoneUnit : IPhone
     Number = number.Trim();
     Extension = extension?.CleanTrim();
 
-    new PhoneValidator(nameof(PhoneUnit)).ValidateAndThrow(this);
+    new PhoneValidator().ValidateAndThrow(this);
   }
 }

@@ -1,12 +1,11 @@
 ﻿using FluentValidation;
 using Logitar.Faktur.Contracts.Stores;
-using Logitar.Faktur.Domain.Extensions;
 
 namespace Logitar.Faktur.Domain.Stores;
 
 public class PhoneValidator : AbstractValidator<IPhone>
 {
-  public PhoneValidator(string? propertyName = null)
+  public PhoneValidator()
   {
     When(x => x.CountryCode != null,
       () => RuleFor(x => x.CountryCode).NotEmpty()
@@ -20,8 +19,7 @@ public class PhoneValidator : AbstractValidator<IPhone>
         .MaximumLength(PhoneUnit.ExtensionMaximumLength));
 
     RuleFor(x => x).Must(phone => phone.IsValid())
-      .WithErrorCode("PhoneValidator")
-      .WithMessage("'{PropertyName}' must be a valid phone number.")
-      .WithPropertyName(propertyName);
+      .WithErrorCode(nameof(PhoneValidator))
+      .WithMessage("'{PropertyName}' must be a valid phone number.");
   }
 }

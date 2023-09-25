@@ -10,7 +10,8 @@ public record StoreUpdatedEvent : DomainEvent, INotification
   public string? DisplayName { get; set; }
   public Modification<string>? Description { get; set; }
 
+  public Modification<AddressUnit>? Address { get; set; }
   public Modification<PhoneUnit>? Phone { get; set; }
 
-  public bool HasChanges => Number != null || DisplayName != null || Description != null || Phone != null;
+  public bool HasChanges => Number != null || DisplayName != null || Description != null || Address != null || Phone != null;
 }

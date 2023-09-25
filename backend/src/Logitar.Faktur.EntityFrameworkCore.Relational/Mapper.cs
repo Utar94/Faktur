@@ -74,6 +74,18 @@ internal class Mapper
 
     MapAggregate(source, destination);
 
+    if (source.AddressStreet != null && source.AddressLocality != null && source.AddressCountry != null && source.AddressFormatted != null)
+    {
+      destination.Address = new Address
+      {
+        Street = source.AddressStreet,
+        Locality = source.AddressLocality,
+        Region = source.AddressRegion,
+        PostalCode = source.AddressPostalCode,
+        Country = source.AddressCountry,
+        Formatted = source.AddressFormatted
+      };
+    }
     if (source.PhoneNumber != null && source.PhoneE164Formatted != null)
     {
       destination.Phone = new Phone

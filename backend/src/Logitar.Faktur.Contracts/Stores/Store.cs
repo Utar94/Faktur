@@ -6,5 +6,6 @@ public class Store : Aggregate
   public string DisplayName { get; set; } = string.Empty;
   public string? Description { get; set; }
 
+  public Address? Address { get; set; }
   public Phone? Phone { get; set; }
 }

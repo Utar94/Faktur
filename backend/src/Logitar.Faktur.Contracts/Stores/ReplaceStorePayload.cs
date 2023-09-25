@@ -6,5 +6,6 @@ public record ReplaceStorePayload
   public string DisplayName { get; set; } = string.Empty;
   public string? Description { get; set; }
 
+  public AddressPayload? Address { get; set; }
   public PhonePayload? Phone { get; set; }
 }

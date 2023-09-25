@@ -49,6 +49,11 @@ internal class ReplaceStoreCommandHandler : IRequestHandler<ReplaceStoreCommand,
       store.Description = DescriptionUnit.TryCreate(payload.Description);
     }
 
+    AddressUnit? address = payload.Address?.ToAddressUnit();
+    if (reference == null || address != reference.Address)
+    {
+      store.Address = address;
+    }
     PhoneUnit? phone = payload.Phone?.ToPhoneUnit();
     if (reference == null || phone != reference.Phone)
     {

@@ -37,7 +37,7 @@ internal class StoreQuerier : IStoreQuerier
   {
     IQueryBuilder builder = sqlHelper.QueryFrom(Db.Stores.Table).SelectAll(Db.Stores.Table);
     sqlHelper.ApplyTextSearch(builder, payload.Id, Db.Stores.AggregateId);
-    sqlHelper.ApplyTextSearch(builder, payload.Search, Db.Stores.Number, Db.Stores.DisplayName, Db.Stores.PhoneE164Formatted);
+    sqlHelper.ApplyTextSearch(builder, payload.Search, Db.Stores.Number, Db.Stores.DisplayName, Db.Stores.AddressFormatted, Db.Stores.PhoneE164Formatted);
 
     IQueryable<StoreEntity> query = this.stores.FromQuery(builder);
 

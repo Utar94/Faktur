@@ -51,6 +51,19 @@ public class StoreAggregate : AggregateRoot
     }
   }
 
+  private AddressUnit? address = null;
+  public AddressUnit? Address
+  {
+    get => address;
+    set
+    {
+      if (value != address)
+      {
+        updated.Address = new Modification<AddressUnit>(value);
+        address = value;
+      }
+    }
+  }
   private PhoneUnit? phone = null;
   public PhoneUnit? Phone
   {
@@ -108,6 +121,10 @@ public class StoreAggregate : AggregateRoot
       description = @event.Description.Value == null ? null : new DescriptionUnit(@event.Description.Value);
     }
 
+    if (@event.Address != null)
+    {
+      address = @event.Address.Value;
+    }
     if (@event.Phone != null)
     {
       phone = @event.Phone.Value;

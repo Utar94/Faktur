@@ -6,5 +6,6 @@ public record UpdateStorePayload
   public string? DisplayName { get; set; } = string.Empty;
   public Modification<string>? Description { get; set; }
 
+  public Modification<AddressPayload>? Address { get; set; }
   public Modification<PhonePayload>? Phone { get; set; }
 }

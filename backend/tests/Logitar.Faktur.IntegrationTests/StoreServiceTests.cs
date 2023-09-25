@@ -46,6 +46,14 @@ public class StoreServiceTests : IntegrationTests
       Number = "08984",
       DisplayName = "  IGA Drummondville  ",
       Description = "    ",
+      Address = new AddressPayload
+      {
+        Street = "  1870 boul Saint-Joseph  ",
+        Locality = "  Drummondville  ",
+        Region = "QC",
+        PostalCode = " J2B 1R2 ",
+        Country = "CA"
+      },
       Phone = new PhonePayload
       {
         Number = "  819-472-1197  "
@@ -71,7 +79,15 @@ public class StoreServiceTests : IntegrationTests
     Assert.Equal(payload.Number.Trim(), store.Number);
     Assert.Equal(payload.DisplayName.Trim(), store.DisplayName);
     Assert.Null(store.Description);
+
     Assert.Equal(payload.Phone.Number.Trim(), store.PhoneNumber);
+
+    Assert.Equal(payload.Address.Street.Trim(), store.AddressStreet);
+    Assert.Equal(payload.Address.Locality.Trim(), store.AddressLocality);
+    Assert.Equal(payload.Address.Region, store.AddressRegion);
+    Assert.Equal(payload.Address.PostalCode.Trim(), store.AddressPostalCode);
+    Assert.Equal(payload.Address.Country.Trim(), store.AddressCountry);
+    Assert.Equal(PostalAddressHelper.Format(payload.Address), store.AddressFormatted);
   }
 
   [Fact(DisplayName = "CreateAsync: it should throw IdentifierAlreadyUsedException when the Gtin is already used.")]
@@ -91,7 +107,16 @@ public class StoreServiceTests : IntegrationTests
   [Fact(DisplayName = "CreateAsync: it should throw ValidationException when the payload is not valid.")]
   public async Task CreateAsync_it_should_throw_ValidationException_when_the_payload_is_not_valid()
   {
-    CreateStorePayload payload = new();
+    CreateStorePayload payload = new()
+    {
+      Address = new AddressPayload
+      {
+        Street = "1870 boul Saint-Joseph",
+        Locality = "Drummondville",
+        Region = "ZZ",
+        Country = "CA"
+      }
+    };
 
     await Assert.ThrowsAsync<FluentValidation.ValidationException>(async () => await storeService.CreateAsync(payload));
   }
@@ -160,6 +185,14 @@ public class StoreServiceTests : IntegrationTests
       Number = "08772",
       DisplayName = "Maxi Drummondville",
       Description = "  Supermarché à proximité de la bibliothèque municipale et du terminus d'autobus.  ",
+      Address = new AddressPayload
+      {
+        Street = "  1870 boul Saint-Joseph  ",
+        Locality = "  Drummondville  ",
+        Region = "QC",
+        PostalCode = " J2B 1R2 ",
+        Country = "CA"
+      },
       Phone = new PhonePayload
       {
         CountryCode = "CA",
@@ -179,6 +212,14 @@ public class StoreServiceTests : IntegrationTests
     Assert.Equal(8772, store.NumberNormalized);
     Assert.Equal("Maxi Drummondville (#08772)", store.DisplayName);
     Assert.Equal(payload.Description.Trim(), store.Description);
+
+    Assert.Equal(payload.Address.Street.Trim(), store.AddressStreet);
+    Assert.Equal(payload.Address.Locality.Trim(), store.AddressLocality);
+    Assert.Equal(payload.Address.Region, store.AddressRegion);
+    Assert.Equal(payload.Address.PostalCode.Trim(), store.AddressPostalCode);
+    Assert.Equal(payload.Address.Country.Trim(), store.AddressCountry);
+    Assert.Equal(PostalAddressHelper.Format(payload.Address), store.AddressFormatted);
+
     Assert.Equal(payload.Phone.CountryCode, store.PhoneCountryCode);
     Assert.Equal(payload.Phone.Number.Trim(), store.PhoneNumber);
     Assert.Equal(payload.Phone.Extension.Trim(), store.PhoneExtension);
@@ -309,6 +350,14 @@ public class StoreServiceTests : IntegrationTests
     {
       Number = new Modification<string>("08984"),
       Description = new Modification<string>("  Supermarché à proximité de la bibliothèque municipale et du terminus d'autobus.  "),
+      Address = new Modification<AddressPayload>(new()
+      {
+        Street = "1870 boul Saint-Joseph",
+        Locality = "Drummondville",
+        Region = "QC",
+        PostalCode = "J2B 1R2",
+        Country = "CA"
+      }),
       Phone = new Modification<PhonePayload>(new()
       {
         Number = "819-472-1197"
@@ -325,6 +374,16 @@ public class StoreServiceTests : IntegrationTests
     Assert.NotNull(store);
     Assert.Equal(payload.Number.Value, store.Number);
     Assert.Equal(payload.Description.Value?.Trim(), store.Description);
-    Assert.Equal(payload.Phone.Value?.Number, store.PhoneNumber);
+
+    Assert.NotNull(payload.Address.Value);
+    Assert.Equal(payload.Address.Value.Street, store.AddressStreet);
+    Assert.Equal(payload.Address.Value.Locality, store.AddressLocality);
+    Assert.Equal(payload.Address.Value.Region, store.AddressRegion);
+    Assert.Equal(payload.Address.Value.PostalCode, store.AddressPostalCode);
+    Assert.Equal(payload.Address.Value.Country, store.AddressCountry);
+    Assert.Equal(PostalAddressHelper.Format(payload.Address.Value), store.AddressFormatted);
+
+    Assert.NotNull(payload.Phone.Value);
+    Assert.Equal(payload.Phone.Value.Number, store.PhoneNumber);
   }
 }

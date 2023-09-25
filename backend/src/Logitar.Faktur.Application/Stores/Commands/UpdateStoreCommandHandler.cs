@@ -43,6 +43,10 @@ internal class UpdateStoreCommandHandler : IRequestHandler<UpdateStoreCommand, A
       store.Description = DescriptionUnit.TryCreate(payload.Description.Value);
     }
 
+    if (payload.Address != null)
+    {
+      store.Address = payload.Address.Value?.ToAddressUnit();
+    }
     if (payload.Phone != null)
     {
       store.Phone = payload.Phone.Value?.ToPhoneUnit();
