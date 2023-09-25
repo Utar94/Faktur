@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using Logitar.Faktur.Domain.Extensions;
+using Logitar.Faktur.Domain.Validators;
 
 namespace Logitar.Faktur.Domain.Articles;
 
@@ -9,9 +10,7 @@ public class GtinValidator : AbstractValidator<string>
   {
     RuleFor(x => x).NotEmpty()
       .MaximumLength(GtinUnit.MaximumLength)
-      .Must(x => x.All(char.IsDigit)) // TODO(fpion): refactor
-        .WithErrorCode("GtinValidator")
-        .WithMessage("'{PropertyName}' may only contain digits.")
+      .SetValidator(new AllowedCharactersValidator("0123456789"))
       .WithPropertyName(propertyName);
   }
 }

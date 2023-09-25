@@ -16,5 +16,8 @@ internal class ReplaceStorePayloadValidator : AbstractValidator<ReplaceStorePayl
 
     When(p => !string.IsNullOrWhiteSpace(p.Description),
       () => RuleFor(p => p.Description!).SetValidator(new DescriptionValidator()));
+
+    When(p => p.Phone != null,
+      () => RuleFor(p => p.Phone!).SetValidator(new PhoneValidator()));
   }
 }

@@ -40,7 +40,8 @@ internal class CreateStoreCommandHandler : IRequestHandler<CreateStoreCommand, A
     StoreAggregate store = new(displayName, applicationContext.ActorId, id)
     {
       Number = StoreNumberUnit.TryCreate(payload.Number),
-      Description = DescriptionUnit.TryCreate(payload.Description)
+      Description = DescriptionUnit.TryCreate(payload.Description),
+      Phone = payload.Phone?.ToPhoneUnit()
     };
     store.Update(applicationContext.ActorId);
 

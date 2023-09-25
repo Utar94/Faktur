@@ -45,7 +45,11 @@ public class StoreServiceTests : IntegrationTests
       Id = "  IGA  ",
       Number = "08984",
       DisplayName = "  IGA Drummondville  ",
-      Description = "    "
+      Description = "    ",
+      Phone = new PhonePayload
+      {
+        Number = "  819-472-1197  "
+      }
     };
 
     AcceptedCommand command = await storeService.CreateAsync(payload);
@@ -67,6 +71,7 @@ public class StoreServiceTests : IntegrationTests
     Assert.Equal(payload.Number.Trim(), store.Number);
     Assert.Equal(payload.DisplayName.Trim(), store.DisplayName);
     Assert.Null(store.Description);
+    Assert.Equal(payload.Phone.Number.Trim(), store.PhoneNumber);
   }
 
   [Fact(DisplayName = "CreateAsync: it should throw IdentifierAlreadyUsedException when the Gtin is already used.")]
@@ -154,7 +159,13 @@ public class StoreServiceTests : IntegrationTests
     {
       Number = "08772",
       DisplayName = "Maxi Drummondville",
-      Description = "  Supermarché à proximité de la bibliothèque municipale et du terminus d'autobus.  "
+      Description = "  Supermarché à proximité de la bibliothèque municipale et du terminus d'autobus.  ",
+      Phone = new PhonePayload
+      {
+        CountryCode = "CA",
+        Number = "  819-472-1197  ",
+        Extension = "  12345  "
+      }
     };
 
     AcceptedCommand command = await storeService.ReplaceAsync(this.store.Id.Value, payload, version);
@@ -168,6 +179,9 @@ public class StoreServiceTests : IntegrationTests
     Assert.Equal(8772, store.NumberNormalized);
     Assert.Equal("Maxi Drummondville (#08772)", store.DisplayName);
     Assert.Equal(payload.Description.Trim(), store.Description);
+    Assert.Equal(payload.Phone.CountryCode, store.PhoneCountryCode);
+    Assert.Equal(payload.Phone.Number.Trim(), store.PhoneNumber);
+    Assert.Equal(payload.Phone.Extension.Trim(), store.PhoneExtension);
   }
 
   [Fact(DisplayName = "ReplaceAsync: it should throw AggregateNotFoundException when the store could not be found.")]
@@ -294,7 +308,11 @@ public class StoreServiceTests : IntegrationTests
     UpdateStorePayload payload = new()
     {
       Number = new Modification<string>("08984"),
-      Description = new Modification<string>("  Supermarché à proximité de la bibliothèque municipale et du terminus d'autobus.  ")
+      Description = new Modification<string>("  Supermarché à proximité de la bibliothèque municipale et du terminus d'autobus.  "),
+      Phone = new Modification<PhonePayload>(new()
+      {
+        Number = "819-472-1197"
+      })
     };
 
     AcceptedCommand command = await storeService.UpdateAsync(this.store.Id.Value, payload);
@@ -307,5 +325,6 @@ public class StoreServiceTests : IntegrationTests
     Assert.NotNull(store);
     Assert.Equal(payload.Number.Value, store.Number);
     Assert.Equal(payload.Description.Value?.Trim(), store.Description);
+    Assert.Equal(payload.Phone.Value?.Number, store.PhoneNumber);
   }
 }

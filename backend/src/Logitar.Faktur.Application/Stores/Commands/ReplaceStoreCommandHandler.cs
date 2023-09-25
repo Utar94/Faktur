@@ -49,6 +49,12 @@ internal class ReplaceStoreCommandHandler : IRequestHandler<ReplaceStoreCommand,
       store.Description = DescriptionUnit.TryCreate(payload.Description);
     }
 
+    PhoneUnit? phone = payload.Phone?.ToPhoneUnit();
+    if (reference == null || phone != reference.Phone)
+    {
+      store.Phone = phone;
+    }
+
     store.Update(applicationContext.ActorId);
 
     await storeRepository.SaveAsync(store, cancellationToken);

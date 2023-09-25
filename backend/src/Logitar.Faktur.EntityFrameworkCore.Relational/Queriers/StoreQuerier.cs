@@ -37,7 +37,7 @@ internal class StoreQuerier : IStoreQuerier
   {
     IQueryBuilder builder = sqlHelper.QueryFrom(Db.Stores.Table).SelectAll(Db.Stores.Table);
     sqlHelper.ApplyTextSearch(builder, payload.Id, Db.Stores.AggregateId);
-    sqlHelper.ApplyTextSearch(builder, payload.Search, Db.Stores.DisplayName, Db.Stores.Number);
+    sqlHelper.ApplyTextSearch(builder, payload.Search, Db.Stores.Number, Db.Stores.DisplayName, Db.Stores.PhoneE164Formatted);
 
     IQueryable<StoreEntity> query = this.stores.FromQuery(builder);
 
@@ -57,6 +57,11 @@ internal class StoreQuerier : IStoreQuerier
           ordered = (ordered == null)
             ? (sort.IsDescending ? query.OrderByDescending(x => x.Number) : query.OrderBy(x => x.Number))
             : (sort.IsDescending ? ordered.OrderByDescending(x => x.Number) : ordered.OrderBy(x => x.Number));
+          break;
+        case StoreSort.PhoneE164Formatted:
+          ordered = (ordered == null)
+            ? (sort.IsDescending ? query.OrderByDescending(x => x.PhoneE164Formatted) : query.OrderBy(x => x.PhoneE164Formatted))
+            : (sort.IsDescending ? ordered.OrderByDescending(x => x.PhoneE164Formatted) : ordered.OrderBy(x => x.PhoneE164Formatted));
           break;
         case StoreSort.UpdatedOn:
           ordered = (ordered == null)

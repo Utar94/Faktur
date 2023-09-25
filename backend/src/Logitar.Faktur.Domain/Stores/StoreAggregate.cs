@@ -51,6 +51,20 @@ public class StoreAggregate : AggregateRoot
     }
   }
 
+  private PhoneUnit? phone = null;
+  public PhoneUnit? Phone
+  {
+    get => phone;
+    set
+    {
+      if (value != phone)
+      {
+        updated.Phone = new Modification<PhoneUnit>(value);
+        phone = value;
+      }
+    }
+  }
+
   public StoreAggregate(AggregateId id) : base(id)
   {
   }
@@ -92,6 +106,11 @@ public class StoreAggregate : AggregateRoot
     if (@event.Description != null)
     {
       description = @event.Description.Value == null ? null : new DescriptionUnit(@event.Description.Value);
+    }
+
+    if (@event.Phone != null)
+    {
+      phone = @event.Phone.Value;
     }
   }
 

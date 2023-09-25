@@ -74,6 +74,17 @@ internal class Mapper
 
     MapAggregate(source, destination);
 
+    if (source.PhoneNumber != null && source.PhoneE164Formatted != null)
+    {
+      destination.Phone = new Phone
+      {
+        CountryCode = source.PhoneCountryCode,
+        Number = source.PhoneNumber,
+        Extension = source.PhoneExtension,
+        E164Formatted = source.PhoneE164Formatted
+      };
+    }
+
     return destination;
   }
 

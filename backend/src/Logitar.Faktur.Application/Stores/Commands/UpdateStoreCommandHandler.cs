@@ -43,6 +43,11 @@ internal class UpdateStoreCommandHandler : IRequestHandler<UpdateStoreCommand, A
       store.Description = DescriptionUnit.TryCreate(payload.Description.Value);
     }
 
+    if (payload.Phone != null)
+    {
+      store.Phone = payload.Phone.Value?.ToPhoneUnit();
+    }
+
     store.Update(applicationContext.ActorId);
 
     await storeRepository.SaveAsync(store, cancellationToken);

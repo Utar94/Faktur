@@ -18,9 +18,14 @@ internal class StoreConfiguration : AggregateConfiguration<StoreEntity>, IEntity
     builder.HasIndex(x => x.Number);
     builder.HasIndex(x => x.NumberNormalized);
     builder.HasIndex(x => x.DisplayName);
+    builder.HasIndex(x => x.PhoneE164Formatted);
 
     builder.Property(x => x.Number).HasMaxLength(StoreNumberUnit.MaximumLength);
     builder.Property(x => x.DisplayName).HasMaxLength(DisplayNameUnit.MaximumLength);
     builder.Property(x => x.Description).HasMaxLength(DescriptionUnit.MaximumLength);
+    builder.Property(x => x.PhoneCountryCode).HasMaxLength(PhoneUnit.CountryCodeMaximumLength);
+    builder.Property(x => x.PhoneNumber).HasMaxLength(PhoneUnit.NumberMaximumLength);
+    builder.Property(x => x.PhoneExtension).HasMaxLength(PhoneUnit.ExtensionMaximumLength);
+    builder.Property(x => x.PhoneE164Formatted).HasMaxLength(12);
   }
 }

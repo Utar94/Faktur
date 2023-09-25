@@ -4,5 +4,6 @@ public enum StoreSort
 {
   DisplayName,
   Number,
+  PhoneE164Formatted,
   UpdatedOn
 }

@@ -17,5 +17,8 @@ internal class UpdateStorePayloadValidator : AbstractValidator<UpdateStorePayloa
 
     When(p => !string.IsNullOrWhiteSpace(p.Description?.Value),
       () => RuleFor(p => p.Description!.Value!).SetValidator(new DescriptionValidator()));
+
+    When(p => p.Phone?.Value != null,
+      () => RuleFor(p => p.Phone!.Value!).SetValidator(new PhoneValidator()));
   }
 }

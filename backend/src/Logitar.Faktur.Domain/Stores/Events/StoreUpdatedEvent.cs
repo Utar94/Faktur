@@ -10,5 +10,7 @@ public record StoreUpdatedEvent : DomainEvent, INotification
   public string? DisplayName { get; set; }
   public Modification<string>? Description { get; set; }
 
-  public bool HasChanges => Number != null || DisplayName != null || Description != null;
+  public Modification<PhoneUnit>? Phone { get; set; }
+
+  public bool HasChanges => Number != null || DisplayName != null || Description != null || Phone != null;
 }

@@ -24,7 +24,6 @@ internal class DeleteStoreCommandHandler : IRequestHandler<DeleteStoreCommand, A
       ?? throw new AggregateNotFoundException<StoreAggregate>(id.AggregateId, nameof(command.Id));
 
     store.Delete(applicationContext.ActorId);
-    // TODO(fpion): remove store from referencing stores
 
     await storeRepository.SaveAsync(store, cancellationToken);
 

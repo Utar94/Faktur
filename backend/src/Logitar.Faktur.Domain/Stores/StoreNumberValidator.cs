@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using Logitar.Faktur.Domain.Extensions;
+using Logitar.Faktur.Domain.Validators;
 
 namespace Logitar.Faktur.Domain.Stores;
 
@@ -9,9 +10,7 @@ public class StoreNumberValidator : AbstractValidator<string>
   {
     RuleFor(x => x).NotEmpty()
       .MaximumLength(StoreNumberUnit.MaximumLength)
-      .Must(x => x.All(char.IsDigit)) // TODO(fpion): refactor
-        .WithErrorCode("StoreNumberValidator")
-        .WithMessage("'{PropertyName}' may only contain digits.")
+      .SetValidator(new AllowedCharactersValidator("0123456789"))
       .WithPropertyName(propertyName);
   }
 }

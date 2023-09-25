@@ -44,5 +44,6 @@ internal static class Db
     public static readonly ColumnId AggregateId = new(nameof(StoreEntity.AggregateId), Table);
     public static readonly ColumnId DisplayName = new(nameof(StoreEntity.DisplayName), Table);
     public static readonly ColumnId Number = new(nameof(StoreEntity.Number), Table);
+    public static readonly ColumnId PhoneE164Formatted = new(nameof(StoreEntity.PhoneE164Formatted), Table);
   }
 }
