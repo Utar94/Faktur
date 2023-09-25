@@ -112,11 +112,14 @@ public class StoreAggregate : AggregateRoot
       return false;
     }
 
-    ApplyChange(new DepartmentRemovedEvent(actorId, number));
+    ApplyChange(new DepartmentRemovedEvent(actorId)
+    {
+      Number = number.Value
+    });
 
     return true;
   }
-  protected virtual void Apply(DepartmentRemovedEvent @event) => departments.Remove(@event.Number.Value);
+  protected virtual void Apply(DepartmentRemovedEvent @event) => departments.Remove(@event.Number);
 
   public void SetBanner(BannerAggregate? banner)
   {
@@ -131,10 +134,16 @@ public class StoreAggregate : AggregateRoot
   {
     if (!departments.TryGetValue(department.Number.Value, out DepartmentUnit? existingDepartment) || department != existingDepartment)
     {
-      ApplyChange(new DepartmentSavedEvent(actorId, department));
+      ApplyChange(new DepartmentSavedEvent(actorId)
+      {
+        Number = department.Number.Value,
+        DisplayName = department.DisplayName.Value,
+        Description = department.Description?.Value
+      });
     }
   }
-  protected virtual void Apply(DepartmentSavedEvent @event) => departments[@event.Department.Number.Value] = @event.Department;
+  protected virtual void Apply(DepartmentSavedEvent @event) => departments[@event.Number] = new DepartmentUnit(
+    new DepartmentNumberUnit(@event.Number), new DisplayNameUnit(@event.DisplayName), DescriptionUnit.TryCreate(@event.Description));
 
   public void Update(ActorId actorId = default)
   {

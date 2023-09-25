@@ -2,7 +2,7 @@
 
 namespace Logitar.Faktur.Domain.Departments;
 
-public record DepartmentUnit // TODO(fpion): serialization
+public record DepartmentUnit
 {
   public DepartmentNumberUnit Number { get; }
   public DisplayNameUnit DisplayName { get; }

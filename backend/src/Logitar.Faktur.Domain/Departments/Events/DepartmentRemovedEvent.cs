@@ -3,13 +3,12 @@ using MediatR;
 
 namespace Logitar.Faktur.Domain.Departments.Events;
 
-public record DepartmentRemovedEvent : DomainEvent, INotification // TODO(fpion): serialization
+public record DepartmentRemovedEvent : DomainEvent, INotification
 {
-  public DepartmentNumberUnit Number { get; }
+  public string Number { get; init; } = string.Empty;
 
-  public DepartmentRemovedEvent(ActorId actorId, DepartmentNumberUnit number)
+  public DepartmentRemovedEvent(ActorId actorId)
   {
     ActorId = actorId;
-    Number = number;
   }
 }
