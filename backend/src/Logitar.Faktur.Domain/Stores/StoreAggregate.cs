@@ -1,8 +1,11 @@
 ﻿using Logitar.EventSourcing;
 using Logitar.Faktur.Contracts;
+using Logitar.Faktur.Domain.Articles;
 using Logitar.Faktur.Domain.Banners;
 using Logitar.Faktur.Domain.Departments;
 using Logitar.Faktur.Domain.Departments.Events;
+using Logitar.Faktur.Domain.Products;
+using Logitar.Faktur.Domain.Products.Events;
 using Logitar.Faktur.Domain.Stores.Events;
 using Logitar.Faktur.Domain.ValueObjects;
 
@@ -10,7 +13,8 @@ namespace Logitar.Faktur.Domain.Stores;
 
 public class StoreAggregate : AggregateRoot
 {
-  private readonly Dictionary<string, DepartmentUnit> departments = new();
+  private readonly Dictionary<DepartmentNumberUnit, DepartmentUnit> departments = new();
+  private readonly Dictionary<ArticleId, ProductUnit> products = new();
 
   private StoreUpdatedEvent updated = new();
 
@@ -85,7 +89,8 @@ public class StoreAggregate : AggregateRoot
     }
   }
 
-  public IReadOnlyDictionary<string, DepartmentUnit> Departments => departments.AsReadOnly();
+  public IReadOnlyDictionary<DepartmentNumberUnit, DepartmentUnit> Departments => departments.AsReadOnly();
+  public IReadOnlyDictionary<ArticleId, ProductUnit> Products => products.AsReadOnly();
 
   public StoreAggregate(AggregateId id) : base(id)
   {
@@ -107,19 +112,29 @@ public class StoreAggregate : AggregateRoot
 
   public bool RemoveDepartment(DepartmentNumberUnit number, ActorId actorId = default)
   {
-    if (!departments.ContainsKey(number.Value))
+    if (!departments.ContainsKey(number))
     {
       return false;
     }
 
-    ApplyChange(new DepartmentRemovedEvent(actorId)
-    {
-      Number = number.Value
-    });
+    ApplyChange(DepartmentRemovedEvent.Create(actorId, number));
 
     return true;
   }
-  protected virtual void Apply(DepartmentRemovedEvent @event) => departments.Remove(@event.Number);
+  protected virtual void Apply(DepartmentRemovedEvent @event) => departments.Remove(@event.GetNumber());
+
+  public bool RemoveProduct(ArticleId articleId, ActorId actorId = default)
+  {
+    if (!products.ContainsKey(articleId))
+    {
+      return false;
+    }
+
+    ApplyChange(ProductRemovedEvent.Create(actorId, articleId));
+
+    return true;
+  }
+  protected virtual void Apply(ProductRemovedEvent @event) => products.Remove(@event.GetArticleId());
 
   public void SetBanner(BannerAggregate? banner)
   {
@@ -132,18 +147,29 @@ public class StoreAggregate : AggregateRoot
 
   public void SetDepartment(DepartmentUnit department, ActorId actorId = default)
   {
-    if (!departments.TryGetValue(department.Number.Value, out DepartmentUnit? existingDepartment) || department != existingDepartment)
+    if (!departments.TryGetValue(department.Number, out DepartmentUnit? existingDepartment) || department != existingDepartment)
     {
-      ApplyChange(new DepartmentSavedEvent(actorId)
-      {
-        Number = department.Number.Value,
-        DisplayName = department.DisplayName.Value,
-        Description = department.Description?.Value
-      });
+      ApplyChange(DepartmentSavedEvent.Create(actorId, department));
     }
   }
-  protected virtual void Apply(DepartmentSavedEvent @event) => departments[@event.Number] = new DepartmentUnit(
-    new DepartmentNumberUnit(@event.Number), new DisplayNameUnit(@event.DisplayName), DescriptionUnit.TryCreate(@event.Description));
+  protected virtual void Apply(DepartmentSavedEvent @event)
+  {
+    DepartmentUnit department = @event.GetDepartment();
+    departments[department.Number] = department;
+  }
+
+  public void SetProduct(ProductUnit product, ActorId actorId = default)
+  {
+    if (!products.TryGetValue(product.ArticleId, out ProductUnit? existingProduct) || product != existingProduct)
+    {
+      ApplyChange(ProductSavedEvent.Create(actorId, product));
+    }
+  }
+  protected virtual void Apply(ProductSavedEvent @event)
+  {
+    ProductUnit product = @event.GetProduct();
+    products[product.ArticleId] = product;
+  }
 
   public void Update(ActorId actorId = default)
   {

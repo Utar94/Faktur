@@ -21,4 +21,6 @@ public record DepartmentNumberUnit
 
     return new DepartmentNumberUnit(value);
   }
+
+  public static DepartmentNumberUnit? TryCreate(string? value) => string.IsNullOrWhiteSpace(value) ? null : new(value);
 }

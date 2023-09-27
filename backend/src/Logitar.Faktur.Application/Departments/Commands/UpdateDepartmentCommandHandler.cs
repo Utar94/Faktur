@@ -32,7 +32,7 @@ internal class UpdateDepartmentCommandHandler : IRequestHandler<UpdateDepartment
     StoreAggregate store = await storeRepository.LoadAsync(storeId, cancellationToken)
       ?? throw new AggregateNotFoundException<StoreAggregate>(storeId.AggregateId, nameof(command.StoreId));
 
-    if (!store.Departments.TryGetValue(number.Value, out DepartmentUnit? department))
+    if (!store.Departments.TryGetValue(number, out DepartmentUnit? department))
     {
       throw new DepartmentNotFoundException(store, number, nameof(command.Number));
     }

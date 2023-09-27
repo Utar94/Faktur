@@ -59,10 +59,10 @@ public class DepartmentServiceTests : IntegrationTests
   {
     DepartmentUnit existing = store.Departments.Values.Single();
 
-    Department? department = await departmentService.ReadAsync(store.Id.Value, store.Departments.Keys.Single());
+    Department? department = await departmentService.ReadAsync(store.Id.Value, store.Departments.Keys.Single().Value);
     Assert.NotNull(department);
 
-    Assert.Equal(store.Departments.Keys.Single(), department.Number);
+    Assert.Equal(store.Departments.Keys.Single().Value, department.Number);
     Assert.Equal(existing.DisplayName.Value, department.DisplayName);
     Assert.Equal(existing.Description?.Value, department.Description);
 
@@ -85,7 +85,7 @@ public class DepartmentServiceTests : IntegrationTests
   [Fact(DisplayName = "RemoveAsync: it should remove the found department.")]
   public async Task RemoveAsync_it_should_remove_the_found_department()
   {
-    string number = store.Departments.Keys.Single();
+    string number = store.Departments.Keys.Single().Value;
 
     AcceptedCommand command = await departmentService.RemoveAsync(store.Id.Value, number);
 
@@ -157,7 +157,7 @@ public class DepartmentServiceTests : IntegrationTests
   [Fact(DisplayName = "SaveAsync: it should save an existing department.")]
   public async Task SaveAsync_it_should_save_an_existing_department()
   {
-    string number = store.Departments.Keys.Single();
+    string number = store.Departments.Keys.Single().Value;
     SaveDepartmentPayload payload = new()
     {
       DisplayName = "  ÉPICERIE  ",
@@ -332,7 +332,7 @@ public class DepartmentServiceTests : IntegrationTests
   [Fact(DisplayName = "UpdateAsync: it should throw ValidationException when the department could not be found.")]
   public async Task UpdateAsync_it_should_throw_ValidationException_when_the_department_could_not_be_found()
   {
-    string number = store.Departments.Keys.Single();
+    string number = store.Departments.Keys.Single().Value;
     UpdateDepartmentPayload payload = new()
     {
       DisplayName = Faker.Random.String(DisplayNameUnit.MaximumLength + 1, minChar: 'A', maxChar: 'Z')
@@ -346,7 +346,7 @@ public class DepartmentServiceTests : IntegrationTests
   [Fact(DisplayName = "UpdateAsync: it should update an existing department.")]
   public async Task UpdateAsync_it_should_update_an_existing_department()
   {
-    string number = store.Departments.Keys.Single();
+    string number = store.Departments.Keys.Single().Value;
     UpdateDepartmentPayload payload = new()
     {
       Description = new Modification<string>("  Département comprenant des produits généraux.  ")

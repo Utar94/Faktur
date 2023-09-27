@@ -11,4 +11,11 @@ public record DepartmentRemovedEvent : DomainEvent, INotification
   {
     ActorId = actorId;
   }
+
+  public static DepartmentRemovedEvent Create(ActorId actorId, DepartmentNumberUnit number) => new(actorId)
+  {
+    Number = number.Value
+  };
+
+  public DepartmentNumberUnit GetNumber() => new(Number);
 }
