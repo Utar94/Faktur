@@ -13,7 +13,7 @@ internal class BannerEntity : AggregateEntity
 
   public BannerEntity(BannerCreatedEvent @event) : base(@event)
   {
-    DisplayName = @event.DisplayName;
+    DisplayName = @event.DisplayName.Value;
   }
 
   private BannerEntity() : base()
@@ -26,11 +26,11 @@ internal class BannerEntity : AggregateEntity
 
     if (@event.DisplayName != null)
     {
-      DisplayName = @event.DisplayName;
+      DisplayName = @event.DisplayName.Value;
     }
     if (@event.Description != null)
     {
-      Description = @event.Description.Value;
+      Description = @event.Description.Value?.Value;
     }
   }
 }

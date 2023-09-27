@@ -1,6 +1,4 @@
-﻿using System.Text;
-
-namespace Logitar.Faktur.Application.Exceptions;
+﻿namespace Logitar.Faktur.Application.Exceptions;
 
 public class ExceptionMessageBuilder
 {

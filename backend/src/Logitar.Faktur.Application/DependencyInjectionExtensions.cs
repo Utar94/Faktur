@@ -9,7 +9,6 @@ using Logitar.Faktur.Contracts.Departments;
 using Logitar.Faktur.Contracts.Products;
 using Logitar.Faktur.Contracts.Stores;
 using Microsoft.Extensions.DependencyInjection;
-using System.Reflection;
 
 namespace Logitar.Faktur.Application;
 

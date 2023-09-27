@@ -14,5 +14,10 @@
   <ItemGroup>
     <ProjectReference Include="..\Logitar.Faktur.Domain\Logitar.Faktur.Domain.csproj" />
   </ItemGroup>
+  
+  <ItemGroup>
+    <Using Include="System.Reflection" />
+    <Using Include="System.Text" />
+  </ItemGroup>
 
 </Project>

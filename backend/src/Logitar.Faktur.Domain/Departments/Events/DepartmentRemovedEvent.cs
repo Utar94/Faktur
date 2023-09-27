@@ -5,17 +5,11 @@ namespace Logitar.Faktur.Domain.Departments.Events;
 
 public record DepartmentRemovedEvent : DomainEvent, INotification
 {
-  public string Number { get; init; } = string.Empty;
+  public DepartmentUnit Department { get; init; }
 
-  public DepartmentRemovedEvent(ActorId actorId)
+  public DepartmentRemovedEvent(ActorId actorId, DepartmentUnit department)
   {
     ActorId = actorId;
+    Department = department;
   }
-
-  public static DepartmentRemovedEvent Create(ActorId actorId, DepartmentNumberUnit number) => new(actorId)
-  {
-    Number = number.Value
-  };
-
-  public DepartmentNumberUnit GetNumber() => new(Number);
 }

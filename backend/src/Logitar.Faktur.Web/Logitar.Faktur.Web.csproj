@@ -16,4 +16,8 @@
     <ProjectReference Include="..\Logitar.Faktur.Application\Logitar.Faktur.Application.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Using Include="System.Text.Json.Serialization" />
+  </ItemGroup>
+
 </Project>

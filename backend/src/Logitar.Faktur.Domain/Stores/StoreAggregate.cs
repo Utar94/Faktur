@@ -30,7 +30,7 @@ public class StoreAggregate : AggregateRoot
     {
       if (value != number)
       {
-        updated.Number = new Modification<string>(value?.Value);
+        updated.Number = new Modification<StoreNumberUnit>(value);
         number = value;
       }
     }
@@ -43,7 +43,7 @@ public class StoreAggregate : AggregateRoot
     {
       if (value != displayName)
       {
-        updated.DisplayName = value.Value;
+        updated.DisplayName = value;
         displayName = value;
       }
     }
@@ -56,7 +56,7 @@ public class StoreAggregate : AggregateRoot
     {
       if (value != description)
       {
-        updated.Description = new Modification<string>(value?.Value);
+        updated.Description = new Modification<DescriptionUnit>(value);
         description = value;
       }
     }
@@ -98,43 +98,37 @@ public class StoreAggregate : AggregateRoot
 
   public StoreAggregate(DisplayNameUnit displayName, ActorId actorId = default, StoreId? id = null) : base(id?.AggregateId)
   {
-    ApplyChange(new StoreCreatedEvent(actorId)
-    {
-      DisplayName = displayName.Value
-    });
+    ApplyChange(new StoreCreatedEvent(actorId, displayName));
   }
-  protected virtual void Apply(StoreCreatedEvent @event)
-  {
-    displayName = new(@event.DisplayName);
-  }
+  protected virtual void Apply(StoreCreatedEvent @event) => displayName = @event.DisplayName;
 
   public void Delete(ActorId actorId = default) => ApplyChange(new StoreDeletedEvent(actorId));
 
   public bool RemoveDepartment(DepartmentNumberUnit number, ActorId actorId = default)
   {
-    if (!departments.ContainsKey(number))
+    if (!departments.TryGetValue(number, out DepartmentUnit? department))
     {
       return false;
     }
 
-    ApplyChange(DepartmentRemovedEvent.Create(actorId, number));
+    ApplyChange(new DepartmentRemovedEvent(actorId, department));
 
     return true;
   }
-  protected virtual void Apply(DepartmentRemovedEvent @event) => departments.Remove(@event.GetNumber());
+  protected virtual void Apply(DepartmentRemovedEvent @event) => departments.Remove(@event.Department.Number);
 
   public bool RemoveProduct(ArticleId articleId, ActorId actorId = default)
   {
-    if (!products.ContainsKey(articleId))
+    if (!products.TryGetValue(articleId, out ProductUnit? product))
     {
       return false;
     }
 
-    ApplyChange(ProductRemovedEvent.Create(actorId, articleId));
+    ApplyChange(new ProductRemovedEvent(actorId, product));
 
     return true;
   }
-  protected virtual void Apply(ProductRemovedEvent @event) => products.Remove(@event.GetArticleId());
+  protected virtual void Apply(ProductRemovedEvent @event) => products.Remove(@event.Product.ArticleId);
 
   public void SetBanner(BannerAggregate? banner)
   {
@@ -149,27 +143,19 @@ public class StoreAggregate : AggregateRoot
   {
     if (!departments.TryGetValue(department.Number, out DepartmentUnit? existingDepartment) || department != existingDepartment)
     {
-      ApplyChange(DepartmentSavedEvent.Create(actorId, department));
+      ApplyChange(new DepartmentSavedEvent(actorId, department));
     }
   }
-  protected virtual void Apply(DepartmentSavedEvent @event)
-  {
-    DepartmentUnit department = @event.GetDepartment();
-    departments[department.Number] = department;
-  }
+  protected virtual void Apply(DepartmentSavedEvent @event) => departments[@event.Department.Number] = @event.Department;
 
   public void SetProduct(ProductUnit product, ActorId actorId = default)
   {
     if (!products.TryGetValue(product.ArticleId, out ProductUnit? existingProduct) || product != existingProduct)
     {
-      ApplyChange(ProductSavedEvent.Create(actorId, product));
+      ApplyChange(new ProductSavedEvent(actorId, product));
     }
   }
-  protected virtual void Apply(ProductSavedEvent @event)
-  {
-    ProductUnit product = @event.GetProduct();
-    products[product.ArticleId] = product;
-  }
+  protected virtual void Apply(ProductSavedEvent @event) => products[@event.Product.ArticleId] = @event.Product;
 
   public void Update(ActorId actorId = default)
   {
@@ -190,15 +176,15 @@ public class StoreAggregate : AggregateRoot
 
     if (@event.Number != null)
     {
-      number = @event.Number.Value == null ? null : new StoreNumberUnit(@event.Number.Value);
+      number = @event.Number.Value;
     }
     if (@event.DisplayName != null)
     {
-      displayName = @event.DisplayName == null ? null : new DisplayNameUnit(@event.DisplayName);
+      displayName = @event.DisplayName;
     }
     if (@event.Description != null)
     {
-      description = @event.Description.Value == null ? null : new DescriptionUnit(@event.Description.Value);
+      description = @event.Description.Value;
     }
 
     if (@event.Address != null)

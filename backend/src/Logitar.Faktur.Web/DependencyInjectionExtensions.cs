@@ -2,7 +2,6 @@
 using Logitar.Faktur.Web.Extensions;
 using Logitar.Faktur.Web.Filters;
 using Logitar.Faktur.Web.Settings;
-using System.Text.Json.Serialization;
 
 namespace Logitar.Faktur.Web;
 

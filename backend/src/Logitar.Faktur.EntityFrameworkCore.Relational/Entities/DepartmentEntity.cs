@@ -28,8 +28,8 @@ internal class DepartmentEntity : Entity
     Store = store;
     StoreId = store.StoreId;
 
-    Number = @event.Number;
-    NumberNormalized = int.Parse(@event.Number);
+    Number = @event.Department.Number.Value;
+    NumberNormalized = @event.Department.Number.NormalizedValue;
 
     CreatedBy = @event.ActorId.Value;
     CreatedOn = @event.OccurredOn.ToUniversalTime();
@@ -60,8 +60,8 @@ internal class DepartmentEntity : Entity
 
   public void Update(DepartmentSavedEvent @event)
   {
-    DisplayName = @event.DisplayName;
-    Description = @event.Description;
+    DisplayName = @event.Department.DisplayName.Value;
+    Description = @event.Department.Description?.Value;
 
     Version++;
 

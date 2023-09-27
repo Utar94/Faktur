@@ -12,7 +12,6 @@ using Logitar.Faktur.EntityFrameworkCore.Relational.Queriers;
 using Logitar.Faktur.EntityFrameworkCore.Relational.Repositories;
 using Logitar.Faktur.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
-using System.Reflection;
 
 namespace Logitar.Faktur.EntityFrameworkCore.Relational;
 

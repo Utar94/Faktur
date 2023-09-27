@@ -33,7 +33,7 @@ internal class StoreEntity : AggregateEntity
 
   public StoreEntity(StoreCreatedEvent @event) : base(@event)
   {
-    DisplayName = @event.DisplayName;
+    DisplayName = @event.DisplayName.Value;
   }
 
   private StoreEntity() : base()
@@ -69,7 +69,7 @@ internal class StoreEntity : AggregateEntity
   {
     Update(@event);
 
-    DepartmentEntity? department = Departments.SingleOrDefault(d => d.NumberNormalized == int.Parse(@event.Number));
+    DepartmentEntity? department = Departments.SingleOrDefault(d => d.NumberNormalized == @event.Department.Number.NormalizedValue);
     if (department != null)
     {
       Departments.Remove(department);
@@ -80,7 +80,7 @@ internal class StoreEntity : AggregateEntity
   {
     Update(@event);
 
-    DepartmentEntity? department = Departments.SingleOrDefault(d => d.NumberNormalized == int.Parse(@event.Number));
+    DepartmentEntity? department = Departments.SingleOrDefault(d => d.NumberNormalized == @event.Department.Number.NormalizedValue);
     if (department == null)
     {
       department = new(@event, this);
@@ -104,16 +104,16 @@ internal class StoreEntity : AggregateEntity
 
     if (@event.Number != null)
     {
-      Number = @event.Number.Value;
-      NumberNormalized = @event.Number.Value == null ? null : int.Parse(@event.Number.Value);
+      Number = @event.Number.Value?.Value;
+      NumberNormalized = @event.Number.Value?.NormalizedValue;
     }
     if (@event.DisplayName != null)
     {
-      DisplayName = @event.DisplayName;
+      DisplayName = @event.DisplayName.Value;
     }
     if (@event.Description != null)
     {
-      Description = @event.Description.Value;
+      Description = @event.Description.Value?.Value;
     }
 
     if (@event.Address != null)

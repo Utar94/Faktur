@@ -19,7 +19,7 @@ public class ArticleAggregate : AggregateRoot
     {
       if (value != gtin)
       {
-        updated.Gtin = new Modification<string>(value?.Value);
+        updated.Gtin = new Modification<GtinUnit>(value);
         gtin = value;
       }
     }
@@ -32,7 +32,7 @@ public class ArticleAggregate : AggregateRoot
     {
       if (value != displayName)
       {
-        updated.DisplayName = value.Value;
+        updated.DisplayName = value;
         displayName = value;
       }
     }
@@ -45,7 +45,7 @@ public class ArticleAggregate : AggregateRoot
     {
       if (value != description)
       {
-        updated.Description = new Modification<string>(value?.Value);
+        updated.Description = new Modification<DescriptionUnit>(value);
         description = value;
       }
     }
@@ -57,15 +57,9 @@ public class ArticleAggregate : AggregateRoot
 
   public ArticleAggregate(DisplayNameUnit displayName, ActorId actorId = default, ArticleId? id = null) : base(id?.AggregateId)
   {
-    ApplyChange(new ArticleCreatedEvent(actorId)
-    {
-      DisplayName = displayName.Value
-    });
+    ApplyChange(new ArticleCreatedEvent(actorId, displayName));
   }
-  protected virtual void Apply(ArticleCreatedEvent @event)
-  {
-    displayName = new(@event.DisplayName);
-  }
+  protected virtual void Apply(ArticleCreatedEvent @event) => displayName = @event.DisplayName;
 
   public void Delete(ActorId actorId = default) => ApplyChange(new ArticleDeletedEvent(actorId));
 
@@ -83,15 +77,15 @@ public class ArticleAggregate : AggregateRoot
   {
     if (@event.Gtin != null)
     {
-      gtin = @event.Gtin.Value == null ? null : new GtinUnit(@event.Gtin.Value);
+      gtin = @event.Gtin.Value;
     }
     if (@event.DisplayName != null)
     {
-      displayName = @event.DisplayName == null ? null : new DisplayNameUnit(@event.DisplayName);
+      displayName = @event.DisplayName;
     }
     if (@event.Description != null)
     {
-      description = @event.Description.Value == null ? null : new DescriptionUnit(@event.Description.Value);
+      description = @event.Description.Value;
     }
   }
 

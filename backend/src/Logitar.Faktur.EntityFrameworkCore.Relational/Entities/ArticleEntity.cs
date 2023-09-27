@@ -13,7 +13,7 @@ internal class ArticleEntity : AggregateEntity
 
   public ArticleEntity(ArticleCreatedEvent @event) : base(@event)
   {
-    DisplayName = @event.DisplayName;
+    DisplayName = @event.DisplayName.Value;
   }
 
   private ArticleEntity() : base()
@@ -26,16 +26,16 @@ internal class ArticleEntity : AggregateEntity
 
     if (@event.Gtin != null)
     {
-      Gtin = @event.Gtin.Value;
-      GtinNormalized = @event.Gtin.Value == null ? null : long.Parse(@event.Gtin.Value);
+      Gtin = @event.Gtin.Value?.Value;
+      GtinNormalized = @event.Gtin.Value?.NormalizedValue;
     }
     if (@event.DisplayName != null)
     {
-      DisplayName = @event.DisplayName;
+      DisplayName = @event.DisplayName.Value;
     }
     if (@event.Description != null)
     {
-      Description = @event.Description.Value;
+      Description = @event.Description.Value?.Value;
     }
   }
 }

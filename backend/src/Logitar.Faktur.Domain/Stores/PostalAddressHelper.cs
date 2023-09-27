@@ -1,5 +1,4 @@
 ﻿using Logitar.Faktur.Contracts.Stores;
-using System.Text;
 
 namespace Logitar.Faktur.Domain.Stores;
 

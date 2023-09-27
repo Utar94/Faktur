@@ -19,7 +19,7 @@ public class BannerAggregate : AggregateRoot
     {
       if (value != displayName)
       {
-        updated.DisplayName = value.Value;
+        updated.DisplayName = value;
         displayName = value;
       }
     }
@@ -32,7 +32,7 @@ public class BannerAggregate : AggregateRoot
     {
       if (value != description)
       {
-        updated.Description = new Modification<string>(value?.Value);
+        updated.Description = new Modification<DescriptionUnit>(value);
         description = value;
       }
     }
@@ -44,15 +44,9 @@ public class BannerAggregate : AggregateRoot
 
   public BannerAggregate(DisplayNameUnit displayName, ActorId actorId = default, BannerId? id = null) : base(id?.AggregateId)
   {
-    ApplyChange(new BannerCreatedEvent(actorId)
-    {
-      DisplayName = displayName.Value
-    });
+    ApplyChange(new BannerCreatedEvent(actorId, displayName));
   }
-  protected virtual void Apply(BannerCreatedEvent @event)
-  {
-    displayName = new(@event.DisplayName);
-  }
+  protected virtual void Apply(BannerCreatedEvent @event) => displayName = @event.DisplayName;
 
   public void Delete(ActorId actorId = default) => ApplyChange(new BannerDeletedEvent(actorId));
 
@@ -70,11 +64,11 @@ public class BannerAggregate : AggregateRoot
   {
     if (@event.DisplayName != null)
     {
-      displayName = @event.DisplayName == null ? null : new DisplayNameUnit(@event.DisplayName);
+      displayName = @event.DisplayName;
     }
     if (@event.Description != null)
     {
-      description = @event.Description.Value == null ? null : new DescriptionUnit(@event.Description.Value);
+      description = @event.Description.Value;
     }
   }
 

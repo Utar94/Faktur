@@ -20,4 +20,8 @@
     <InternalsVisibleTo Include="Logitar.Faktur.IntegrationTests" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Using Include="System.Reflection" />
+  </ItemGroup>
+
 </Project>
