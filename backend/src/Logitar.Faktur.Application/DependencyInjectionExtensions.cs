@@ -1,10 +1,12 @@
 ﻿using Logitar.Faktur.Application.Articles;
 using Logitar.Faktur.Application.Banners;
 using Logitar.Faktur.Application.Departments;
+using Logitar.Faktur.Application.Products;
 using Logitar.Faktur.Application.Stores;
 using Logitar.Faktur.Contracts.Articles;
 using Logitar.Faktur.Contracts.Banners;
 using Logitar.Faktur.Contracts.Departments;
+using Logitar.Faktur.Contracts.Products;
 using Logitar.Faktur.Contracts.Stores;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
@@ -28,6 +30,7 @@ public static class DependencyInjectionExtensions
       .AddTransient<IArticleService, ArticleService>()
       .AddTransient<IBannerService, BannerService>()
       .AddTransient<IDepartmentService, DepartmentService>()
+      .AddTransient<IProductService, ProductService>()
       .AddTransient<IStoreService, StoreService>();
   }
 }
