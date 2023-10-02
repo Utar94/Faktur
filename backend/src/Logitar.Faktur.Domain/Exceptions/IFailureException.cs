@@ -1,6 +1,6 @@
 ﻿using FluentValidation.Results;
 
-namespace Logitar.Faktur.Application.Exceptions;
+namespace Logitar.Faktur.Domain.Exceptions;
 
 public interface IFailureException
 {

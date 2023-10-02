@@ -15,6 +15,7 @@ public class StoreAggregate : AggregateRoot
 {
   private readonly Dictionary<DepartmentNumberUnit, DepartmentUnit> departments = new();
   private readonly Dictionary<ArticleId, ProductUnit> products = new();
+  private readonly Dictionary<SkuUnit, ProductUnit> productsBySku = new();
 
   private StoreUpdatedEvent updated = new();
 
@@ -91,6 +92,7 @@ public class StoreAggregate : AggregateRoot
 
   public IReadOnlyDictionary<DepartmentNumberUnit, DepartmentUnit> Departments => departments.AsReadOnly();
   public IReadOnlyDictionary<ArticleId, ProductUnit> Products => products.AsReadOnly();
+  public IReadOnlyDictionary<SkuUnit, ProductUnit> ProductsBySku => productsBySku.AsReadOnly();
 
   public StoreAggregate(AggregateId id) : base(id)
   {
@@ -128,7 +130,15 @@ public class StoreAggregate : AggregateRoot
 
     return true;
   }
-  protected virtual void Apply(ProductRemovedEvent @event) => products.Remove(@event.Product.ArticleId);
+  protected virtual void Apply(ProductRemovedEvent @event)
+  {
+    products.Remove(@event.Product.ArticleId);
+
+    if (@event.Product.Sku != null)
+    {
+      productsBySku.Remove(@event.Product.Sku);
+    }
+  }
 
   public void SetBanner(BannerAggregate? banner)
   {
@@ -150,12 +160,24 @@ public class StoreAggregate : AggregateRoot
 
   public void SetProduct(ProductUnit product, ActorId actorId = default)
   {
-    if (!products.TryGetValue(product.ArticleId, out ProductUnit? existingProduct) || product != existingProduct)
+    if (product.Sku != null && productsBySku.TryGetValue(product.Sku, out ProductUnit? existingProduct) && product.ArticleId != existingProduct.ArticleId)
+    {
+      throw new SkuAlreadyUsedException(this, product.Sku, nameof(product.Sku));
+    }
+    else if (!products.TryGetValue(product.ArticleId, out existingProduct) || product != existingProduct)
     {
       ApplyChange(new ProductSavedEvent(actorId, product));
     }
   }
-  protected virtual void Apply(ProductSavedEvent @event) => products[@event.Product.ArticleId] = @event.Product;
+  protected virtual void Apply(ProductSavedEvent @event)
+  {
+    products[@event.Product.ArticleId] = @event.Product;
+
+    if (@event.Product.Sku != null)
+    {
+      productsBySku[@event.Product.Sku] = @event.Product;
+    }
+  }
 
   public void Update(ActorId actorId = default)
   {

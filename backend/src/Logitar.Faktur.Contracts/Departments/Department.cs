@@ -1,23 +1,12 @@
-﻿using Logitar.Faktur.Contracts.Actors;
-using Logitar.Faktur.Contracts.Stores;
+﻿using Logitar.Faktur.Contracts.Stores;
 
 namespace Logitar.Faktur.Contracts.Departments;
 
-public record Department
+public class Department : Metadata
 {
   public string Number { get; set; } = string.Empty;
   public string DisplayName { get; set; } = string.Empty;
   public string? Description { get; set; }
 
   public Store? Store { get; set; }
-
-  #region TODO(fpion): refactor
-  public long Version { get; set; }
-
-  public Actor CreatedBy { get; set; } = new();
-  public DateTime CreatedOn { get; set; }
-
-  public Actor UpdatedBy { get; set; } = new();
-  public DateTime UpdatedOn { get; set; }
-  #endregion
 }

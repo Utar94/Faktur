@@ -26,7 +26,9 @@ public static class DependencyInjectionExtensions
     new DepartmentNumberUnitConverter(),
     new DescriptionUnitConverter(),
     new DisplayNameUnitConverter(),
+    new FlagsUnitConverter(),
     new GtinUnitConverter(),
+    new SkuUnitConverter(),
     new StoreIdConverter(),
     new StoreNumberUnitConverter()
   };

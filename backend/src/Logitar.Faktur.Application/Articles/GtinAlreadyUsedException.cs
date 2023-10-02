@@ -1,6 +1,6 @@
 ﻿using FluentValidation.Results;
-using Logitar.Faktur.Application.Exceptions;
 using Logitar.Faktur.Domain.Articles;
+using Logitar.Faktur.Domain.Exceptions;
 
 namespace Logitar.Faktur.Application.Articles;
 

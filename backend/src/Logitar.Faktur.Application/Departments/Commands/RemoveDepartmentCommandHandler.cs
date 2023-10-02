@@ -31,6 +31,8 @@ internal class RemoveDepartmentCommandHandler : IRequestHandler<RemoveDepartment
       throw new DepartmentNotFoundException(store, number, nameof(command.Number));
     }
 
+    // TODO(fpion): remove from products
+
     await storeRepository.SaveAsync(store, cancellationToken);
 
     return applicationContext.AcceptCommand(store);

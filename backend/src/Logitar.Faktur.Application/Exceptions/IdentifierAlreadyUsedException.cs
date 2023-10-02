@@ -1,6 +1,7 @@
 ﻿using FluentValidation.Results;
 using Logitar.EventSourcing;
 using Logitar.Faktur.Application.Extensions;
+using Logitar.Faktur.Domain.Exceptions;
 
 namespace Logitar.Faktur.Application.Exceptions;
 

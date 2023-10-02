@@ -23,6 +23,8 @@ internal class DepartmentEntity : Entity
   public string UpdatedBy { get; private set; } = string.Empty;
   public DateTime UpdatedOn { get; private set; }
 
+  public List<ProductEntity> Products { get; private set; } = new();
+
   public DepartmentEntity(DepartmentSavedEvent @event, StoreEntity store)
   {
     Store = store;
@@ -52,7 +54,7 @@ internal class DepartmentEntity : Entity
 
     if (addStore && Store != null)
     {
-      ids.AddRange(Store.GetActorIds(addDepartments: false));
+      ids.AddRange(Store.GetActorIds(addDepartments: false, addProducts: false));
     }
 
     return ids;

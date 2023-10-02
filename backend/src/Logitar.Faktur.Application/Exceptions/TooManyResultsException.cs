@@ -1,5 +1,6 @@
 ﻿using Logitar.Faktur.Application.Extensions;
 using Logitar.Faktur.Contracts;
+using Logitar.Faktur.Domain.Exceptions;
 
 namespace Logitar.Faktur.Application.Exceptions;
 

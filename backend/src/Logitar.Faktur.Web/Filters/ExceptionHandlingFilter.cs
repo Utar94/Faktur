@@ -2,6 +2,7 @@
 using Logitar.Faktur.Application.Articles;
 using Logitar.Faktur.Application.Departments;
 using Logitar.Faktur.Application.Exceptions;
+using Logitar.Faktur.Domain.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 

@@ -15,7 +15,7 @@ internal class DepartmentConfiguration : IEntityTypeConfiguration<DepartmentEnti
     builder.HasKey(x => x.DepartmentId);
 
     builder.HasIndex(x => x.Number);
-    builder.HasIndex(x => new { x.StoreId, x.NumberNormalized });
+    builder.HasIndex(x => new { x.StoreId, x.NumberNormalized }).IsUnique();
     builder.HasIndex(x => x.DisplayName);
     builder.HasIndex(x => x.Version);
     builder.HasIndex(x => x.CreatedBy);

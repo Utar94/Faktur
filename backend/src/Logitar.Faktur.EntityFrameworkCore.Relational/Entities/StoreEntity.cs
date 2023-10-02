@@ -1,5 +1,6 @@
 ﻿using Logitar.EventSourcing;
 using Logitar.Faktur.Domain.Departments.Events;
+using Logitar.Faktur.Domain.Products.Events;
 using Logitar.Faktur.Domain.Stores;
 using Logitar.Faktur.Domain.Stores.Events;
 
@@ -30,6 +31,7 @@ internal class StoreEntity : AggregateEntity
   public string? PhoneE164Formatted { get; private set; }
 
   public List<DepartmentEntity> Departments { get; private set; } = new();
+  public List<ProductEntity> Products { get; private set; } = new();
 
   public StoreEntity(StoreCreatedEvent @event) : base(@event)
   {
@@ -40,10 +42,10 @@ internal class StoreEntity : AggregateEntity
   {
   }
 
-  public override IEnumerable<ActorId> GetActorIds() => GetActorIds(addDepartments: true);
-  public IEnumerable<ActorId> GetActorIds(bool addDepartments)
+  public override IEnumerable<ActorId> GetActorIds() => GetActorIds(addDepartments: true, addProducts: true);
+  public IEnumerable<ActorId> GetActorIds(bool addDepartments, bool addProducts)
   {
-    List<ActorId> ids = new(capacity: 4 + (2 * Departments.Count))
+    List<ActorId> ids = new(capacity: 4 + (2 * Departments.Count) + (2 * Products.Count))
     {
       new ActorId(CreatedBy),
       new ActorId(UpdatedBy)
@@ -62,6 +64,14 @@ internal class StoreEntity : AggregateEntity
       }
     }
 
+    if (addProducts)
+    {
+      foreach (ProductEntity product in Products)
+      {
+        ids.AddRange(product.GetActorIds(addStore: false));
+      }
+    }
+
     return ids;
   }
 
@@ -73,6 +83,17 @@ internal class StoreEntity : AggregateEntity
     if (department != null)
     {
       Departments.Remove(department);
+    }
+  }
+
+  public void RemoveProduct(ProductRemovedEvent @event)
+  {
+    Update(@event);
+
+    ProductEntity? product = Products.SingleOrDefault(p => p.Article?.AggregateId == @event.Product.ArticleId.Value);
+    if (product != null)
+    {
+      Products.Remove(product);
     }
   }
 
@@ -89,6 +110,25 @@ internal class StoreEntity : AggregateEntity
     else
     {
       department.Update(@event);
+    }
+  }
+
+  public void SetProduct(ProductSavedEvent @event, ArticleEntity article)
+  {
+    Update(@event);
+
+    DepartmentEntity? department = @event.Product.DepartmentNumber == null ? null
+      : Departments.SingleOrDefault(d => d.NumberNormalized == @event.Product.DepartmentNumber.NormalizedValue);
+
+    ProductEntity? product = Products.SingleOrDefault(p => p.Article?.AggregateId == @event.Product.ArticleId.Value);
+    if (product == null)
+    {
+      product = new(@event, this, department, article);
+      Products.Add(product);
+    }
+    else
+    {
+      product.Update(@event, department);
     }
   }
 

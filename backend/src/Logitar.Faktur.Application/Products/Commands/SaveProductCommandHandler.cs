@@ -1,6 +1,8 @@
-﻿using Logitar.Faktur.Application.Departments;
+﻿using FluentValidation;
+using Logitar.Faktur.Application.Departments;
 using Logitar.Faktur.Application.Exceptions;
 using Logitar.Faktur.Application.Extensions;
+using Logitar.Faktur.Application.Products.Validators;
 using Logitar.Faktur.Contracts;
 using Logitar.Faktur.Contracts.Products;
 using Logitar.Faktur.Domain.Articles;
@@ -27,9 +29,10 @@ internal class SaveProductCommandHandler : IRequestHandler<SaveProductCommand, A
 
   public async Task<AcceptedCommand> Handle(SaveProductCommand command, CancellationToken cancellationToken)
   {
-    SaveProductPayload payload = command.Payload; // TODO(fpion): validate
+    SaveProductPayload payload = command.Payload;
+    new SaveProductPayloadValidator().ValidateAndThrow(payload);
 
-    ArticleId articleId = ArticleId.Parse(command.StoreId, nameof(command.StoreId));
+    ArticleId articleId = ArticleId.Parse(command.ArticleId, nameof(command.ArticleId));
     ArticleAggregate article = await articleRepository.LoadAsync(articleId, cancellationToken)
       ?? throw new AggregateNotFoundException<ArticleAggregate>(articleId.AggregateId, nameof(command.ArticleId));
 
@@ -43,16 +46,14 @@ internal class SaveProductCommandHandler : IRequestHandler<SaveProductCommand, A
       throw new DepartmentNotFoundException(store, departmentNumber, nameof(payload.DepartmentNumber));
     }
 
-    // TODO(fpion): Sku
+    SkuUnit? sku = SkuUnit.TryCreate(payload.Sku);
     DisplayNameUnit displayName = new(payload.DisplayName);
     DescriptionUnit? description = DescriptionUnit.TryCreate(payload.Description);
-    ProductUnit product = new(article.Id, displayName, description);
-    store.SetProduct(product);
-
-    // TODO(fpion): Flags
-
-    // TODO(fpion): UnitPrice
-    // TODO(fpion): UnitType
+    FlagsUnit? flags = FlagsUnit.TryCreate(payload.Flags);
+    UnitPriceUnit? unitPrice = UnitPriceUnit.TryCreate(payload.UnitPrice);
+    UnitTypeUnit? unitType = UnitTypeUnit.TryCreate(payload.UnitType);
+    ProductUnit product = new(article.Id, displayName, departmentNumber, sku, description, flags, unitPrice, unitType);
+    store.SetProduct(product, applicationContext.ActorId);
 
     await storeRepository.SaveAsync(store, cancellationToken);
 

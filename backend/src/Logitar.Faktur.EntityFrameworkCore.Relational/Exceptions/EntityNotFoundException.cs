@@ -1,6 +1,6 @@
 ﻿using Logitar.EventSourcing;
-using Logitar.Faktur.Application.Exceptions;
 using Logitar.Faktur.Application.Extensions;
+using Logitar.Faktur.Domain.Exceptions;
 using Logitar.Faktur.EntityFrameworkCore.Relational.Entities;
 
 namespace Logitar.Faktur.EntityFrameworkCore.Relational.Exceptions;
