@@ -30,6 +30,8 @@ public static class DependencyInjectionExtensions
     new GtinUnitConverter(),
     new SkuUnitConverter(),
     new StoreIdConverter(),
-    new StoreNumberUnitConverter()
+    new StoreNumberUnitConverter(),
+    new UnitPriceUnitConverter(),
+    new UnitTypeUnitConverter()
   };
 }
