@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Reimplemented article management.
 - Reimplemented banner management.
 - Reimplemented department management.
+- Reimplemented product management.
 - Reimplemented store management.
 
 ## [1.7.2] - 2023-09-22
