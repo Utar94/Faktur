@@ -3,4 +3,4 @@ using MediatR;
 
 namespace Logitar.Faktur.Application.Products.Queries;
 
-internal record ReadProductQuery(string StoreId, string ArticleId) : IRequest<Product?>;
+internal record ReadProductQuery(string StoreId, string? ArticleId, string? Sku) : IRequest<Product?>;

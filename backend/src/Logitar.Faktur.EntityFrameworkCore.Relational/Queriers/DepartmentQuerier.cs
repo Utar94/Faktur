@@ -7,6 +7,7 @@ using Logitar.Faktur.Contracts.Actors;
 using Logitar.Faktur.Contracts.Departments;
 using Logitar.Faktur.Contracts.Search;
 using Logitar.Faktur.Domain.Departments;
+using Logitar.Faktur.Domain.Stores;
 using Logitar.Faktur.EntityFrameworkCore.Relational.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -25,27 +26,22 @@ internal class DepartmentQuerier : IDepartmentQuerier
     this.sqlHelper = sqlHelper;
   }
 
-  public async Task<Department?> ReadAsync(string storeId, string number, CancellationToken cancellationToken)
+  public async Task<Department?> ReadAsync(StoreId storeId, DepartmentNumberUnit number, CancellationToken cancellationToken)
   {
-    new DepartmentNumberValidator(nameof(number)).ValidateAndThrow(number);
-
-    storeId = storeId.Trim();
-    int numberNormalized = DepartmentNumberUnit.Parse(number, nameof(number)).NormalizedValue;
-
     DepartmentEntity? department = await departments.AsNoTracking()
       .Include(x => x.Store)
-      .SingleOrDefaultAsync(x => x.Store!.AggregateId == storeId && x.NumberNormalized == numberNormalized, cancellationToken);
+      .SingleOrDefaultAsync(x => x.Store!.AggregateId == storeId.Value && x.NumberNormalized == number.NormalizedValue, cancellationToken);
 
     return department == null ? null : await MapAsync(department, cancellationToken);
   }
 
   public async Task<SearchResults<Department>> SearchAsync(SearchDepartmentsPayload payload, CancellationToken cancellationToken)
   {
-    string storeId = payload.StoreId.Trim();
+    StoreId storeId = StoreId.Parse(payload.StoreId, nameof(payload.StoreId));
 
     IQueryBuilder builder = sqlHelper.QueryFrom(Db.Departments.Table)
       .Join(Db.Stores.StoreId, Db.Departments.StoreId)
-      .Where(Db.Stores.AggregateId, Operators.IsEqualTo(storeId))
+      .Where(Db.Stores.AggregateId, Operators.IsEqualTo(storeId.Value))
       .SelectAll(Db.Departments.Table);
     sqlHelper.ApplyTextSearch(builder, payload.Id, Db.Departments.Number);
     sqlHelper.ApplyTextSearch(builder, payload.Search, Db.Departments.Number, Db.Departments.DisplayName);

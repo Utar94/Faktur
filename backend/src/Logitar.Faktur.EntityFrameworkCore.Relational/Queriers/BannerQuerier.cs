@@ -5,6 +5,7 @@ using Logitar.Faktur.Application.Banners;
 using Logitar.Faktur.Contracts.Actors;
 using Logitar.Faktur.Contracts.Banners;
 using Logitar.Faktur.Contracts.Search;
+using Logitar.Faktur.Domain.Banners;
 using Logitar.Faktur.EntityFrameworkCore.Relational.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -23,12 +24,10 @@ internal class BannerQuerier : IBannerQuerier
     this.sqlHelper = sqlHelper;
   }
 
-  public async Task<Banner?> ReadAsync(string id, CancellationToken cancellationToken)
+  public async Task<Banner?> ReadAsync(BannerId id, CancellationToken cancellationToken)
   {
-    id = id.Trim();
-
     BannerEntity? banner = await banners.AsNoTracking()
-      .SingleOrDefaultAsync(x => x.AggregateId == id, cancellationToken);
+      .SingleOrDefaultAsync(x => x.AggregateId == id.Value, cancellationToken);
 
     return banner == null ? null : await MapAsync(banner, cancellationToken);
   }

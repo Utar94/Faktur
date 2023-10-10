@@ -2,7 +2,7 @@
 
 namespace Logitar.Faktur.EntityFrameworkCore.Relational.Entities;
 
-internal abstract class AggregateEntity : Entity
+internal abstract class AggregateEntity : Entity, IMetadata
 {
   public string AggregateId { get; private set; } = string.Empty;
   public long Version { get; private set; }

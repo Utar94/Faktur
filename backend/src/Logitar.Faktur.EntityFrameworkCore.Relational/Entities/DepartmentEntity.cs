@@ -3,7 +3,7 @@ using Logitar.Faktur.Domain.Departments.Events;
 
 namespace Logitar.Faktur.EntityFrameworkCore.Relational.Entities;
 
-internal class DepartmentEntity : Entity
+internal class DepartmentEntity : Entity, IMetadata
 {
   public int DepartmentId { get; private set; }
 

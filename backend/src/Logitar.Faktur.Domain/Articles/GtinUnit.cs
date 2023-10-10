@@ -15,5 +15,12 @@ public record GtinUnit
     Value = value.Trim();
   }
 
+  public static GtinUnit Parse(string value, string propertyName)
+  {
+    new GtinValidator(propertyName).ValidateAndThrow(value);
+
+    return new GtinUnit(value);
+  }
+
   public static GtinUnit? TryCreate(string? value) => string.IsNullOrWhiteSpace(value) ? null : new(value);
 }

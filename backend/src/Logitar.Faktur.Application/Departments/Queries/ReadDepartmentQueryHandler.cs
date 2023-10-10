@@ -1,4 +1,6 @@
 ﻿using Logitar.Faktur.Contracts.Departments;
+using Logitar.Faktur.Domain.Departments;
+using Logitar.Faktur.Domain.Stores;
 using MediatR;
 
 namespace Logitar.Faktur.Application.Departments.Queries;
@@ -14,6 +16,9 @@ internal class ReadDepartmentQueryHandler : IRequestHandler<ReadDepartmentQuery,
 
   public async Task<Department?> Handle(ReadDepartmentQuery query, CancellationToken cancellationToken)
   {
-    return await departmentQuerier.ReadAsync(query.StoreId, query.Number, cancellationToken);
+    StoreId storeId = StoreId.Parse(query.StoreId, nameof(query.StoreId));
+    DepartmentNumberUnit number = DepartmentNumberUnit.Parse(query.Number, nameof(query.Number));
+
+    return await departmentQuerier.ReadAsync(storeId, number, cancellationToken);
   }
 }

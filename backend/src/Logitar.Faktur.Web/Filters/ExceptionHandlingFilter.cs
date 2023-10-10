@@ -2,7 +2,9 @@
 using Logitar.Faktur.Application.Articles;
 using Logitar.Faktur.Application.Departments;
 using Logitar.Faktur.Application.Exceptions;
+using Logitar.Faktur.Application.Products;
 using Logitar.Faktur.Domain.Exceptions;
+using Logitar.Faktur.Domain.Stores;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
@@ -14,6 +16,8 @@ internal class ExceptionHandlingFilter : ExceptionFilterAttribute
   {
     [typeof(DepartmentNotFoundException)] = HandleNotFoundFailureException,
     [typeof(GtinAlreadyUsedException)] = HandleConflictFailureException,
+    [typeof(ProductNotFoundException)] = HandleNotFoundFailureException,
+    [typeof(SkuAlreadyUsedException)] = HandleConflictFailureException,
     [typeof(ValidationException)] = HandleValidationException
   };
 

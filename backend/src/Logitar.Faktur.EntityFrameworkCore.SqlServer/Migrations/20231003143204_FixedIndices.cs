@@ -14,10 +14,6 @@ namespace Logitar.Faktur.EntityFrameworkCore.SqlServer.Migrations
                 name: "FK_Products_Articles_ArticleId",
                 table: "Products");
 
-            migrationBuilder.DropForeignKey(
-                name: "FK_Products_Departments_DepartmentId",
-                table: "Products");
-
             migrationBuilder.AddForeignKey(
                 name: "FK_Products_Articles_ArticleId",
                 table: "Products",
@@ -25,14 +21,6 @@ namespace Logitar.Faktur.EntityFrameworkCore.SqlServer.Migrations
                 principalTable: "Articles",
                 principalColumn: "ArticleId",
                 onDelete: ReferentialAction.Restrict);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_Products_Departments_DepartmentId",
-                table: "Products",
-                column: "DepartmentId",
-                principalTable: "Departments",
-                principalColumn: "DepartmentId",
-                onDelete: ReferentialAction.SetNull);
         }
 
         /// <inheritdoc />
@@ -42,10 +30,6 @@ namespace Logitar.Faktur.EntityFrameworkCore.SqlServer.Migrations
                 name: "FK_Products_Articles_ArticleId",
                 table: "Products");
 
-            migrationBuilder.DropForeignKey(
-                name: "FK_Products_Departments_DepartmentId",
-                table: "Products");
-
             migrationBuilder.AddForeignKey(
                 name: "FK_Products_Articles_ArticleId",
                 table: "Products",
@@ -53,13 +37,6 @@ namespace Logitar.Faktur.EntityFrameworkCore.SqlServer.Migrations
                 principalTable: "Articles",
                 principalColumn: "ArticleId",
                 onDelete: ReferentialAction.Cascade);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_Products_Departments_DepartmentId",
-                table: "Products",
-                column: "DepartmentId",
-                principalTable: "Departments",
-                principalColumn: "DepartmentId");
         }
     }
 }

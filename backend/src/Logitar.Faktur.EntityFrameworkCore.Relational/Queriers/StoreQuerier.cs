@@ -5,6 +5,8 @@ using Logitar.Faktur.Application.Stores;
 using Logitar.Faktur.Contracts.Actors;
 using Logitar.Faktur.Contracts.Search;
 using Logitar.Faktur.Contracts.Stores;
+using Logitar.Faktur.Domain.Banners;
+using Logitar.Faktur.Domain.Stores;
 using Logitar.Faktur.EntityFrameworkCore.Relational.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -23,25 +25,24 @@ internal class StoreQuerier : IStoreQuerier
     this.sqlHelper = sqlHelper;
   }
 
-  public async Task<Store?> ReadAsync(string id, CancellationToken cancellationToken)
+  public async Task<Store?> ReadAsync(StoreId id, CancellationToken cancellationToken)
   {
-    id = id.Trim();
-
     StoreEntity? store = await stores.AsNoTracking()
       .Include(x => x.Banner)
       .Include(x => x.Departments)
-      .SingleOrDefaultAsync(x => x.AggregateId == id, cancellationToken);
+      .SingleOrDefaultAsync(x => x.AggregateId == id.Value, cancellationToken);
 
     return store == null ? null : await MapAsync(store, cancellationToken);
   }
 
   public async Task<SearchResults<Store>> SearchAsync(SearchStoresPayload payload, CancellationToken cancellationToken)
   {
-    string? bannerId = payload.BannerId?.CleanTrim();
+    BannerId? bannerId = string.IsNullOrWhiteSpace(payload.BannerId)
+      ? null : BannerId.Parse(payload.BannerId, nameof(payload.BannerId));
 
     IQueryBuilder builder = sqlHelper.QueryFrom(Db.Stores.Table)
       .LeftJoin(Db.Banners.BannerId, Db.Stores.BannerId)
-      .Where(Db.Banners.AggregateId, bannerId == null ? Operators.IsNull() : Operators.IsEqualTo(bannerId))
+      .Where(Db.Banners.AggregateId, bannerId == null ? Operators.IsNull() : Operators.IsEqualTo(bannerId.Value))
       .SelectAll(Db.Stores.Table);
     sqlHelper.ApplyTextSearch(builder, payload.Id, Db.Stores.AggregateId);
     sqlHelper.ApplyTextSearch(builder, payload.Search, Db.Stores.Number, Db.Stores.DisplayName, Db.Stores.AddressFormatted, Db.Stores.PhoneE164Formatted);

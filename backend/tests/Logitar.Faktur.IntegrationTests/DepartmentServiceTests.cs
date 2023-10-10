@@ -222,7 +222,10 @@ public class DepartmentServiceTests : IntegrationTests
   [Fact(DisplayName = "SearchAsync: it should return empty results when none are matching.")]
   public async Task SearchAsync_it_should_return_empty_results_when_none_are_matching()
   {
-    SearchDepartmentsPayload payload = new();
+    SearchDepartmentsPayload payload = new()
+    {
+      StoreId = store.Id.Value
+    };
     payload.Id.Terms.Add(new SearchTerm(Guid.Empty.ToString()));
 
     SearchResults<Department> departments = await departmentService.SearchAsync(payload);

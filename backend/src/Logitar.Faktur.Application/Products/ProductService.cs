@@ -16,9 +16,9 @@ internal class ProductService : IProductService
     this.mediator = mediator;
   }
 
-  public async Task<Product?> ReadAsync(string storeId, string articleId, CancellationToken cancellationToken)
+  public async Task<Product?> ReadAsync(string storeId, string? articleId, string? sku, CancellationToken cancellationToken)
   {
-    return await mediator.Send(new ReadProductQuery(storeId, articleId), cancellationToken);
+    return await mediator.Send(new ReadProductQuery(storeId, articleId, sku), cancellationToken);
   }
 
   public async Task<AcceptedCommand> RemoveAsync(string storeId, string articleId, CancellationToken cancellationToken)

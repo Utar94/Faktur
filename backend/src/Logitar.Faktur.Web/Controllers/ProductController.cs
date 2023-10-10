@@ -21,7 +21,14 @@ public class ProductController : ControllerBase
   [HttpGet("{articleId}")]
   public async Task<ActionResult<Product>> ReadAsync(string storeId, string articleId, CancellationToken cancellationToken)
   {
-    Product? product = await productService.ReadAsync(storeId, articleId, cancellationToken);
+    Product? product = await productService.ReadAsync(storeId, articleId, cancellationToken: cancellationToken);
+    return product == null ? NotFound() : Ok(product);
+  }
+
+  [HttpGet("sku:{sku}")]
+  public async Task<ActionResult<Product>> ReadBySkuAsync(string storeId, string sku, CancellationToken cancellationToken)
+  {
+    Product? product = await productService.ReadAsync(storeId, sku: sku, cancellationToken: cancellationToken);
     return product == null ? NotFound() : Ok(product);
   }
 

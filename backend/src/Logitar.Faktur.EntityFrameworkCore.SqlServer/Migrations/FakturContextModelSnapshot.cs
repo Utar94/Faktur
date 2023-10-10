@@ -519,7 +519,7 @@ namespace Logitar.Faktur.EntityFrameworkCore.SqlServer.Migrations
                     b.HasOne("Logitar.Faktur.EntityFrameworkCore.Relational.Entities.DepartmentEntity", "Department")
                         .WithMany("Products")
                         .HasForeignKey("DepartmentId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("Logitar.Faktur.EntityFrameworkCore.Relational.Entities.StoreEntity", "Store")
                         .WithMany("Products")

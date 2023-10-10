@@ -1,5 +1,4 @@
 ﻿using Logitar.Faktur.Application.Extensions;
-using Logitar.Faktur.Contracts;
 using Logitar.Faktur.Domain.Exceptions;
 
 namespace Logitar.Faktur.Application.Exceptions;
@@ -31,11 +30,6 @@ public class TooManyResultsException : Exception
   public TooManyResultsException(Type type, int expected, int actual)
     : base(BuildMessage(type, expected, actual))
   {
-    if (!type.IsSubclassOf(typeof(Aggregate)))
-    {
-      throw new ArgumentException($"The type must be a subclass of {nameof(Aggregate)}.", nameof(type));
-    }
-
     Type = type;
     Expected = expected;
     Actual = actual;
@@ -47,7 +41,7 @@ public class TooManyResultsException : Exception
     .Build();
 }
 
-public class TooManyResultsException<T> : TooManyResultsException where T : Aggregate
+public class TooManyResultsException<T> : TooManyResultsException
 {
   public TooManyResultsException(int expected, int actual)
     : base(typeof(T), expected, actual)

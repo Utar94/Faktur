@@ -24,12 +24,10 @@ internal class ArticleQuerier : IArticleQuerier
     this.sqlHelper = sqlHelper;
   }
 
-  public async Task<Article?> ReadAsync(string id, CancellationToken cancellationToken)
+  public async Task<Article?> ReadAsync(ArticleId id, CancellationToken cancellationToken)
   {
-    id = id.Trim();
-
     ArticleEntity? article = await articles.AsNoTracking()
-      .SingleOrDefaultAsync(x => x.AggregateId == id, cancellationToken);
+      .SingleOrDefaultAsync(x => x.AggregateId == id.Value, cancellationToken);
 
     return article == null ? null : await MapAsync(article, cancellationToken);
   }

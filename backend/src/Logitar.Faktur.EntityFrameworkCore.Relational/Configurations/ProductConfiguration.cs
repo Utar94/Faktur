@@ -28,7 +28,7 @@ internal class ProductConfiguration : IEntityTypeConfiguration<ProductEntity>
     builder.HasIndex(x => x.UpdatedOn);
 
     builder.HasOne(x => x.Article).WithMany(x => x.Products).OnDelete(DeleteBehavior.Restrict);
-    builder.HasOne(x => x.Department).WithMany(x => x.Products).OnDelete(DeleteBehavior.SetNull);
+    builder.HasOne(x => x.Department).WithMany(x => x.Products).OnDelete(DeleteBehavior.NoAction);
     builder.HasOne(x => x.Store).WithMany(x => x.Products).OnDelete(DeleteBehavior.Cascade);
 
     builder.Property(x => x.Sku).HasMaxLength(SkuUnit.MaximumLength);

@@ -3,7 +3,7 @@ using Logitar.Faktur.Domain.Products.Events;
 
 namespace Logitar.Faktur.EntityFrameworkCore.Relational.Entities;
 
-internal class ProductEntity : Entity
+internal class ProductEntity : Entity, IMetadata
 {
   public int ProductId { get; private set; }
 
@@ -65,9 +65,21 @@ internal class ProductEntity : Entity
       new ActorId(UpdatedBy)
     };
 
-    if (addStore && Store != null)
+    if (Article != null)
     {
-      ids.AddRange(Store.GetActorIds(addDepartments: false, addProducts: false));
+      ids.AddRange(Article.GetActorIds());
+    }
+
+    if (addStore)
+    {
+      if (Department != null)
+      {
+        ids.AddRange(Department.GetActorIds(addStore));
+      }
+      if (Store != null)
+      {
+        ids.AddRange(Store.GetActorIds(addDepartments: false, addProducts: false));
+      }
     }
 
     return ids;

@@ -3,6 +3,7 @@ using Logitar.Faktur.Application.Actors;
 using Logitar.Faktur.Application.Articles;
 using Logitar.Faktur.Application.Banners;
 using Logitar.Faktur.Application.Departments;
+using Logitar.Faktur.Application.Products;
 using Logitar.Faktur.Application.Stores;
 using Logitar.Faktur.Domain.Articles;
 using Logitar.Faktur.Domain.Banners;
@@ -36,6 +37,7 @@ public static class DependencyInjectionExtensions
       .AddScoped<IArticleQuerier, ArticleQuerier>()
       .AddScoped<IBannerQuerier, BannerQuerier>()
       .AddScoped<IDepartmentQuerier, DepartmentQuerier>()
+      .AddScoped<IProductQuerier, ProductQuerier>()
       .AddScoped<IStoreQuerier, StoreQuerier>();
   }
 

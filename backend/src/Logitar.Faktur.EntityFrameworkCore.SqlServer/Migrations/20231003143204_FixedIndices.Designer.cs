@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Logitar.Faktur.EntityFrameworkCore.SqlServer.Migrations
 {
     [DbContext(typeof(FakturContext))]
-    [Migration("20231002200559_FixedIndices")]
+    [Migration("20231003143204_FixedIndices")]
     partial class FixedIndices
     {
         /// <inheritdoc />
@@ -522,7 +522,7 @@ namespace Logitar.Faktur.EntityFrameworkCore.SqlServer.Migrations
                     b.HasOne("Logitar.Faktur.EntityFrameworkCore.Relational.Entities.DepartmentEntity", "Department")
                         .WithMany("Products")
                         .HasForeignKey("DepartmentId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("Logitar.Faktur.EntityFrameworkCore.Relational.Entities.StoreEntity", "Store")
                         .WithMany("Products")

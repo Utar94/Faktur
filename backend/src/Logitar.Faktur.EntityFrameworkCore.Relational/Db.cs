@@ -16,6 +16,7 @@ internal static class Db
     public static readonly TableId Table = new(nameof(FakturContext.Articles));
 
     public static readonly ColumnId AggregateId = new(nameof(ArticleEntity.AggregateId), Table);
+    public static readonly ColumnId ArticleId = new(nameof(ArticleEntity.ArticleId), Table);
     public static readonly ColumnId DisplayName = new(nameof(ArticleEntity.DisplayName), Table);
     public static readonly ColumnId Gtin = new(nameof(ArticleEntity.Gtin), Table);
     public static readonly ColumnId GtinNormalized = new(nameof(ArticleEntity.GtinNormalized), Table);
@@ -34,6 +35,7 @@ internal static class Db
   {
     public static readonly TableId Table = new(nameof(FakturContext.Departments));
 
+    public static readonly ColumnId DepartmentId = new(nameof(DepartmentEntity.DepartmentId), Table);
     public static readonly ColumnId DisplayName = new(nameof(DepartmentEntity.DisplayName), Table);
     public static readonly ColumnId Number = new(nameof(DepartmentEntity.Number), Table);
     public static readonly ColumnId StoreId = new(nameof(DepartmentEntity.StoreId), Table);
@@ -50,6 +52,12 @@ internal static class Db
   internal static class Products
   {
     public static readonly TableId Table = new(nameof(FakturContext.Products));
+
+    public static readonly ColumnId ArticleId = new(nameof(ProductEntity.ArticleId), Table);
+    public static readonly ColumnId DepartmentId = new(nameof(ProductEntity.DepartmentId), Table);
+    public static readonly ColumnId DisplayName = new(nameof(ProductEntity.DisplayName), Table);
+    public static readonly ColumnId Sku = new(nameof(ProductEntity.Sku), Table);
+    public static readonly ColumnId StoreId = new(nameof(ProductEntity.StoreId), Table);
   }
 
   internal static class Stores

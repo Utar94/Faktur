@@ -20,16 +20,17 @@ internal class ReadArticleQueryHandler : IRequestHandler<ReadArticleQuery, Artic
 
     if (!string.IsNullOrWhiteSpace(query.Id))
     {
-      Article? article = await articleQuerier.ReadAsync(query.Id, cancellationToken);
+      ArticleId articleId = ArticleId.Parse(query.Id, nameof(query.Id));
+      Article? article = await articleQuerier.ReadAsync(articleId, cancellationToken);
       if (article != null)
       {
         articles[article.Id] = article;
       }
     }
 
-    GtinUnit? gtin = GtinUnit.TryCreate(query.Gtin);
-    if (gtin != null)
+    if (!string.IsNullOrWhiteSpace(query.Gtin))
     {
+      GtinUnit gtin = GtinUnit.Parse(query.Gtin, nameof(query.Gtin));
       Article? article = await articleQuerier.ReadAsync(gtin, cancellationToken);
       if (article != null)
       {
