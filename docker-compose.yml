@@ -1,0 +1,40 @@
+version: "3.8"
+name: faktur
+services:
+  faktur_mssql:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: Faktur_mssql
+    environment:
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: vs6J2jUWZTFnacMt
+    ports:
+      - 1439:1433
+
+  faktur_portal:
+    image: fpion/portal:v4.0.1
+    container_name: Faktur_portal
+    depends_on:
+      - faktur_mssql
+    restart: unless-stopped
+    environment:
+      EnableBasicAuthentication: "true"
+      EnableMigrations: "true"
+      SQLCONNSTR_Portal: "Server=faktur_mssql;Database=Portal;User Id=SA;Password=vs6J2jUWZTFnacMt;Persist Security Info=False;Encrypt=False;"
+    ports:
+      - 8889:8080
+
+  faktur_backend:
+    build:
+      context: ./backend
+      dockerfile: /src/Faktur/Dockerfile
+    image: faktur_backend
+    container_name: Faktur_backend
+    depends_on:
+      - faktur_mssql
+    restart: unless-stopped
+    environment:
+      ASPNETCORE_Environment: Development
+      Portal:BaseUrl: http://faktur_portal:8080
+      SQLCONNSTR_Faktur: "Server=faktur_mssql;Database=Faktur;User Id=SA;Password=vs6J2jUWZTFnacMt;Persist Security Info=False;Encrypt=False;"
+    ports:
+      - 8089:8080
