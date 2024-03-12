@@ -1,20 +1,28 @@
-﻿using Faktur.EntityFrameworkCore.Relational;
+﻿using Faktur.Authentication;
+using Faktur.Constants;
+using Faktur.EntityFrameworkCore.Relational;
 using Faktur.EntityFrameworkCore.SqlServer;
 using Faktur.Extensions;
 using Faktur.Infrastructure;
+using Faktur.Middlewares;
 using Faktur.Settings;
 using Logitar.EventSourcing.EntityFrameworkCore.Relational;
+using MediatR;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Faktur;
 
 internal class Startup : StartupBase
 {
   private readonly IConfiguration _configuration;
+  private readonly string[] _authenticationSchemes;
   private readonly bool _enableOpenApi;
 
   public Startup(IConfiguration configuration)
   {
     _configuration = configuration;
+    _authenticationSchemes = Schemes.GetEnabled(configuration);
     _enableOpenApi = configuration.GetValue<bool>("EnableOpenApi");
   }
 
@@ -28,11 +36,31 @@ internal class Startup : StartupBase
     services.AddSingleton(corsSettings);
     services.AddCors(corsSettings);
 
-    // TODO(fpion): Authentication
+    AuthenticationSettings authenticationSettings = _configuration.GetSection("Authentication").Get<AuthenticationSettings>() ?? new();
+    services.AddSingleton(authenticationSettings);
+    services.AddSingleton<Authentication.IAuthenticationService, Authentication.AuthenticationService>();
 
-    // TODO(fpion): Authorization
+    AuthenticationBuilder authenticationBuilder = services.AddAuthentication()
+      .AddScheme<BearerAuthenticationOptions, BearerAuthenticationHandler>(Schemes.Bearer, options => { })
+      .AddScheme<SessionAuthenticationOptions, SessionAuthenticationHandler>(Schemes.Session, options => { });
+    if (_authenticationSchemes.Contains(Schemes.Basic))
+    {
+      authenticationBuilder.AddScheme<BasicAuthenticationOptions, BasicAuthenticationHandler>(Schemes.Basic, options => { });
+    }
 
-    // TODO(fpion): Session
+    services.AddAuthorizationBuilder()
+      .SetDefaultPolicy(new AuthorizationPolicyBuilder(_authenticationSchemes)
+        .RequireAuthenticatedUser()
+        .Build()
+      );
+
+    CookiesSettings cookiesSettings = _configuration.GetSection("Cookies").Get<CookiesSettings>() ?? new();
+    services.AddSingleton(cookiesSettings);
+    services.AddSession(options =>
+    {
+      options.Cookie.SameSite = cookiesSettings.Session.SameSite;
+      options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    });
 
     services.AddApplicationInsightsTelemetry();
     IHealthChecksBuilder healthChecks = services.AddHealthChecks();
@@ -54,7 +82,8 @@ internal class Startup : StartupBase
         throw new DatabaseProviderNotSupportedException(databaseProvider);
     }
 
-    //services.AddDistributedMemoryCache(); // TODO(fpion): Session
+    services.AddDistributedMemoryCache();
+    services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ActivityPipelineBehavior<,>));
   }
 
   public override void Configure(IApplicationBuilder builder)
@@ -66,10 +95,10 @@ internal class Startup : StartupBase
 
     builder.UseHttpsRedirection();
     builder.UseCors();
-    //builder.UseSession(); // TODO(fpion): Session
-    //builder.UseMiddleware<RenewSession>(); // TODO(fpion): Session
-    //builder.UseAuthentication(); // TODO(fpion): Authentication
-    //builder.UseAuthorization(); // TODO(fpion): Authorization
+    builder.UseSession();
+    builder.UseMiddleware<RenewSession>();
+    builder.UseAuthentication();
+    builder.UseAuthorization();
 
     if (builder is WebApplication application)
     {

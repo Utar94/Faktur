@@ -6,5 +6,19 @@ internal static class Schemes
   public const string Bearer = nameof(Bearer);
   public const string Session = nameof(Session);
 
-  public static IReadOnlyCollection<string> All => [Basic, Bearer, Session];
+  public static string[] GetEnabled(IConfiguration configuration)
+  {
+    List<string> schemes = new(capacity: 3)
+    {
+      Bearer,
+      Session
+    };
+
+    if (configuration.GetValue<bool>("EnableBasicAuthentication"))
+    {
+      schemes.Add(Basic);
+    }
+
+    return [.. schemes];
+  }
 }
