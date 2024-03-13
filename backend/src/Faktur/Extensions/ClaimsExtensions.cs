@@ -2,7 +2,6 @@
 using Logitar.Portal.Contracts.Sessions;
 using Logitar.Portal.Contracts.Users;
 using Logitar.Security.Claims;
-using System.Security.Claims;
 
 namespace Faktur.Extensions;
 

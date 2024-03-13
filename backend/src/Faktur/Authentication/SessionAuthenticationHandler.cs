@@ -2,8 +2,6 @@
 using Logitar.Portal.Contracts.Sessions;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Options;
-using System.Security.Claims;
-using System.Text.Encodings.Web;
 
 namespace Faktur.Authentication;
 

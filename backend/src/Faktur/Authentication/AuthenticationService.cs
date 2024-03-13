@@ -6,9 +6,6 @@ using Logitar.Portal.Contracts.Tokens;
 using Logitar.Portal.Contracts.Users;
 using Logitar.Security.Claims;
 using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 
 namespace Faktur.Authentication;
 

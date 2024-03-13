@@ -5,7 +5,6 @@ using Logitar.Portal.Contracts;
 using Logitar.Portal.Contracts.Sessions;
 using Logitar.Portal.Contracts.Users;
 using Microsoft.Extensions.Primitives;
-using System.Text.Json;
 
 namespace Faktur.Extensions;
 
