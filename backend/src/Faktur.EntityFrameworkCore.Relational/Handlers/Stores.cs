@@ -53,16 +53,16 @@ internal static class Stores
     }
   }
 
-  public class StoreDepartmentDeletedEventHandler : INotificationHandler<StoreDepartmentDeletedEvent>
+  public class StoreDepartmentRemovedEventHandler : INotificationHandler<StoreDepartmentRemovedEvent>
   {
     private readonly FakturContext _context;
 
-    public StoreDepartmentDeletedEventHandler(FakturContext context)
+    public StoreDepartmentRemovedEventHandler(FakturContext context)
     {
       _context = context;
     }
 
-    public async Task Handle(StoreDepartmentDeletedEvent @event, CancellationToken cancellationToken)
+    public async Task Handle(StoreDepartmentRemovedEvent @event, CancellationToken cancellationToken)
     {
       StoreEntity store = await _context.Stores
        .Include(x => x.Departments)

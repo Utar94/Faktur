@@ -26,9 +26,11 @@ public static class DependencyInjectionExtensions
 
   private static IEnumerable<JsonConverter> GetFakturJsonConverters() =>
   [
+    new ArticleIdConverter(),
     new BannerIdConverter(),
     new DescriptionConverter(),
     new DisplayNameConverter(),
+    new GtinConverter(),
     new NumberConverter(),
     new StoreIdConverter()
   ];

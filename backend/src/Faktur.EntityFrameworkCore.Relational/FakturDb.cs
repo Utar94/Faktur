@@ -18,6 +18,23 @@ internal static class FakturDb
     public static readonly ColumnId Type = new(nameof(ActorEntity.Type), Table);
   }
 
+  public static class Articles
+  {
+    public static readonly TableId Table = new(nameof(FakturContext.Articles));
+
+    public static readonly ColumnId AggregateId = new(nameof(ArticleEntity.AggregateId), Table);
+    public static readonly ColumnId ArticleId = new(nameof(ArticleEntity.ArticleId), Table);
+    public static readonly ColumnId CreatedBy = new(nameof(ArticleEntity.CreatedBy), Table);
+    public static readonly ColumnId CreatedOn = new(nameof(ArticleEntity.CreatedOn), Table);
+    public static readonly ColumnId Description = new(nameof(ArticleEntity.Description), Table);
+    public static readonly ColumnId DisplayName = new(nameof(ArticleEntity.DisplayName), Table);
+    public static readonly ColumnId Gtin = new(nameof(ArticleEntity.Gtin), Table);
+    public static readonly ColumnId GtinNormalized = new(nameof(ArticleEntity.GtinNormalized), Table);
+    public static readonly ColumnId UpdatedBy = new(nameof(ArticleEntity.UpdatedBy), Table);
+    public static readonly ColumnId UpdatedOn = new(nameof(ArticleEntity.UpdatedOn), Table);
+    public static readonly ColumnId Version = new(nameof(ArticleEntity.Version), Table);
+  }
+
   public static class Banners
   {
     public static readonly TableId Table = new(nameof(FakturContext.Banners));

@@ -3,11 +3,11 @@ using MediatR;
 
 namespace Faktur.Domain.Stores.Events;
 
-public record StoreDepartmentDeletedEvent : DomainEvent, INotification
+public record StoreDepartmentRemovedEvent : DomainEvent, INotification
 {
   public NumberUnit Number { get; }
 
-  public StoreDepartmentDeletedEvent(NumberUnit number, ActorId actorId)
+  public StoreDepartmentRemovedEvent(NumberUnit number, ActorId actorId)
   {
     Number = number;
     ActorId = actorId;
