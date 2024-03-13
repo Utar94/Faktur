@@ -1,10 +1,12 @@
-﻿using Faktur.Authentication;
+﻿using Faktur.Application.Actors;
+using Faktur.Authentication;
 using Faktur.Extensions;
 using Faktur.Models.Account;
 using Logitar.Portal.Contracts;
 using Logitar.Portal.Contracts.Errors;
 using Logitar.Portal.Contracts.Sessions;
 using Logitar.Portal.Contracts.Users;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,14 +17,16 @@ namespace Faktur.Controllers;
 public class AccountController : ControllerBase
 {
   private readonly IAuthenticationService _authenticationService;
+  private readonly IPublisher _publisher;
   private readonly ISessionClient _sessionClient;
   private readonly IUserClient _userClient;
 
   private new User User => HttpContext.GetUser() ?? throw new InvalidOperationException("An authenticated user is required.");
 
-  public AccountController(IAuthenticationService authenticationService, ISessionClient sessionClient, IUserClient userClient)
+  public AccountController(IAuthenticationService authenticationService, IPublisher publisher, ISessionClient sessionClient, IUserClient userClient)
   {
     _authenticationService = authenticationService;
+    _publisher = publisher;
     _sessionClient = sessionClient;
     _userClient = userClient;
   }
@@ -64,6 +68,7 @@ public class AccountController : ControllerBase
 
     RequestContext context = new(User.Id.ToString(), cancellationToken);
     User user = await _userClient.UpdateAsync(User.Id, payload, context) ?? throw new InvalidOperationException($"The user 'Id={User.Id}' update returned null.");
+    await _publisher.Publish(new UserUpdatedEvent(user), cancellationToken);
     UserProfile profile = new(user);
     return Ok(profile);
   }
@@ -127,6 +132,8 @@ public class AccountController : ControllerBase
   {
     SignInSessionPayload payload = new(input.Username, input.Password, isPersistent: true, HttpContext.GetSessionAttributes());
     RequestContext context = new(cancellationToken);
-    return await _sessionClient.SignInAsync(payload, context);
+    Session session = await _sessionClient.SignInAsync(payload, context);
+    await _publisher.Publish(new UserSignedInEvent(session.User), cancellationToken);
+    return session;
   }
 }
