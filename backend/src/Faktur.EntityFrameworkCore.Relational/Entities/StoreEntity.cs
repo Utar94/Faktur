@@ -45,7 +45,7 @@ internal class StoreEntity : AggregateEntity
     BannerId = banner?.BannerId;
   }
 
-  public void RemoveDepartment(StoreDepartmentDeletedEvent @event)
+  public void RemoveDepartment(StoreDepartmentRemovedEvent @event)
   {
     Update(@event);
 

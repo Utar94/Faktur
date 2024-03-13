@@ -95,10 +95,10 @@ public class StoreAggregate : AggregateRoot
   {
     if (_departments.ContainsKey(number))
     {
-      Raise(new StoreDepartmentDeletedEvent(number, actorId));
+      Raise(new StoreDepartmentRemovedEvent(number, actorId));
     }
   }
-  protected virtual void Apply(StoreDepartmentDeletedEvent @event)
+  protected virtual void Apply(StoreDepartmentRemovedEvent @event)
   {
     _departments.Remove(@event.Number);
   }

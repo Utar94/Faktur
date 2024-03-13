@@ -1,4 +1,5 @@
-﻿using Faktur.Contracts.Banners;
+﻿using Faktur.Contracts.Articles;
+using Faktur.Contracts.Banners;
 using Faktur.Contracts.Departments;
 using Faktur.Contracts.Stores;
 using Faktur.EntityFrameworkCore.Relational.Entities;
@@ -34,6 +35,19 @@ internal class Mapper
     EmailAddress = source.EmailAddress,
     PictureUrl = source.PictureUrl
   };
+
+  public Article ToArticle(ArticleEntity source)
+  {
+    Article destination = new(source.DisplayName)
+    {
+      Gtin = source.Gtin,
+      Description = source.Description
+    };
+
+    MapAggregate(source, destination);
+
+    return destination;
+  }
 
   public Banner ToBanner(BannerEntity source)
   {
