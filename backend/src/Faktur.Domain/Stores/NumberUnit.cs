@@ -8,10 +8,10 @@ public record NumberUnit
 
   public string Value { get; }
 
-  public NumberUnit(string value)
+  public NumberUnit(string value, string? propertyName = null)
   {
     Value = value.Trim();
-    new NumberValidator().ValidateAndThrow(Value);
+    new NumberValidator(propertyName).ValidateAndThrow(Value);
   }
 
   public static NumberUnit? TryCreate(string? value)

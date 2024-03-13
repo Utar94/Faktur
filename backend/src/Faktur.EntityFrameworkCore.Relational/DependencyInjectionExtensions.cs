@@ -1,4 +1,5 @@
 ﻿using Faktur.Application.Banners;
+using Faktur.Application.Departments;
 using Faktur.Application.Stores;
 using Faktur.Domain.Banners;
 using Faktur.Domain.Stores;
@@ -29,6 +30,7 @@ public static class DependencyInjectionExtensions
   {
     return services
       .AddTransient<IBannerQuerier, BannerQuerier>()
+      .AddTransient<IDepartmentQuerier, DepartmentQuerier>()
       .AddTransient<IStoreQuerier, StoreQuerier>();
   }
 

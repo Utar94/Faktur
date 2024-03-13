@@ -33,6 +33,22 @@ internal static class FakturDb
     public static readonly ColumnId Version = new(nameof(BannerEntity.Version), Table);
   }
 
+  public static class Departments
+  {
+    public static readonly TableId Table = new(nameof(FakturContext.Departments));
+
+    public static readonly ColumnId CreatedBy = new(nameof(DepartmentEntity.CreatedBy), Table);
+    public static readonly ColumnId CreatedOn = new(nameof(DepartmentEntity.CreatedOn), Table);
+    public static readonly ColumnId DepartmentId = new(nameof(DepartmentEntity.DepartmentId), Table);
+    public static readonly ColumnId Description = new(nameof(DepartmentEntity.Description), Table);
+    public static readonly ColumnId DisplayName = new(nameof(DepartmentEntity.DisplayName), Table);
+    public static readonly ColumnId Number = new(nameof(DepartmentEntity.Number), Table);
+    public static readonly ColumnId NumberNormalized = new(nameof(DepartmentEntity.NumberNormalized), Table);
+    public static readonly ColumnId StoreId = new(nameof(DepartmentEntity.StoreId), Table);
+    public static readonly ColumnId UpdatedBy = new(nameof(DepartmentEntity.UpdatedBy), Table);
+    public static readonly ColumnId UpdatedOn = new(nameof(DepartmentEntity.UpdatedOn), Table);
+  }
+
   public static class Stores
   {
     public static readonly TableId Table = new(nameof(FakturContext.Stores));

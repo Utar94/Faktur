@@ -1,5 +1,6 @@
 ﻿using Faktur.Contracts;
 using Faktur.Domain.Banners;
+using Faktur.Domain.Departments;
 using Faktur.Domain.Shared;
 using Faktur.Domain.Stores.Events;
 using Logitar.EventSourcing;
@@ -65,6 +66,9 @@ public class StoreAggregate : AggregateRoot
     }
   }
 
+  private readonly Dictionary<NumberUnit, DepartmentUnit> _departments = [];
+  public IReadOnlyDictionary<NumberUnit, DepartmentUnit> Departments => _departments.AsReadOnly();
+
   public StoreAggregate(AggregateId id) : base(id)
   {
   }
@@ -85,6 +89,41 @@ public class StoreAggregate : AggregateRoot
     {
       Raise(new StoreDeletedEvent(actorId));
     }
+  }
+
+  public void RemoveDepartment(NumberUnit number, ActorId actorId = default)
+  {
+    if (_departments.ContainsKey(number))
+    {
+      Raise(new StoreDepartmentDeletedEvent(number, actorId));
+    }
+  }
+  protected virtual void Apply(StoreDepartmentDeletedEvent @event)
+  {
+    _departments.Remove(@event.Number);
+  }
+
+  public void SetDepartment(NumberUnit number, DepartmentUnit department, ActorId actorId = default)
+  {
+    DepartmentUnit? existingDepartment = TryFindDepartment(number);
+    if (existingDepartment == null || existingDepartment != department)
+    {
+      Raise(new StoreDepartmentSavedEvent(number, department, actorId));
+    }
+  }
+  protected virtual void Apply(StoreDepartmentSavedEvent @event)
+  {
+    _departments[@event.Number] = @event.Department;
+  }
+
+  public DepartmentUnit? TryFindDepartment(NumberUnit number)
+  {
+    if (_departments.TryGetValue(number, out DepartmentUnit? department))
+    {
+      return department;
+    }
+
+    return null;
   }
 
   public void Update(ActorId actorId = default)

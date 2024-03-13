@@ -17,6 +17,7 @@ internal class StoreConfiguration : AggregateConfiguration<StoreEntity>, IEntity
 
     builder.HasIndex(x => x.Number);
     builder.HasIndex(x => x.DisplayName);
+    builder.HasIndex(x => x.DepartmentCount);
 
     builder.Property(x => x.Number).HasMaxLength(NumberUnit.MaximumLength);
     builder.Property(x => x.DisplayName).HasMaxLength(DisplayNameUnit.MaximumLength);

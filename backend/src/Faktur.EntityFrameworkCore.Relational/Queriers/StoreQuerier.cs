@@ -42,6 +42,7 @@ internal class StoreQuerier : IStoreQuerier
 
     StoreEntity? store = await _stores.AsNoTracking()
       .Include(x => x.Banner)
+      .Include(x => x.Departments)
       .SingleOrDefaultAsync(x => x.AggregateId == aggregateId, cancellationToken);
 
     return store == null ? null : await MapAsync(store, cancellationToken);
@@ -71,6 +72,11 @@ internal class StoreQuerier : IStoreQuerier
     {
       switch (sort.Field)
       {
+        case StoreSort.DepartmentCount:
+          ordered = (ordered == null)
+            ? (sort.IsDescending ? query.OrderByDescending(x => x.DepartmentCount) : query.OrderBy(x => x.DepartmentCount))
+            : (sort.IsDescending ? ordered.ThenByDescending(x => x.DepartmentCount) : ordered.ThenBy(x => x.DepartmentCount));
+          break;
         case StoreSort.DisplayName:
           ordered = (ordered == null)
             ? (sort.IsDescending ? query.OrderByDescending(x => x.DisplayName) : query.OrderBy(x => x.DisplayName))
@@ -108,6 +114,6 @@ internal class StoreQuerier : IStoreQuerier
     IEnumerable<Actor> actors = await _actorService.FindAsync(actorIds, cancellationToken);
     Mapper mapper = new(actors);
 
-    return stores.Select(mapper.ToStore);
+    return stores.Select(store => mapper.ToStore(store, includeDepartments: true));
   }
 }

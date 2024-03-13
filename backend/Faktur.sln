@@ -14,17 +14,17 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Faktur.Domain", "src\Faktur.Domain\Faktur.Domain.csproj", "{42B8010F-CF49-4911-BD94-2D3738DC6F45}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Faktur.Domain", "src\Faktur.Domain\Faktur.Domain.csproj", "{42B8010F-CF49-4911-BD94-2D3738DC6F45}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Faktur.Application", "src\Faktur.Application\Faktur.Application.csproj", "{0C514CF0-56ED-4FA9-BCF1-F13D966E8CE6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Faktur.Application", "src\Faktur.Application\Faktur.Application.csproj", "{0C514CF0-56ED-4FA9-BCF1-F13D966E8CE6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Faktur.Infrastructure", "src\Faktur.Infrastructure\Faktur.Infrastructure.csproj", "{6FE8074E-F045-49FD-8E2B-2176CFC1B7A1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Faktur.Infrastructure", "src\Faktur.Infrastructure\Faktur.Infrastructure.csproj", "{6FE8074E-F045-49FD-8E2B-2176CFC1B7A1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Faktur", "src\Faktur\Faktur.csproj", "{9C551157-BFBA-413B-9E63-E0307AB480A5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Faktur", "src\Faktur\Faktur.csproj", "{9C551157-BFBA-413B-9E63-E0307AB480A5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Faktur.EntityFrameworkCore.Relational", "src\Faktur.EntityFrameworkCore.Relational\Faktur.EntityFrameworkCore.Relational.csproj", "{78C213CA-FE6A-4332-9D24-EF7A79E6C9EE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Faktur.EntityFrameworkCore.Relational", "src\Faktur.EntityFrameworkCore.Relational\Faktur.EntityFrameworkCore.Relational.csproj", "{78C213CA-FE6A-4332-9D24-EF7A79E6C9EE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Faktur.EntityFrameworkCore.SqlServer", "src\Faktur.EntityFrameworkCore.SqlServer\Faktur.EntityFrameworkCore.SqlServer.csproj", "{685F89E4-CE6E-4ACD-BB07-650AC673443E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Faktur.EntityFrameworkCore.SqlServer", "src\Faktur.EntityFrameworkCore.SqlServer\Faktur.EntityFrameworkCore.SqlServer.csproj", "{685F89E4-CE6E-4ACD-BB07-650AC673443E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
