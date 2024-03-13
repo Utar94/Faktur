@@ -1,4 +1,5 @@
 ﻿using Faktur.Contracts.Banners;
+using Faktur.Contracts.Departments;
 using Faktur.Contracts.Stores;
 using Faktur.EntityFrameworkCore.Relational.Entities;
 using Logitar.EventSourcing;
@@ -46,16 +47,39 @@ internal class Mapper
     return destination;
   }
 
-  public Store ToStore(StoreEntity source)
+  public Department ToDepartment(DepartmentEntity source, Store store)
+  {
+    Department destination = new(store, source.Number, source.DisplayName)
+    {
+      Description = source.Description,
+      CreatedBy = FindActor(source.CreatedBy),
+      CreatedOn = AsUniversalTime(source.CreatedOn),
+      UpdatedBy = FindActor(source.UpdatedBy),
+      UpdatedOn = AsUniversalTime(source.UpdatedOn)
+    };
+
+    return destination;
+  }
+
+  public Store ToStore(StoreEntity source, bool includeDepartments)
   {
     Store destination = new(source.DisplayName)
     {
       Number = source.Number,
-      Description = source.Description
+      Description = source.Description,
+      DepartmentCount = source.DepartmentCount
     };
     if (source.Banner != null)
     {
       destination.Banner = ToBanner(source.Banner);
+    }
+
+    if (includeDepartments)
+    {
+      foreach (DepartmentEntity department in source.Departments)
+      {
+        destination.Departments.Add(ToDepartment(department, destination));
+      }
     }
 
     MapAggregate(source, destination);

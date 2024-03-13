@@ -53,6 +53,50 @@ internal static class Stores
     }
   }
 
+  public class StoreDepartmentDeletedEventHandler : INotificationHandler<StoreDepartmentDeletedEvent>
+  {
+    private readonly FakturContext _context;
+
+    public StoreDepartmentDeletedEventHandler(FakturContext context)
+    {
+      _context = context;
+    }
+
+    public async Task Handle(StoreDepartmentDeletedEvent @event, CancellationToken cancellationToken)
+    {
+      StoreEntity store = await _context.Stores
+       .Include(x => x.Departments)
+       .SingleOrDefaultAsync(x => x.AggregateId == @event.AggregateId.Value, cancellationToken)
+       ?? throw new InvalidOperationException($"The store 'AggregateId={@event.AggregateId}' could not be found.");
+
+      store.RemoveDepartment(@event);
+
+      await _context.SaveChangesAsync(cancellationToken);
+    }
+  }
+
+  public class StoreDepartmentSavedEventHandler : INotificationHandler<StoreDepartmentSavedEvent>
+  {
+    private readonly FakturContext _context;
+
+    public StoreDepartmentSavedEventHandler(FakturContext context)
+    {
+      _context = context;
+    }
+
+    public async Task Handle(StoreDepartmentSavedEvent @event, CancellationToken cancellationToken)
+    {
+      StoreEntity store = await _context.Stores
+        .Include(x => x.Departments)
+        .SingleOrDefaultAsync(x => x.AggregateId == @event.AggregateId.Value, cancellationToken)
+        ?? throw new InvalidOperationException($"The store 'AggregateId={@event.AggregateId}' could not be found.");
+
+      store.SetDepartment(@event);
+
+      await _context.SaveChangesAsync(cancellationToken);
+    }
+  }
+
   public class StoreUpdatedEventHandler : INotificationHandler<StoreUpdatedEvent>
   {
     private readonly FakturContext _context;
@@ -64,24 +108,25 @@ internal static class Stores
 
     public async Task Handle(StoreUpdatedEvent @event, CancellationToken cancellationToken)
     {
-      StoreEntity? store = await _context.Stores
-        .SingleOrDefaultAsync(x => x.AggregateId == @event.AggregateId.Value, cancellationToken);
-      if (store != null)
+      StoreEntity store = await _context.Stores
+        .SingleOrDefaultAsync(x => x.AggregateId == @event.AggregateId.Value, cancellationToken)
+        ?? throw new InvalidOperationException($"The store 'AggregateId={@event.AggregateId}' could not be found.");
+
+      if (@event.BannerId != null)
       {
-        if (@event.BannerId != null)
+        BannerEntity? banner = null;
+        if (@event.BannerId.Value != null)
         {
-          BannerEntity? banner = null;
-          if (@event.BannerId.Value != null)
-          {
-            banner = await _context.Banners.SingleOrDefaultAsync(x => x.AggregateId == @event.BannerId.Value.Value, cancellationToken);
-          }
-          store.SetBanner(banner);
+          banner = await _context.Banners
+            .SingleOrDefaultAsync(x => x.AggregateId == @event.BannerId.Value.Value, cancellationToken)
+            ?? throw new InvalidOperationException($"The banner 'AggregateId={@event.BannerId.Value.Value}' could not be found.");
         }
-
-        store.Update(@event);
-
-        await _context.SaveChangesAsync(cancellationToken);
+        store.SetBanner(banner);
       }
+
+      store.Update(@event);
+
+      await _context.SaveChangesAsync(cancellationToken);
     }
   }
 }

@@ -1,0 +1,11 @@
+﻿using FluentValidation;
+
+namespace Faktur.Domain;
+
+internal static class FluentValidationExtensions
+{
+  public static IRuleBuilderOptions<T, TProperty> WithPropertyName<T, TProperty>(this IRuleBuilderOptions<T, TProperty> ruleBuilder, string? propertyName)
+  {
+    return propertyName == null ? ruleBuilder : ruleBuilder.OverridePropertyName(propertyName).WithName(propertyName);
+  }
+}

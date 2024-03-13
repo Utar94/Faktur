@@ -30,7 +30,12 @@ internal class Startup : StartupBase
   {
     base.ConfigureServices(services);
 
-    services.AddControllers().AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
+    services.AddControllers()
+      .AddJsonOptions(options =>
+      {
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+      });
 
     CorsSettings corsSettings = _configuration.GetSection("Cors").Get<CorsSettings>() ?? new();
     services.AddSingleton(corsSettings);

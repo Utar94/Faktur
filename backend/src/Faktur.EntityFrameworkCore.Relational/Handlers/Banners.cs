@@ -64,14 +64,13 @@ internal static class Banners
 
     public async Task Handle(BannerUpdatedEvent @event, CancellationToken cancellationToken)
     {
-      BannerEntity? banner = await _context.Banners
-        .SingleOrDefaultAsync(x => x.AggregateId == @event.AggregateId.Value, cancellationToken);
-      if (banner != null)
-      {
-        banner.Update(@event);
+      BannerEntity banner = await _context.Banners
+        .SingleOrDefaultAsync(x => x.AggregateId == @event.AggregateId.Value, cancellationToken)
+        ?? throw new InvalidOperationException($"The banner 'AggregateId={@event.AggregateId}' could not be found.");
 
-        await _context.SaveChangesAsync(cancellationToken);
-      }
+      banner.Update(@event);
+
+      await _context.SaveChangesAsync(cancellationToken);
     }
   }
 }
