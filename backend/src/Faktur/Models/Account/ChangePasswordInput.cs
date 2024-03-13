@@ -1,15 +1,15 @@
 ﻿namespace Faktur.Models.Account;
 
-public record ChangePasswordPayload
+public record ChangePasswordInput
 {
   public string Current { get; set; }
   public string New { get; set; }
 
-  public ChangePasswordPayload() : this(string.Empty, string.Empty)
+  public ChangePasswordInput() : this(string.Empty, string.Empty)
   {
   }
 
-  public ChangePasswordPayload(string current, string @new)
+  public ChangePasswordInput(string current, string @new)
   {
     Current = current;
     New = @new;

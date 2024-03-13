@@ -29,11 +29,11 @@ public class AccountController : ControllerBase
 
   [Authorize]
   [HttpPut("password/change")]
-  public async Task<ActionResult<UserProfile>> ChangePasswordAsync([FromBody] Models.Account.ChangePasswordPayload password, CancellationToken cancellationToken)
+  public async Task<ActionResult<UserProfile>> ChangePasswordAsync([FromBody] ChangePasswordInput password, CancellationToken cancellationToken)
   {
     UpdateUserPayload payload = new()
     {
-      Password = new Logitar.Portal.Contracts.Users.ChangePasswordPayload(password.New)
+      Password = new ChangePasswordPayload(password.New)
       {
         Current = password.Current
       }
@@ -71,7 +71,7 @@ public class AccountController : ControllerBase
   [HttpPost("sign/in")]
   public async Task<ActionResult<CurrentUser>> SignInAsync([FromBody] SignInPayload payload, CancellationToken cancellationToken)
   {
-    var session = await SignInAsync((Credentials)payload, cancellationToken);
+    Session session = await SignInAsync((Credentials)payload, cancellationToken);
     HttpContext.SignIn(session);
     return Ok(new CurrentUser(session));
   }

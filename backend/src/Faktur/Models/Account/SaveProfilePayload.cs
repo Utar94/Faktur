@@ -35,7 +35,7 @@ public record SaveProfilePayload
     }
     if (!string.IsNullOrWhiteSpace(LastName))
     {
-      payload.FirstName = new Modification<string>(LastName);
+      payload.LastName = new Modification<string>(LastName);
     }
 
     if (!string.IsNullOrWhiteSpace(PictureUrl))
