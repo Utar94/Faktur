@@ -1,5 +1,7 @@
 ﻿using Faktur.Application.Banners;
+using Faktur.Application.Stores;
 using Faktur.Domain.Banners;
+using Faktur.Domain.Stores;
 using Faktur.EntityFrameworkCore.Relational.Actors;
 using Faktur.EntityFrameworkCore.Relational.Queriers;
 using Faktur.EntityFrameworkCore.Relational.Repositories;
@@ -25,11 +27,15 @@ public static class DependencyInjectionExtensions
 
   private static IServiceCollection AddQueriers(this IServiceCollection services)
   {
-    return services.AddTransient<IBannerQuerier, BannerQuerier>();
+    return services
+      .AddTransient<IBannerQuerier, BannerQuerier>()
+      .AddTransient<IStoreQuerier, StoreQuerier>();
   }
 
   private static IServiceCollection AddRepositories(this IServiceCollection services)
   {
-    return services.AddTransient<IBannerRepository, BannerRepository>();
+    return services
+      .AddTransient<IBannerRepository, BannerRepository>()
+      .AddTransient<IStoreRepository, StoreRepository>();
   }
 }

@@ -8,11 +8,13 @@ internal class DeleteBannerCommandHandler : IRequestHandler<DeleteBannerCommand,
 {
   private readonly IBannerQuerier _bannerQuerier;
   private readonly IBannerRepository _bannerRepository;
+  private readonly IPublisher _publisher;
 
-  public DeleteBannerCommandHandler(IBannerQuerier bannerQuerier, IBannerRepository bannerRepository)
+  public DeleteBannerCommandHandler(IBannerQuerier bannerQuerier, IBannerRepository bannerRepository, IPublisher publisher)
   {
     _bannerQuerier = bannerQuerier;
     _bannerRepository = bannerRepository;
+    _publisher = publisher;
   }
 
   public async Task<Banner?> Handle(DeleteBannerCommand command, CancellationToken cancellationToken)
@@ -26,6 +28,7 @@ internal class DeleteBannerCommandHandler : IRequestHandler<DeleteBannerCommand,
 
     banner.Delete(command.ActorId);
 
+    await _publisher.Publish(new RemoveBannerCommand(command.ActorId, banner), cancellationToken);
     await _bannerRepository.SaveAsync(banner, cancellationToken);
 
     return result;
