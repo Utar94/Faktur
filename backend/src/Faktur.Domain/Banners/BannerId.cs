@@ -7,6 +7,10 @@ public record BannerId
   public AggregateId AggregateId { get; }
   public string Value => AggregateId.Value;
 
+  public BannerId(Guid id) : this(new AggregateId(id))
+  {
+  }
+
   public BannerId(AggregateId id)
   {
     AggregateId = id;

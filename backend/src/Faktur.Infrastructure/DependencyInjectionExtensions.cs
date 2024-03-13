@@ -28,7 +28,9 @@ public static class DependencyInjectionExtensions
   [
     new BannerIdConverter(),
     new DescriptionConverter(),
-    new DisplayNameConverter()
+    new DisplayNameConverter(),
+    new NumberConverter(),
+    new StoreIdConverter()
   ];
 
   private static CachingSettings InitializeCachingSettings(IServiceProvider serviceProvider)

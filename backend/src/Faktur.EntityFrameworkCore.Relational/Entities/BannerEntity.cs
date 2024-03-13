@@ -4,10 +4,12 @@ namespace Faktur.EntityFrameworkCore.Relational.Entities;
 
 internal class BannerEntity : AggregateEntity
 {
-  public int BannerId { get; set; }
+  public int BannerId { get; private set; }
 
-  public string DisplayName { get; set; } = string.Empty;
-  public string? Description { get; set; }
+  public string DisplayName { get; private set; } = string.Empty;
+  public string? Description { get; private set; }
+
+  public List<StoreEntity> Stores { get; private set; } = [];
 
   public BannerEntity(BannerCreatedEvent @event) : base(@event)
   {

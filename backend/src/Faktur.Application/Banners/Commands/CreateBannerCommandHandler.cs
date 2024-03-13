@@ -29,6 +29,8 @@ internal class CreateBannerCommandHandler : IRequestHandler<CreateBannerCommand,
       Description = DescriptionUnit.TryCreate(payload.Description)
     };
 
+    banner.Update(command.ActorId);
+
     await _bannerRepository.SaveAsync(banner, cancellationToken);
 
     return await _bannerQuerier.ReadAsync(banner, cancellationToken);
