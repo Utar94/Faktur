@@ -2,5 +2,6 @@
 
 public enum UnitType
 {
-  Kg
+  Kg,
+  Lbs
 }

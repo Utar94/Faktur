@@ -33,6 +33,7 @@ public static class DependencyInjectionExtensions
     new FlagsConverter(),
     new GtinConverter(),
     new NumberConverter(),
+    new ProductIdConverter(),
     new SkuConverter(),
     new StoreIdConverter()
   ];

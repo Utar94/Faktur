@@ -26,6 +26,7 @@ internal class DeleteArticleCommandHandler : IRequestHandler<DeleteArticleComman
 
     article.Delete(command.ActorId);
 
+    // TODO(fpion): delete products
     await _articleRepository.SaveAsync(article, cancellationToken);
 
     return result;

@@ -26,6 +26,7 @@ internal class DeleteStoreCommandHandler : IRequestHandler<DeleteStoreCommand, S
 
     store.Delete(command.ActorId);
 
+    // TODO(fpion): delete products
     await _storeRepository.SaveAsync(store, cancellationToken);
 
     return result;
