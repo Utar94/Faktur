@@ -93,7 +93,7 @@ public class StoreAggregate : AggregateRoot
 
   public void RemoveDepartment(NumberUnit number, ActorId actorId = default)
   {
-    if (_departments.ContainsKey(number))
+    if (HasDepartment(number))
     {
       Raise(new StoreDepartmentRemovedEvent(number, actorId));
     }
@@ -116,6 +116,7 @@ public class StoreAggregate : AggregateRoot
     _departments[@event.Number] = @event.Department;
   }
 
+  public bool HasDepartment(NumberUnit number) => _departments.ContainsKey(number);
   public DepartmentUnit? TryFindDepartment(NumberUnit number)
   {
     if (_departments.TryGetValue(number, out DepartmentUnit? department))

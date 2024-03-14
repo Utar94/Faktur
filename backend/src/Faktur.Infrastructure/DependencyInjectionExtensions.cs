@@ -30,8 +30,10 @@ public static class DependencyInjectionExtensions
     new BannerIdConverter(),
     new DescriptionConverter(),
     new DisplayNameConverter(),
+    new FlagsConverter(),
     new GtinConverter(),
     new NumberConverter(),
+    new SkuConverter(),
     new StoreIdConverter()
   ];
 

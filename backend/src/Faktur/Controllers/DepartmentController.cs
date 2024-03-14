@@ -32,12 +32,13 @@ public class DepartmentController : ControllerBase
     }
     else if (result.IsCreated)
     {
+      Department department = result.Department;
       Uri location = HttpContext.BuildLocation("stores/{storeId}/departments/{number}", new Dictionary<string, string>
       {
-        ["storeId"] = result.Department.Store.Id.ToString(),
-        ["number"] = result.Department.Number
+        ["storeId"] = department.Store.Id.ToString(),
+        ["number"] = department.Number
       });
-      return Created(location, result.Department);
+      return Created(location, department);
     }
     else
     {
@@ -62,7 +63,7 @@ public class DepartmentController : ControllerBase
   [HttpGet]
   public async Task<ActionResult<SearchResults<Department>>> SearchAsync(Guid storeId, [FromQuery] SearchDepartmentsModel model, CancellationToken cancellationToken)
   {
-    SearchResults<Department> results = await _mediator.Send(new SearchDepartmentsQuery(storeId, model.ToPayload()), cancellationToken);
+    SearchResults<Department> results = await _mediator.Send(new SearchDepartmentsQuery(model.ToPayload(storeId)), cancellationToken);
     return Ok(results);
   }
 

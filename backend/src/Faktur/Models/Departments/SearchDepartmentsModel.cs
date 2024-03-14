@@ -4,9 +4,9 @@ namespace Faktur.Models.Departments;
 
 public record SearchDepartmentsModel : SearchModel
 {
-  public SearchDepartmentsPayload ToPayload()
+  public SearchDepartmentsPayload ToPayload(Guid storeId)
   {
-    SearchDepartmentsPayload payload = new();
+    SearchDepartmentsPayload payload = new(storeId);
     Fill(payload);
 
     foreach (string sort in Sort)

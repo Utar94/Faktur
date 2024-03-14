@@ -11,7 +11,7 @@ public record GtinUnit
   public GtinUnit(string value)
   {
     Value = value.Trim();
-    new GtinValidator().ValidateAndThrow(value);
+    new GtinValidator().ValidateAndThrow(Value);
   }
 
   public static GtinUnit? TryCreate(string? value)

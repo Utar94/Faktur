@@ -5,7 +5,6 @@ namespace Faktur.Contracts.Departments;
 
 public class Department
 {
-  public Store Store { get; set; }
   public string Number { get; set; }
   public string DisplayName { get; set; }
   public string? Description { get; set; }
@@ -14,6 +13,8 @@ public class Department
   public DateTime CreatedOn { get; set; }
   public Actor UpdatedBy { get; set; } = new();
   public DateTime UpdatedOn { get; set; }
+
+  public Store Store { get; set; }
 
   public Department() : this(new Store(), string.Empty, string.Empty)
   {
