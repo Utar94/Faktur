@@ -31,6 +31,64 @@ internal class ProductRepository : Logitar.EventSourcing.EntityFrameworkCore.Rel
     return await base.LoadAsync<ProductAggregate>(id.AggregateId, version, cancellationToken);
   }
 
+  public async Task<IEnumerable<ProductAggregate>> LoadAsync(ArticleAggregate article, CancellationToken cancellationToken)
+  {
+    IQuery query = _sqlHelper.QueryFrom(EventDb.Events.Table)
+      .Join(FakturDb.Products.AggregateId, EventDb.Events.AggregateId,
+        new OperatorCondition(EventDb.Events.AggregateType, Operators.IsEqualTo(AggregateType))
+      )
+      .Join(FakturDb.Articles.ArticleId, FakturDb.Products.ArticleId)
+      .Where(FakturDb.Articles.AggregateId, Operators.IsEqualTo(article.Id.Value))
+      .SelectAll(EventDb.Events.Table)
+      .Build();
+
+    EventEntity[] events = await EventContext.Events.FromQuery(query)
+      .AsNoTracking()
+      .OrderBy(e => e.Version)
+      .ToArrayAsync(cancellationToken);
+
+    return Load<ProductAggregate>(events.Select(EventSerializer.Deserialize));
+  }
+
+  public async Task<IEnumerable<ProductAggregate>> LoadAsync(StoreAggregate store, CancellationToken cancellationToken)
+  {
+    IQuery query = _sqlHelper.QueryFrom(EventDb.Events.Table)
+      .Join(FakturDb.Products.AggregateId, EventDb.Events.AggregateId,
+        new OperatorCondition(EventDb.Events.AggregateType, Operators.IsEqualTo(AggregateType))
+      )
+      .Join(FakturDb.Stores.StoreId, FakturDb.Products.StoreId)
+      .Where(FakturDb.Stores.AggregateId, Operators.IsEqualTo(store.Id.Value))
+      .SelectAll(EventDb.Events.Table)
+      .Build();
+
+    EventEntity[] events = await EventContext.Events.FromQuery(query)
+      .AsNoTracking()
+      .OrderBy(e => e.Version)
+      .ToArrayAsync(cancellationToken);
+
+    return Load<ProductAggregate>(events.Select(EventSerializer.Deserialize));
+  }
+  public async Task<IEnumerable<ProductAggregate>> LoadAsync(StoreAggregate store, NumberUnit departmentNumber, CancellationToken cancellationToken)
+  {
+    IQuery query = _sqlHelper.QueryFrom(EventDb.Events.Table)
+      .Join(FakturDb.Products.AggregateId, EventDb.Events.AggregateId,
+        new OperatorCondition(EventDb.Events.AggregateType, Operators.IsEqualTo(AggregateType))
+      )
+      .Join(FakturDb.Departments.DepartmentId, FakturDb.Products.DepartmentId)
+      .Join(FakturDb.Stores.StoreId, FakturDb.Departments.StoreId)
+      .Where(FakturDb.Stores.AggregateId, Operators.IsEqualTo(store.Id.Value))
+      .Where(FakturDb.Departments.NumberNormalized, Operators.IsEqualTo(departmentNumber.Value))
+      .SelectAll(EventDb.Events.Table)
+      .Build();
+
+    EventEntity[] events = await EventContext.Events.FromQuery(query)
+      .AsNoTracking()
+      .OrderBy(e => e.Version)
+      .ToArrayAsync(cancellationToken);
+
+    return Load<ProductAggregate>(events.Select(EventSerializer.Deserialize));
+  }
+
   public async Task<ProductAggregate?> LoadAsync(Guid storeGuid, Guid articleGuid, CancellationToken cancellationToken)
   {
     StoreId storeId = new(storeGuid);
