@@ -1,15 +1,16 @@
-﻿using Logitar;
+﻿using Faktur.Domain.Articles;
+using Logitar;
 
-namespace Faktur.Domain.Articles;
+namespace Faktur.Application.Articles;
 
 public class GtinAlreadyUsedException : Exception
 {
   private const string ErrorMessage = "The specified Global Trade Item Number (GTIN) is already used.";
 
-  public GtinUnit Gtin
+  public string Gtin
   {
-    get => new((string)Data[nameof(Gtin)]!);
-    private set => Data[nameof(Gtin)] = value.Value;
+    get => (string)Data[nameof(Gtin)]!;
+    private set => Data[nameof(Gtin)] = value;
   }
   public string? PropertyName
   {
@@ -19,7 +20,7 @@ public class GtinAlreadyUsedException : Exception
 
   public GtinAlreadyUsedException(GtinUnit gtin, string? propertyName = null) : base(BuildMessage(gtin, propertyName))
   {
-    Gtin = gtin;
+    Gtin = gtin.Value;
     PropertyName = propertyName;
   }
 

@@ -1,4 +1,5 @@
-﻿using Faktur.Contracts.Articles;
+﻿using Faktur.Application.Products.Commands;
+using Faktur.Contracts.Articles;
 using Faktur.Domain.Articles;
 using MediatR;
 
@@ -8,11 +9,13 @@ internal class DeleteArticleCommandHandler : IRequestHandler<DeleteArticleComman
 {
   private readonly IArticleQuerier _articleQuerier;
   private readonly IArticleRepository _articleRepository;
+  private readonly IPublisher _publisher;
 
-  public DeleteArticleCommandHandler(IArticleQuerier articleQuerier, IArticleRepository articleRepository)
+  public DeleteArticleCommandHandler(IArticleQuerier articleQuerier, IArticleRepository articleRepository, IPublisher publisher)
   {
     _articleQuerier = articleQuerier;
     _articleRepository = articleRepository;
+    _publisher = publisher;
   }
 
   public async Task<Article?> Handle(DeleteArticleCommand command, CancellationToken cancellationToken)
@@ -26,6 +29,7 @@ internal class DeleteArticleCommandHandler : IRequestHandler<DeleteArticleComman
 
     article.Delete(command.ActorId);
 
+    await _publisher.Publish(new DeleteArticleProductsCommand(command.ActorId, article));
     await _articleRepository.SaveAsync(article, cancellationToken);
 
     return result;

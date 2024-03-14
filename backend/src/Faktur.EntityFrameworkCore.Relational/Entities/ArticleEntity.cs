@@ -15,6 +15,8 @@ internal class ArticleEntity : AggregateEntity
   public string DisplayName { get; private set; } = string.Empty;
   public string? Description { get; private set; }
 
+  public List<ProductEntity> Products { get; private set; } = [];
+
   public ArticleEntity(ArticleCreatedEvent @event) : base(@event)
   {
     DisplayName = @event.DisplayName.Value;

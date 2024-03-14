@@ -1,4 +1,5 @@
-﻿using Faktur.Contracts.Stores;
+﻿using Faktur.Application.Products.Commands;
+using Faktur.Contracts.Stores;
 using Faktur.Domain.Stores;
 using MediatR;
 
@@ -6,11 +7,13 @@ namespace Faktur.Application.Stores.Commands;
 
 internal class DeleteStoreCommandHandler : IRequestHandler<DeleteStoreCommand, Store?>
 {
+  private readonly IPublisher _publisher;
   private readonly IStoreQuerier _storeQuerier;
   private readonly IStoreRepository _storeRepository;
 
-  public DeleteStoreCommandHandler(IStoreQuerier storeQuerier, IStoreRepository storeRepository)
+  public DeleteStoreCommandHandler(IPublisher publisher, IStoreQuerier storeQuerier, IStoreRepository storeRepository)
   {
+    _publisher = publisher;
     _storeQuerier = storeQuerier;
     _storeRepository = storeRepository;
   }
@@ -26,6 +29,7 @@ internal class DeleteStoreCommandHandler : IRequestHandler<DeleteStoreCommand, S
 
     store.Delete(command.ActorId);
 
+    await _publisher.Publish(new DeleteStoreProductsCommand(command.ActorId, store), cancellationToken);
     await _storeRepository.SaveAsync(store, cancellationToken);
 
     return result;

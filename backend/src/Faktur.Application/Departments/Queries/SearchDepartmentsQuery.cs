@@ -4,4 +4,4 @@ using MediatR;
 
 namespace Faktur.Application.Departments.Queries;
 
-public record SearchDepartmentsQuery(Guid StoreId, SearchDepartmentsPayload Payload) : IRequest<SearchResults<Department>>;
+public record SearchDepartmentsQuery(SearchDepartmentsPayload Payload) : IRequest<SearchResults<Department>>;

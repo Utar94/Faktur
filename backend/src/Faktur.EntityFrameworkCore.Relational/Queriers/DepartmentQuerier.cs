@@ -48,9 +48,9 @@ internal class DepartmentQuerier : IDepartmentQuerier
     return department == null ? null : await MapAsync(department, cancellationToken);
   }
 
-  public async Task<SearchResults<Department>> SearchAsync(Guid storeGuid, SearchDepartmentsPayload payload, CancellationToken cancellationToken)
+  public async Task<SearchResults<Department>> SearchAsync(SearchDepartmentsPayload payload, CancellationToken cancellationToken)
   {
-    StoreId storeId = new(storeGuid);
+    StoreId storeId = new(payload.StoreId);
 
     IQueryBuilder builder = _sqlHelper.QueryFrom(FakturDb.Departments.Table).SelectAll(FakturDb.Departments.Table)
       .Join(FakturDb.Stores.StoreId, FakturDb.Departments.StoreId)

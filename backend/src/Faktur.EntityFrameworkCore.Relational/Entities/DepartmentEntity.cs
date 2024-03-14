@@ -24,6 +24,8 @@ internal class DepartmentEntity
   public string UpdatedBy { get; private set; } = ActorId.DefaultValue;
   public DateTime UpdatedOn { get; private set; }
 
+  public List<ProductEntity> Products { get; private set; } = [];
+
   public DepartmentEntity(StoreEntity store, StoreDepartmentSavedEvent @event)
   {
     Store = store;

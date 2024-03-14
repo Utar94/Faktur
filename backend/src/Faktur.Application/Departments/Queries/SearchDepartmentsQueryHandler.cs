@@ -15,6 +15,6 @@ internal class SearchDepartmentsQueryHandler : IRequestHandler<SearchDepartments
 
   public async Task<SearchResults<Department>> Handle(SearchDepartmentsQuery query, CancellationToken cancellationToken)
   {
-    return await _departmentQuerier.SearchAsync(query.StoreId, query.Payload, cancellationToken);
+    return await _departmentQuerier.SearchAsync(query.Payload, cancellationToken);
   }
 }

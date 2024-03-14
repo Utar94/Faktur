@@ -269,6 +269,112 @@ namespace Faktur.EntityFrameworkCore.SqlServer.Migrations
                     b.ToTable("Departments", (string)null);
                 });
 
+            modelBuilder.Entity("Faktur.EntityFrameworkCore.Relational.Entities.ProductEntity", b =>
+                {
+                    b.Property<int>("ProductId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ProductId"));
+
+                    b.Property<string>("AggregateId")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<int>("ArticleId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("DepartmentId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DisplayName")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("Flags")
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<string>("Sku")
+                        .HasMaxLength(32)
+                        .HasColumnType("nvarchar(32)");
+
+                    b.Property<string>("SkuNormalized")
+                        .HasMaxLength(32)
+                        .HasColumnType("nvarchar(32)");
+
+                    b.Property<int>("StoreId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal?>("UnitPrice")
+                        .HasColumnType("money");
+
+                    b.Property<string>("UnitType")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("UpdatedBy")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<DateTime>("UpdatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long>("Version")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("ProductId");
+
+                    b.HasIndex("AggregateId")
+                        .IsUnique();
+
+                    b.HasIndex("ArticleId");
+
+                    b.HasIndex("CreatedBy");
+
+                    b.HasIndex("CreatedOn");
+
+                    b.HasIndex("DepartmentId");
+
+                    b.HasIndex("DisplayName");
+
+                    b.HasIndex("Flags");
+
+                    b.HasIndex("Sku");
+
+                    b.HasIndex("UnitPrice");
+
+                    b.HasIndex("UnitType");
+
+                    b.HasIndex("UpdatedBy");
+
+                    b.HasIndex("UpdatedOn");
+
+                    b.HasIndex("Version");
+
+                    b.HasIndex("StoreId", "ArticleId")
+                        .IsUnique();
+
+                    b.HasIndex("StoreId", "Sku")
+                        .IsUnique()
+                        .HasFilter("[Sku] IS NOT NULL");
+
+                    b.ToTable("Products", (string)null);
+                });
+
             modelBuilder.Entity("Faktur.EntityFrameworkCore.Relational.Entities.StoreEntity", b =>
                 {
                     b.Property<int>("StoreId")
@@ -356,6 +462,32 @@ namespace Faktur.EntityFrameworkCore.SqlServer.Migrations
                     b.Navigation("Store");
                 });
 
+            modelBuilder.Entity("Faktur.EntityFrameworkCore.Relational.Entities.ProductEntity", b =>
+                {
+                    b.HasOne("Faktur.EntityFrameworkCore.Relational.Entities.ArticleEntity", "Article")
+                        .WithMany("Products")
+                        .HasForeignKey("ArticleId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Faktur.EntityFrameworkCore.Relational.Entities.DepartmentEntity", "Department")
+                        .WithMany("Products")
+                        .HasForeignKey("DepartmentId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Faktur.EntityFrameworkCore.Relational.Entities.StoreEntity", "Store")
+                        .WithMany("Products")
+                        .HasForeignKey("StoreId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Article");
+
+                    b.Navigation("Department");
+
+                    b.Navigation("Store");
+                });
+
             modelBuilder.Entity("Faktur.EntityFrameworkCore.Relational.Entities.StoreEntity", b =>
                 {
                     b.HasOne("Faktur.EntityFrameworkCore.Relational.Entities.BannerEntity", "Banner")
@@ -366,14 +498,26 @@ namespace Faktur.EntityFrameworkCore.SqlServer.Migrations
                     b.Navigation("Banner");
                 });
 
+            modelBuilder.Entity("Faktur.EntityFrameworkCore.Relational.Entities.ArticleEntity", b =>
+                {
+                    b.Navigation("Products");
+                });
+
             modelBuilder.Entity("Faktur.EntityFrameworkCore.Relational.Entities.BannerEntity", b =>
                 {
                     b.Navigation("Stores");
                 });
 
+            modelBuilder.Entity("Faktur.EntityFrameworkCore.Relational.Entities.DepartmentEntity", b =>
+                {
+                    b.Navigation("Products");
+                });
+
             modelBuilder.Entity("Faktur.EntityFrameworkCore.Relational.Entities.StoreEntity", b =>
                 {
                     b.Navigation("Departments");
+
+                    b.Navigation("Products");
                 });
 #pragma warning restore 612, 618
         }
