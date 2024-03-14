@@ -13,7 +13,7 @@ public class Product : Aggregate
 
   public string? Flags { get; set; }
 
-  public double? UnitPrice { get; set; }
+  public decimal? UnitPrice { get; set; }
   public UnitType? UnitType { get; set; }
 
   public Article Article { get; set; }

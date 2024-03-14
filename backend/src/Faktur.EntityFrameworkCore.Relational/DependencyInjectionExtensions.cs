@@ -1,9 +1,11 @@
 ﻿using Faktur.Application.Articles;
 using Faktur.Application.Banners;
 using Faktur.Application.Departments;
+using Faktur.Application.Products;
 using Faktur.Application.Stores;
 using Faktur.Domain.Articles;
 using Faktur.Domain.Banners;
+using Faktur.Domain.Products;
 using Faktur.Domain.Stores;
 using Faktur.EntityFrameworkCore.Relational.Actors;
 using Faktur.EntityFrameworkCore.Relational.Queriers;
@@ -34,6 +36,7 @@ public static class DependencyInjectionExtensions
       .AddTransient<IArticleQuerier, ArticleQuerier>()
       .AddTransient<IBannerQuerier, BannerQuerier>()
       .AddTransient<IDepartmentQuerier, DepartmentQuerier>()
+      .AddTransient<IProductQuerier, ProductQuerier>()
       .AddTransient<IStoreQuerier, StoreQuerier>();
   }
 
@@ -42,6 +45,7 @@ public static class DependencyInjectionExtensions
     return services
       .AddTransient<IArticleRepository, ArticleRepository>()
       .AddTransient<IBannerRepository, BannerRepository>()
+      .AddTransient<IProductRepository, ProductRepository>()
       .AddTransient<IStoreRepository, StoreRepository>();
   }
 }

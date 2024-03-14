@@ -1,6 +1,7 @@
 ﻿using Faktur.Contracts.Articles;
 using Faktur.Contracts.Banners;
 using Faktur.Contracts.Departments;
+using Faktur.Contracts.Products;
 using Faktur.Contracts.Stores;
 using Faktur.EntityFrameworkCore.Relational.Entities;
 using Logitar.EventSourcing;
@@ -71,6 +72,38 @@ internal class Mapper
       UpdatedBy = FindActor(source.UpdatedBy),
       UpdatedOn = AsUniversalTime(source.UpdatedOn)
     };
+
+    return destination;
+  }
+
+  public Product ToProduct(ProductEntity source)
+  {
+    if (source.Article == null)
+    {
+      throw new ArgumentException($"The '{nameof(source.Article)}' is required.", nameof(source));
+    }
+    if (source.Store == null)
+    {
+      throw new ArgumentException($"The '{nameof(source.Store)}' is required.", nameof(source));
+    }
+
+    Article article = ToArticle(source.Article);
+    Store store = ToStore(source.Store, includeDepartments: true);
+    Product destination = new(article, store)
+    {
+      Sku = source.Sku,
+      DisplayName = source.DisplayName,
+      Description = source.Description,
+      Flags = source.Flags,
+      UnitPrice = source.UnitPrice,
+      UnitType = source.UnitType
+    };
+    if (source.Department != null)
+    {
+      destination.Department = ToDepartment(source.Department, store);
+    }
+
+    MapAggregate(source, destination);
 
     return destination;
   }

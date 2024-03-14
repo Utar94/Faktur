@@ -10,6 +10,6 @@ public class UpdateProductPayload
 
   public Modification<string>? Flags { get; set; }
 
-  public Modification<double?>? UnitPrice { get; set; }
+  public Modification<decimal?>? UnitPrice { get; set; }
   public Modification<UnitType?>? UnitType { get; set; }
 }

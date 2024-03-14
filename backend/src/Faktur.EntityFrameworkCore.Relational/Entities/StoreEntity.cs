@@ -17,6 +17,8 @@ internal class StoreEntity : AggregateEntity
   public int DepartmentCount { get; private set; }
   public List<DepartmentEntity> Departments { get; private set; } = [];
 
+  public List<ProductEntity> Products { get; private set; } = [];
+
   public StoreEntity(StoreCreatedEvent @event) : base(@event)
   {
     DisplayName = @event.DisplayName.Value;

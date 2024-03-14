@@ -66,6 +66,29 @@ internal static class FakturDb
     public static readonly ColumnId UpdatedOn = new(nameof(DepartmentEntity.UpdatedOn), Table);
   }
 
+  public static class Products
+  {
+    public static readonly TableId Table = new(nameof(FakturContext.Products));
+
+    public static readonly ColumnId AggregateId = new(nameof(ProductEntity.AggregateId), Table);
+    public static readonly ColumnId ArticleId = new(nameof(ProductEntity.ArticleId), Table);
+    public static readonly ColumnId CreatedBy = new(nameof(ProductEntity.CreatedBy), Table);
+    public static readonly ColumnId CreatedOn = new(nameof(ProductEntity.CreatedOn), Table);
+    public static readonly ColumnId DepartmentId = new(nameof(ProductEntity.DepartmentId), Table);
+    public static readonly ColumnId Description = new(nameof(ProductEntity.Description), Table);
+    public static readonly ColumnId DisplayName = new(nameof(ProductEntity.DisplayName), Table);
+    public static readonly ColumnId Flags = new(nameof(ProductEntity.Flags), Table);
+    public static readonly ColumnId ProductId = new(nameof(ProductEntity.ProductId), Table);
+    public static readonly ColumnId Sku = new(nameof(ProductEntity.Sku), Table);
+    public static readonly ColumnId SkuNormalized = new(nameof(ProductEntity.SkuNormalized), Table);
+    public static readonly ColumnId StoreId = new(nameof(ProductEntity.StoreId), Table);
+    public static readonly ColumnId UnitPrice = new(nameof(ProductEntity.UnitPrice), Table);
+    public static readonly ColumnId UnitType = new(nameof(ProductEntity.UnitType), Table);
+    public static readonly ColumnId UpdatedBy = new(nameof(ProductEntity.UpdatedBy), Table);
+    public static readonly ColumnId UpdatedOn = new(nameof(ProductEntity.UpdatedOn), Table);
+    public static readonly ColumnId Version = new(nameof(ProductEntity.Version), Table);
+  }
+
   public static class Stores
   {
     public static readonly TableId Table = new(nameof(FakturContext.Stores));

@@ -86,8 +86,8 @@ public class ProductAggregate : AggregateRoot
     }
   }
 
-  private double? _unitPrice = null;
-  public double? UnitPrice
+  private decimal? _unitPrice = null;
+  public decimal? UnitPrice
   {
     get => _unitPrice;
     set
@@ -95,7 +95,7 @@ public class ProductAggregate : AggregateRoot
       if (value != _unitPrice)
       {
         _unitPrice = value;
-        _updatedEvent.UnitPrice = new Modification<double?>(value);
+        _updatedEvent.UnitPrice = new Modification<decimal?>(value);
       }
     }
   }
