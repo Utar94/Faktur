@@ -28,6 +28,8 @@ internal class ProductEntity : AggregateEntity
   public decimal? UnitPrice { get; private set; }
   public UnitType? UnitType { get; private set; }
 
+  public List<ReceiptItemEntity> ReceiptItems { get; private set; } = [];
+
   public ProductEntity(StoreEntity store, ArticleEntity article, ProductCreatedEvent @event) : base(@event)
   {
     Store = store;

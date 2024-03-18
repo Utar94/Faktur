@@ -30,6 +30,7 @@ internal class DeleteStoreCommandHandler : IRequestHandler<DeleteStoreCommand, S
     store.Delete(command.ActorId);
 
     await _publisher.Publish(new DeleteStoreProductsCommand(command.ActorId, store), cancellationToken);
+    // TODO(fpion): DeleteStoreReceiptsCommand
     await _storeRepository.SaveAsync(store, cancellationToken);
 
     return result;

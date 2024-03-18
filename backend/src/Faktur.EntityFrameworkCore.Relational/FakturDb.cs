@@ -89,6 +89,54 @@ internal static class FakturDb
     public static readonly ColumnId Version = new(nameof(ProductEntity.Version), Table);
   }
 
+  public static class ReceiptItems
+  {
+    public static readonly TableId Table = new(nameof(FakturContext.ReceiptItems));
+
+    public static readonly ColumnId DepartmentName = new(nameof(ReceiptItemEntity.DepartmentName), Table);
+    public static readonly ColumnId DepartmentNumber = new(nameof(ReceiptItemEntity.DepartmentNumber), Table);
+    public static readonly ColumnId Flags = new(nameof(ReceiptItemEntity.Flags), Table);
+    public static readonly ColumnId Gtin = new(nameof(ReceiptItemEntity.Gtin), Table);
+    public static readonly ColumnId GtinNormalized = new(nameof(ReceiptItemEntity.GtinNormalized), Table);
+    public static readonly ColumnId Label = new(nameof(ReceiptItemEntity.Label), Table);
+    public static readonly ColumnId Number = new(nameof(ReceiptItemEntity.Number), Table);
+    public static readonly ColumnId Price = new(nameof(ReceiptItemEntity.Price), Table);
+    public static readonly ColumnId ProductId = new(nameof(ReceiptItemEntity.ProductId), Table);
+    public static readonly ColumnId Quantity = new(nameof(ReceiptItemEntity.Quantity), Table);
+    public static readonly ColumnId ReceiptId = new(nameof(ReceiptItemEntity.ReceiptId), Table);
+    public static readonly ColumnId Sku = new(nameof(ReceiptItemEntity.Sku), Table);
+    public static readonly ColumnId SkuNormalized = new(nameof(ReceiptItemEntity.SkuNormalized), Table);
+    public static readonly ColumnId UnitPrice = new(nameof(ReceiptItemEntity.UnitPrice), Table);
+  }
+
+  public static class Receipts
+  {
+    public static readonly TableId Table = new(nameof(FakturContext.Receipts));
+
+    public static readonly ColumnId AggregateId = new(nameof(ReceiptEntity.AggregateId), Table);
+    public static readonly ColumnId CreatedBy = new(nameof(ReceiptEntity.CreatedBy), Table);
+    public static readonly ColumnId CreatedOn = new(nameof(ReceiptEntity.CreatedOn), Table);
+    public static readonly ColumnId IssuedOn = new(nameof(ReceiptEntity.IssuedOn), Table);
+    public static readonly ColumnId ItemCount = new(nameof(ReceiptEntity.ItemCount), Table);
+    public static readonly ColumnId Number = new(nameof(ReceiptEntity.Number), Table);
+    public static readonly ColumnId ReceiptId = new(nameof(ReceiptEntity.ReceiptId), Table);
+    public static readonly ColumnId StoreId = new(nameof(ReceiptEntity.StoreId), Table);
+    public static readonly ColumnId UpdatedBy = new(nameof(ReceiptEntity.UpdatedBy), Table);
+    public static readonly ColumnId UpdatedOn = new(nameof(ReceiptEntity.UpdatedOn), Table);
+    public static readonly ColumnId Version = new(nameof(ReceiptEntity.Version), Table);
+  }
+
+  public static class ReceiptTaxes
+  {
+    public static readonly TableId Table = new(nameof(FakturContext.ReceiptTaxes));
+
+    public static readonly ColumnId Amount = new(nameof(ReceiptTaxEntity.Amount), Table);
+    public static readonly ColumnId Code = new(nameof(ReceiptTaxEntity.Code), Table);
+    public static readonly ColumnId Rate = new(nameof(ReceiptTaxEntity.Rate), Table);
+    public static readonly ColumnId ReceiptId = new(nameof(ReceiptTaxEntity.ReceiptId), Table);
+    public static readonly ColumnId TaxableAmount = new(nameof(ReceiptTaxEntity.TaxableAmount), Table);
+  }
+
   public static class Stores
   {
     public static readonly TableId Table = new(nameof(FakturContext.Stores));
