@@ -34,6 +34,7 @@ public static class DependencyInjectionExtensions
     new GtinConverter(),
     new NumberConverter(),
     new ProductIdConverter(),
+    new ReceiptIdConverter(),
     new SkuConverter(),
     new StoreIdConverter()
   ];
