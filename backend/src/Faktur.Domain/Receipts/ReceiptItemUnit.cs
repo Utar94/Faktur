@@ -40,5 +40,6 @@ public record ReceiptItemUnit
     Quantity = quantity; // TODO(fpion): validate
     UnitPrice = unitPrice; // TODO(fpion): validate
     Price = price; // TODO(fpion): validate
+    // TODO(fpion): Department?
   }
 }

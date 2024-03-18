@@ -17,8 +17,12 @@ internal class ReceiptConfiguration : AggregateConfiguration<ReceiptEntity>, IEn
     builder.HasIndex(x => x.IssuedOn);
     builder.HasIndex(x => x.Number);
     builder.HasIndex(x => x.ItemCount);
+    builder.HasIndex(x => x.SubTotal);
+    builder.HasIndex(x => x.Total);
 
     builder.Property(x => x.Number).HasMaxLength(NumberUnit.MaximumLength);
+    builder.Property(x => x.SubTotal).HasColumnType("money");
+    builder.Property(x => x.Total).HasColumnType("money");
 
     builder.HasOne(x => x.Store).WithMany(x => x.Receipts).OnDelete(DeleteBehavior.Restrict);
   }

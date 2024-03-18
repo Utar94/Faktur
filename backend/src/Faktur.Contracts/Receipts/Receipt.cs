@@ -11,13 +11,13 @@ public class Receipt : Aggregate
 
   public List<ReceiptItem> Items { get; set; }
 
-  public bool HasBeenProcessed { get; set; }
-  public Actor? ProcessedBy { get; set; }
-  public DateTime? ProcessedOn { get; set; }
-
   public decimal SubTotal { get; set; }
   public List<ReceiptTax> Taxes { get; set; }
   public decimal Total { get; set; }
+
+  public bool HasBeenProcessed { get; set; }
+  public Actor? ProcessedBy { get; set; }
+  public DateTime? ProcessedOn { get; set; }
 
   public Store Store { get; set; }
 

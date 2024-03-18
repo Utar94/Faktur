@@ -2,6 +2,7 @@
 using Faktur.Contracts.Banners;
 using Faktur.Contracts.Departments;
 using Faktur.Contracts.Products;
+using Faktur.Contracts.Receipts;
 using Faktur.Contracts.Stores;
 using Faktur.EntityFrameworkCore.Relational.Entities;
 using Logitar.EventSourcing;
@@ -106,6 +107,11 @@ internal class Mapper
     MapAggregate(source, destination);
 
     return destination;
+  }
+
+  public Receipt ToReceipt(ReceiptEntity source)
+  {
+    throw new NotImplementedException(); // TODO(fpion): implement
   }
 
   public Store ToStore(StoreEntity source, bool includeDepartments)

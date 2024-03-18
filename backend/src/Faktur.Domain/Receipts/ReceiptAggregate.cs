@@ -51,6 +51,23 @@ public class ReceiptAggregate : AggregateRoot
   {
   }
 
+  public ReceiptAggregate(StoreAggregate store, DateTime? issuedOn = null, NumberUnit? number = null, ActorId actorId = default, ReceiptId? id = null)
+    : base((id ?? ReceiptId.NewId()).AggregateId)
+  {
+    if (issuedOn.HasValue)
+    {
+      new IssuedOnValidator(nameof(issuedOn)).ValidateAndThrow(issuedOn.Value);
+    }
+
+    Raise(new ReceiptCreatedEvent(store.Id, issuedOn ?? DateTime.Now, number, actorId));
+  }
+  protected virtual void Apply(ReceiptCreatedEvent @event)
+  {
+    _storeId = @event.StoreId;
+    _issuedOn = @event.IssuedOn;
+    _number = @event.Number;
+  }
+
   public static ReceiptAggregate Import(StoreAggregate store, DateTime? issuedOn = null, NumberUnit? number = null, IEnumerable<ReceiptItemUnit>? items = null, ActorId actorId = default, ReceiptId? id = null)
   {
     if (issuedOn.HasValue)
