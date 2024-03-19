@@ -77,7 +77,7 @@ public class ReplaceReceiptCommandTests : IntegrationTests
   {
     ReplaceReceiptPayload payload = new()
     {
-      Number = RandomStringGenerator.GetString("0123456789ABCDEF", 16 + 1)
+      Number = RandomStringGenerator.GetString("0123456789ABCDEF", NumberUnit.MaximumLength + 1)
     };
     ReplaceReceiptCommand command = new(Guid.NewGuid(), payload, Version: null);
     var exception = await Assert.ThrowsAsync<FluentValidation.ValidationException>(async () => await Mediator.Send(command));

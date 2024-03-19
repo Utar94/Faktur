@@ -49,7 +49,7 @@ public class UpdateReceiptCommandTests : IntegrationTests
   {
     UpdateReceiptPayload payload = new()
     {
-      Number = new Modification<string>(RandomStringGenerator.GetString("0123456789ABCDEF", 16 + 1))
+      Number = new Modification<string>(RandomStringGenerator.GetString("0123456789ABCDEF", NumberUnit.MaximumLength + 1))
     };
     UpdateReceiptCommand command = new(Guid.NewGuid(), payload);
     var exception = await Assert.ThrowsAsync<FluentValidation.ValidationException>(async () => await Mediator.Send(command));

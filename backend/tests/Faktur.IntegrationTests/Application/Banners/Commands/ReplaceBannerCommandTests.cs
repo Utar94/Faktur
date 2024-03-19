@@ -34,7 +34,7 @@ public class ReplaceBannerCommandTests : IntegrationTests
   [Fact(DisplayName = "It should replace an existing banner.")]
   public async Task It_should_replace_an_existing_banner()
   {
-    BannerAggregate banner = new(new DisplayNameUnit("PC POULET BBQ"));
+    BannerAggregate banner = new(new DisplayNameUnit("MAXI"));
     long version = banner.Version;
     await _bannerRepository.SaveAsync(banner);
 
@@ -60,7 +60,7 @@ public class ReplaceBannerCommandTests : IntegrationTests
   [Fact(DisplayName = "It should return null when the banner cannot be found.")]
   public async Task It_should_return_null_when_the_banner_cannot_be_found()
   {
-    ReplaceBannerPayload payload = new("PC POULET BBQ");
+    ReplaceBannerPayload payload = new("MAXI");
     ReplaceBannerCommand command = new(Guid.NewGuid(), payload, Version: null);
     Assert.Null(await Mediator.Send(command));
   }
