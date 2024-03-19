@@ -28,6 +28,13 @@ public class ReceiptController : ControllerBase
     return Created(location, receipt);
   }
 
+  [HttpDelete("{id}")]
+  public async Task<ActionResult<Receipt>> DeleteAsync(Guid id, CancellationToken cancellationToken)
+  {
+    Receipt? receipt = await _mediator.Send(new DeleteReceiptCommand(id), cancellationToken);
+    return receipt == null ? NotFound() : Ok(receipt);
+  }
+
   [HttpGet("{id}")]
   public async Task<ActionResult<Receipt>> ReadAsync(Guid id, CancellationToken cancellationToken)
   {
