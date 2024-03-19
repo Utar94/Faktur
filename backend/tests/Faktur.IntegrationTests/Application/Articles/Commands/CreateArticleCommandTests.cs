@@ -1,5 +1,6 @@
 ﻿using Faktur.Contracts.Articles;
 using Faktur.EntityFrameworkCore.Relational;
+using FluentValidation.Results;
 using Logitar.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -49,6 +50,8 @@ public class CreateArticleCommandTests : IntegrationTests
     CreateArticlePayload payload = new(displayName: string.Empty);
     CreateArticleCommand command = new(payload);
     var exception = await Assert.ThrowsAsync<FluentValidation.ValidationException>(async () => await Mediator.Send(command));
-    Assert.Equal("NotEmptyValidator", Assert.Single(exception.Errors).ErrorCode);
+    ValidationFailure error = Assert.Single(exception.Errors);
+    Assert.Equal("NotEmptyValidator", error.ErrorCode);
+    Assert.Equal("DisplayName", error.PropertyName);
   }
 }

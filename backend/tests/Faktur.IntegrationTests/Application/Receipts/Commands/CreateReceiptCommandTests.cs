@@ -3,6 +3,7 @@ using Faktur.Contracts.Receipts;
 using Faktur.Domain.Shared;
 using Faktur.Domain.Stores;
 using Faktur.EntityFrameworkCore.Relational;
+using FluentValidation.Results;
 using Logitar.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -90,6 +91,8 @@ public class CreateReceiptCommandTests : IntegrationTests
     };
     CreateReceiptCommand command = new(payload);
     var exception = await Assert.ThrowsAsync<FluentValidation.ValidationException>(async () => await Mediator.Send(command));
-    Assert.Equal("PastValidator", Assert.Single(exception.Errors).ErrorCode);
+    ValidationFailure error = Assert.Single(exception.Errors);
+    Assert.Equal("PastValidator", error.ErrorCode);
+    Assert.Equal("IssuedOn.Value", error.PropertyName);
   }
 }

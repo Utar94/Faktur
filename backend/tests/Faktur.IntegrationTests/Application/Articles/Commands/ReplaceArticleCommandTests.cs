@@ -2,6 +2,7 @@
 using Faktur.Domain.Articles;
 using Faktur.Domain.Shared;
 using Faktur.EntityFrameworkCore.Relational;
+using FluentValidation.Results;
 using Logitar.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -70,6 +71,8 @@ public class ReplaceArticleCommandTests : IntegrationTests
     ReplaceArticlePayload payload = new(displayName: string.Empty);
     ReplaceArticleCommand command = new(Guid.NewGuid(), payload, Version: null);
     var exception = await Assert.ThrowsAsync<FluentValidation.ValidationException>(async () => await Mediator.Send(command));
-    Assert.Equal("NotEmptyValidator", Assert.Single(exception.Errors).ErrorCode);
+    ValidationFailure error = Assert.Single(exception.Errors);
+    Assert.Equal("NotEmptyValidator", error.ErrorCode);
+    Assert.Equal("DisplayName", error.PropertyName);
   }
 }

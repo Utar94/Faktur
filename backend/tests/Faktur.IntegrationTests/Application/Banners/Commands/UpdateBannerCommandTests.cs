@@ -3,6 +3,7 @@ using Faktur.Contracts.Banners;
 using Faktur.Domain.Banners;
 using Faktur.Domain.Shared;
 using Faktur.EntityFrameworkCore.Relational;
+using FluentValidation.Results;
 using Logitar.Data;
 using Logitar.Security.Cryptography;
 using Microsoft.EntityFrameworkCore;
@@ -49,7 +50,9 @@ public class UpdateBannerCommandTests : IntegrationTests
     };
     UpdateBannerCommand command = new(Guid.NewGuid(), payload);
     var exception = await Assert.ThrowsAsync<FluentValidation.ValidationException>(async () => await Mediator.Send(command));
-    Assert.Equal("MaximumLengthValidator", Assert.Single(exception.Errors).ErrorCode);
+    ValidationFailure error = Assert.Single(exception.Errors);
+    Assert.Equal("MaximumLengthValidator", error.ErrorCode);
+    Assert.Equal("DisplayName", error.PropertyName);
   }
 
   [Fact(DisplayName = "It should update an existing banner.")]

@@ -3,6 +3,7 @@ using Faktur.Contracts.Articles;
 using Faktur.Domain.Articles;
 using Faktur.Domain.Shared;
 using Faktur.EntityFrameworkCore.Relational;
+using FluentValidation.Results;
 using Logitar.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -48,7 +49,9 @@ public class UpdateArticleCommandTests : IntegrationTests
     };
     UpdateArticleCommand command = new(Guid.NewGuid(), payload);
     var exception = await Assert.ThrowsAsync<FluentValidation.ValidationException>(async () => await Mediator.Send(command));
-    Assert.Equal("AllowedCharactersValidator", Assert.Single(exception.Errors).ErrorCode);
+    ValidationFailure error = Assert.Single(exception.Errors);
+    Assert.Equal("AllowedCharactersValidator", error.ErrorCode);
+    Assert.Equal("Gtin.Value", error.PropertyName);
   }
 
   [Fact(DisplayName = "It should update an existing article.")]
