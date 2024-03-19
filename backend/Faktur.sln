@@ -26,6 +26,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Faktur.EntityFrameworkCore.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Faktur.EntityFrameworkCore.SqlServer", "src\Faktur.EntityFrameworkCore.SqlServer\Faktur.EntityFrameworkCore.SqlServer.csproj", "{685F89E4-CE6E-4ACD-BB07-650AC673443E}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{D6C0BA2F-F805-4BAB-AFD7-9D5A92DF1352}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Faktur.IntegrationTests", "tests\Faktur.IntegrationTests\Faktur.IntegrationTests.csproj", "{ABC4557E-132B-429E-9E6F-E812A126C1D9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -60,9 +64,16 @@ Global
 		{685F89E4-CE6E-4ACD-BB07-650AC673443E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{685F89E4-CE6E-4ACD-BB07-650AC673443E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{685F89E4-CE6E-4ACD-BB07-650AC673443E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ABC4557E-132B-429E-9E6F-E812A126C1D9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ABC4557E-132B-429E-9E6F-E812A126C1D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ABC4557E-132B-429E-9E6F-E812A126C1D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ABC4557E-132B-429E-9E6F-E812A126C1D9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{ABC4557E-132B-429E-9E6F-E812A126C1D9} = {D6C0BA2F-F805-4BAB-AFD7-9D5A92DF1352}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C3414F6E-6810-45E8-ADAA-2782088197F3}

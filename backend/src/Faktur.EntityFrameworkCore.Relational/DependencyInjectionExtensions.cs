@@ -14,18 +14,17 @@ using Faktur.EntityFrameworkCore.Relational.Queriers;
 using Faktur.EntityFrameworkCore.Relational.Repositories;
 using Faktur.Infrastructure;
 using Logitar.EventSourcing.EntityFrameworkCore.Relational;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Faktur.EntityFrameworkCore.Relational;
 
 public static class DependencyInjectionExtensions
 {
-  public static IServiceCollection AddFakturWithEntityFrameworkCoreRelational(this IServiceCollection services, IConfiguration configuration)
+  public static IServiceCollection AddFakturWithEntityFrameworkCoreRelational(this IServiceCollection services)
   {
     return services
       .AddLogitarEventSourcingWithEntityFrameworkCoreRelational()
-      .AddFakturInfrastructure(configuration)
+      .AddFakturInfrastructure()
       .AddMediatR(config => config.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()))
       .AddQueriers()
       .AddRepositories()

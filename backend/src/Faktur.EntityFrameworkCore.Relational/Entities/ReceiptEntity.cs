@@ -1,5 +1,4 @@
-﻿using Faktur.Domain.Receipts;
-using Faktur.Domain.Receipts.Events;
+﻿using Faktur.Domain.Receipts.Events;
 using Logitar.EventSourcing;
 
 namespace Faktur.EntityFrameworkCore.Relational.Entities;
@@ -29,20 +28,13 @@ internal class ReceiptEntity : AggregateEntity
   public string? ProcessedBy { get; private set; }
   public DateTime? ProcessedOn { get; private set; }
 
-  public ReceiptEntity(StoreEntity store, ReceiptImportedEvent @event) : base(@event)
+  public ReceiptEntity(StoreEntity store, ReceiptCreatedEvent @event) : base(@event)
   {
     Store = store;
     StoreId = store.StoreId;
 
     IssuedOn = @event.IssuedOn.ToUniversalTime();
     Number = @event.Number?.Value;
-
-    ItemCount = @event.Items.Count;
-    foreach (KeyValuePair<int, ReceiptItemUnit> item in @event.Items)
-    {
-      ReceiptItemEntity itemEntity = new(this, item.Key, item.Value);
-      Items.Add(itemEntity);
-    }
   }
 
   private ReceiptEntity() : base()
@@ -58,5 +50,19 @@ internal class ReceiptEntity : AggregateEntity
       actorIds.Add(new ActorId(ProcessedBy));
     }
     return actorIds;
+  }
+
+  public void Update(ReceiptUpdatedEvent @event)
+  {
+    base.Update(@event);
+
+    if (@event.IssuedOn.HasValue)
+    {
+      IssuedOn = @event.IssuedOn.Value;
+    }
+    if (@event.Number != null)
+    {
+      Number = @event.Number.Value?.Value;
+    }
   }
 }

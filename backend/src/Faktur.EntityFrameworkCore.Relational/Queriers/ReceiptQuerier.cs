@@ -42,6 +42,7 @@ internal class ReceiptQuerier : IReceiptQuerier
 
     ReceiptEntity? receipt = await _receipts.AsNoTracking()
       .Include(x => x.Items)
+      .Include(x => x.Store)
       .Include(x => x.Taxes)
       .SingleOrDefaultAsync(x => x.AggregateId == aggregateId, cancellationToken); // TODO(fpion): other includes
 
@@ -61,8 +62,18 @@ internal class ReceiptQuerier : IReceiptQuerier
       StoreId storeId = new(payload.StoreId.Value);
       builder.Where(FakturDb.Stores.AggregateId, Operators.IsEqualTo(storeId.Value));
     }
+    if (payload.IsEmpty.HasValue)
+    {
+      ComparisonOperator @operator = payload.IsEmpty.Value ? Operators.IsEqualTo(0) : Operators.IsGreaterThan(0);
+      builder.Where(FakturDb.Receipts.ItemCount, @operator);
+    }
+    if (payload.HasBeenProcessed.HasValue)
+    {
+      builder.Where(FakturDb.Receipts.HasBeenProcessed, Operators.IsEqualTo(payload.HasBeenProcessed.Value));
+    }
 
-    IQueryable<ReceiptEntity> query = _receipts.FromQuery(builder).AsNoTracking(); // TODO(fpion): other includes
+    IQueryable<ReceiptEntity> query = _receipts.FromQuery(builder).AsNoTracking()
+      .Include(x => x.Store); // TODO(fpion): other includes
 
     long total = await query.LongCountAsync(cancellationToken);
 

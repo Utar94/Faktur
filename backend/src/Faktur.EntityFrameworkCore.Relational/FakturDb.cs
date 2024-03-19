@@ -116,9 +116,12 @@ internal static class FakturDb
     public static readonly ColumnId AggregateId = new(nameof(ReceiptEntity.AggregateId), Table);
     public static readonly ColumnId CreatedBy = new(nameof(ReceiptEntity.CreatedBy), Table);
     public static readonly ColumnId CreatedOn = new(nameof(ReceiptEntity.CreatedOn), Table);
+    public static readonly ColumnId HasBeenProcessed = new(nameof(ReceiptEntity.HasBeenProcessed), Table);
     public static readonly ColumnId IssuedOn = new(nameof(ReceiptEntity.IssuedOn), Table);
     public static readonly ColumnId ItemCount = new(nameof(ReceiptEntity.ItemCount), Table);
     public static readonly ColumnId Number = new(nameof(ReceiptEntity.Number), Table);
+    public static readonly ColumnId ProcessedBy = new(nameof(ReceiptEntity.ProcessedBy), Table);
+    public static readonly ColumnId ProcessedOn = new(nameof(ReceiptEntity.ProcessedOn), Table);
     public static readonly ColumnId ReceiptId = new(nameof(ReceiptEntity.ReceiptId), Table);
     public static readonly ColumnId StoreId = new(nameof(ReceiptEntity.StoreId), Table);
     public static readonly ColumnId SubTotal = new(nameof(ReceiptEntity.SubTotal), Table);

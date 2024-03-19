@@ -24,6 +24,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <InternalsVisibleTo Include="Faktur.IntegrationTests" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Using Include="System.Reflection" />
   </ItemGroup>
 
