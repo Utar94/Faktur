@@ -26,8 +26,8 @@ internal class CreateReceiptCommandHandler : IRequestHandler<CreateReceiptComman
     CreateReceiptPayload payload = command.Payload;
     new CreateReceiptValidator().ValidateAndThrow(payload);
 
-    StoreAggregate store = await _storeRepository.LoadAsync(command.StoreId, cancellationToken)
-      ?? throw new StoreNotFoundException(command.StoreId, nameof(command.StoreId));
+    StoreAggregate store = await _storeRepository.LoadAsync(payload.StoreId, cancellationToken)
+      ?? throw new StoreNotFoundException(payload.StoreId, nameof(payload.StoreId));
 
     NumberUnit? number = NumberUnit.TryCreate(payload.Number);
     ReceiptAggregate receipt = new(store, payload.IssuedOn, number, command.ActorId);

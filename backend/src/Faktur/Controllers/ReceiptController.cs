@@ -22,10 +22,10 @@ public class ReceiptController : ControllerBase
     _mediator = mediator;
   }
 
-  [HttpPost("/stores/{storeId}/receipts")]
-  public async Task<ActionResult<Receipt>> CreateAsync(Guid storeId, [FromBody] CreateReceiptPayload payload, CancellationToken cancellationToken)
+  [HttpPost]
+  public async Task<ActionResult<Receipt>> CreateAsync([FromBody] CreateReceiptPayload payload, CancellationToken cancellationToken)
   {
-    Receipt receipt = await _mediator.Send(new CreateReceiptCommand(storeId, payload), cancellationToken);
+    Receipt receipt = await _mediator.Send(new CreateReceiptCommand(payload), cancellationToken);
     Uri location = HttpContext.BuildLocation("receipts/{id}", new Dictionary<string, string> { ["id"] = receipt.Id.ToString() });
     return Created(location, receipt);
   }
