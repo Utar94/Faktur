@@ -25,6 +25,10 @@ internal class ReceiptRepository : Logitar.EventSourcing.EntityFrameworkCore.Rel
   {
     return await base.LoadAsync<ReceiptAggregate>(new AggregateId(id), cancellationToken);
   }
+  public async Task<ReceiptAggregate?> LoadAsync(Guid id, long version, CancellationToken cancellationToken)
+  {
+    return await base.LoadAsync<ReceiptAggregate>(new AggregateId(id), version, cancellationToken);
+  }
 
   public async Task<IEnumerable<ReceiptAggregate>> LoadAsync(StoreAggregate store, CancellationToken cancellationToken)
   {
