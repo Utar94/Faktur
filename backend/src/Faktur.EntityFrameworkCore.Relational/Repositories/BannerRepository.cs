@@ -21,6 +21,11 @@ internal class BannerRepository : Logitar.EventSourcing.EntityFrameworkCore.Rela
     return await base.LoadAsync<BannerAggregate>(new AggregateId(id), version, cancellationToken);
   }
 
+  public async Task<IEnumerable<BannerAggregate>> LoadAsync(CancellationToken cancellationToken)
+  {
+    return await base.LoadAsync<BannerAggregate>(cancellationToken);
+  }
+
   public async Task SaveAsync(BannerAggregate banner, CancellationToken cancellationToken)
   {
     await base.SaveAsync(banner, cancellationToken);

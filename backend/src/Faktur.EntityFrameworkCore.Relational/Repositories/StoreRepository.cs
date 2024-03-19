@@ -40,7 +40,7 @@ internal class StoreRepository : Logitar.EventSourcing.EntityFrameworkCore.Relat
       .Join(FakturDb.Stores.AggregateId, EventDb.Events.AggregateId,
         new OperatorCondition(EventDb.Events.AggregateType, Operators.IsEqualTo(AggregateType))
       )
-      .Join(FakturDb.Stores.BannerId, FakturDb.Banners.BannerId)
+      .Join(FakturDb.Banners.BannerId, FakturDb.Stores.BannerId)
       .Where(FakturDb.Banners.AggregateId, Operators.IsEqualTo(banner.Id.Value))
       .SelectAll(EventDb.Events.Table)
       .Build();
