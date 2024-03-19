@@ -46,6 +46,11 @@ internal class ArticleRepository : Logitar.EventSourcing.EntityFrameworkCore.Rel
     return Load<ArticleAggregate>(events.Select(EventSerializer.Deserialize)).SingleOrDefault();
   }
 
+  public async Task<IEnumerable<ArticleAggregate>> LoadAsync(CancellationToken cancellationToken)
+  {
+    return await base.LoadAsync<ArticleAggregate>(cancellationToken);
+  }
+
   public async Task SaveAsync(ArticleAggregate article, CancellationToken cancellationToken)
   {
     await base.SaveAsync(article, cancellationToken);

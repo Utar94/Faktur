@@ -44,6 +44,10 @@ public class ReceiptAggregate : AggregateRoot
     }
   }
 
+  public ReceiptAggregate(AggregateId id) : base(id)
+  {
+  }
+
   public ReceiptAggregate(StoreAggregate store, DateTime? issuedOn = null, NumberUnit? number = null, ActorId actorId = default, ReceiptId? id = null)
     : base((id ?? ReceiptId.NewId()).AggregateId)
   {
