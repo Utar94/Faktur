@@ -6,14 +6,15 @@ namespace Faktur.Contracts.Receipts;
 
 public class Receipt : Aggregate
 {
-  public DateTime? IssuedOn { get; set; }
+  public DateTime IssuedOn { get; set; }
   public string? Number { get; set; }
 
+  public int ItemCount { get; set; }
   public List<ReceiptItem> Items { get; set; }
 
   public decimal SubTotal { get; set; }
-  public List<ReceiptTax> Taxes { get; set; }
   public decimal Total { get; set; }
+  public List<ReceiptTax> Taxes { get; set; }
 
   public bool HasBeenProcessed { get; set; }
   public Actor? ProcessedBy { get; set; }

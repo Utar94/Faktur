@@ -2,6 +2,8 @@
 using Faktur.Application.Receipts.Queries;
 using Faktur.Contracts.Receipts;
 using Faktur.Extensions;
+using Faktur.Models.Receipts;
+using Logitar.Portal.Contracts.Search;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -47,6 +49,13 @@ public class ReceiptController : ControllerBase
   {
     Receipt? receipt = await _mediator.Send(new ReplaceReceiptCommand(id, payload, version), cancellationToken);
     return receipt == null ? NotFound() : Ok(receipt);
+  }
+
+  [HttpGet]
+  public async Task<ActionResult<SearchResults<Receipt>>> SearchAsync([FromQuery] SearchReceiptsModel model, CancellationToken cancellationToken)
+  {
+    SearchResults<Receipt> results = await _mediator.Send(new SearchReceiptsQuery(model.ToPayload()), cancellationToken);
+    return Ok(results);
   }
 
   [HttpPatch("{id}")]
