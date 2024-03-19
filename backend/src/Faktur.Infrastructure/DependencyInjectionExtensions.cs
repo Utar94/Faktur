@@ -3,7 +3,6 @@ using Faktur.Application.Caching;
 using Faktur.Infrastructure.Caching;
 using Faktur.Infrastructure.Converters;
 using Logitar.EventSourcing.Infrastructure;
-using Logitar.Portal.Client;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -11,11 +10,10 @@ namespace Faktur.Infrastructure;
 
 public static class DependencyInjectionExtensions
 {
-  public static IServiceCollection AddFakturInfrastructure(this IServiceCollection services, IConfiguration configuration)
+  public static IServiceCollection AddFakturInfrastructure(this IServiceCollection services)
   {
     return services
       .AddLogitarEventSourcingInfrastructure()
-      .AddLogitarPortalClient(configuration)
       .AddFakturApplication()
       .AddMemoryCache()
       .AddSingleton(InitializeCachingSettings)
@@ -34,6 +32,7 @@ public static class DependencyInjectionExtensions
     new GtinConverter(),
     new NumberConverter(),
     new ProductIdConverter(),
+    new ReceiptIdConverter(),
     new SkuConverter(),
     new StoreIdConverter()
   ];

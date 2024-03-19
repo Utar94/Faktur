@@ -27,7 +27,7 @@ internal abstract class AggregateEntity
     Update(@event);
   }
 
-  public IEnumerable<ActorId> GetActorIds() => [new(CreatedBy), new(UpdatedBy)];
+  public virtual IEnumerable<ActorId> GetActorIds() => [new(CreatedBy), new(UpdatedBy)];
 
   protected void Update(DomainEvent @event)
   {

@@ -21,11 +21,14 @@ public static class DependencyInjectionExtensions
     {
       throw new ArgumentException($"The configuration '{ConfigurationKey}' could not be found.", nameof(configuration));
     }
-
+    return services.AddFakturWithEntityFrameworkCoreSqlServer(connectionString);
+  }
+  public static IServiceCollection AddFakturWithEntityFrameworkCoreSqlServer(this IServiceCollection services, string connectionString)
+  {
     return services
       .AddDbContext<FakturContext>(options => options.UseSqlServer(connectionString, b => b.MigrationsAssembly("Faktur.EntityFrameworkCore.SqlServer")))
       .AddLogitarEventSourcingWithEntityFrameworkCoreSqlServer(connectionString)
-      .AddFakturWithEntityFrameworkCoreRelational(configuration)
+      .AddFakturWithEntityFrameworkCoreRelational()
       .AddSingleton<ISearchHelper, SqlServerSearchHelper>()
       .AddSingleton<ISqlHelper, SqlServerHelper>();
   }

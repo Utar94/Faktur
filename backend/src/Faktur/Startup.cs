@@ -7,6 +7,7 @@ using Faktur.Infrastructure;
 using Faktur.Middlewares;
 using Faktur.Settings;
 using Logitar.EventSourcing.EntityFrameworkCore.Relational;
+using Logitar.Portal.Client;
 using MediatR;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
@@ -88,6 +89,7 @@ internal class Startup : StartupBase
     }
 
     services.AddDistributedMemoryCache();
+    services.AddLogitarPortalClient(_configuration);
     services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ActivityPipelineBehavior<,>));
   }
 

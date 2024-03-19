@@ -2,6 +2,7 @@
 using Faktur.Contracts.Banners;
 using Faktur.Contracts.Departments;
 using Faktur.Contracts.Products;
+using Faktur.Contracts.Receipts;
 using Faktur.Contracts.Stores;
 using Faktur.EntityFrameworkCore.Relational.Entities;
 using Logitar.EventSourcing;
@@ -108,6 +109,43 @@ internal class Mapper
     return destination;
   }
 
+  public Receipt ToReceipt(ReceiptEntity source)
+  {
+    if (source.Store == null)
+    {
+      throw new ArgumentException($"The '{nameof(source.Store)}' is required.", nameof(source));
+    }
+
+    Store store = ToStore(source.Store, includeDepartments: true);
+    Receipt destination = new(store)
+    {
+      IssuedOn = AsUniversalTime(source.IssuedOn),
+      Number = source.Number,
+      ItemCount = source.ItemCount,
+      SubTotal = source.SubTotal,
+      Total = source.Total,
+      HasBeenProcessed = source.HasBeenProcessed,
+      ProcessedBy = TryFindActor(source.ProcessedBy),
+      ProcessedOn = AsUniversalTime(source.ProcessedOn)
+    };
+
+    // TODO(fpion): Items
+
+    foreach (ReceiptTaxEntity tax in source.Taxes)
+    {
+      destination.Taxes.Add(new ReceiptTax(tax.Code)
+      {
+        Rate = tax.Rate,
+        TaxableAmount = tax.TaxableAmount,
+        Amount = tax.Amount
+      });
+    }
+
+    MapAggregate(source, destination);
+
+    return destination;
+  }
+
   public Store ToStore(StoreEntity source, bool includeDepartments)
   {
     Store destination = new(source.DisplayName)
@@ -144,9 +182,11 @@ internal class Mapper
     destination.UpdatedOn = AsUniversalTime(source.UpdatedOn);
   }
 
+  private Actor? TryFindActor(string? id) => id == null ? null : FindActor(new ActorId(id));
   private Actor FindActor(string id) => FindActor(new ActorId(id));
   private Actor FindActor(ActorId id) => _actors.TryGetValue(id, out Actor? actor) ? actor : _system;
 
+  private static DateTime? AsUniversalTime(DateTime? value) => value.HasValue ? AsUniversalTime(value.Value) : null;
   private static DateTime AsUniversalTime(DateTime value) => value.Kind switch
   {
     DateTimeKind.Unspecified => DateTime.SpecifyKind(value, DateTimeKind.Utc),

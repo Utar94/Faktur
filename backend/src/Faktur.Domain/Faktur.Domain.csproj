@@ -23,5 +23,9 @@
   <ItemGroup>
     <ProjectReference Include="..\Faktur.Contracts\Faktur.Contracts.csproj" />
   </ItemGroup>
+  
+  <ItemGroup>
+    <Using Include="System.Globalization" />
+  </ItemGroup>
 
 </Project>

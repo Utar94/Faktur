@@ -2,28 +2,29 @@
 using Faktur.Application.Banners;
 using Faktur.Application.Departments;
 using Faktur.Application.Products;
+using Faktur.Application.Receipts;
 using Faktur.Application.Stores;
 using Faktur.Domain.Articles;
 using Faktur.Domain.Banners;
 using Faktur.Domain.Products;
+using Faktur.Domain.Receipts;
 using Faktur.Domain.Stores;
 using Faktur.EntityFrameworkCore.Relational.Actors;
 using Faktur.EntityFrameworkCore.Relational.Queriers;
 using Faktur.EntityFrameworkCore.Relational.Repositories;
 using Faktur.Infrastructure;
 using Logitar.EventSourcing.EntityFrameworkCore.Relational;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Faktur.EntityFrameworkCore.Relational;
 
 public static class DependencyInjectionExtensions
 {
-  public static IServiceCollection AddFakturWithEntityFrameworkCoreRelational(this IServiceCollection services, IConfiguration configuration)
+  public static IServiceCollection AddFakturWithEntityFrameworkCoreRelational(this IServiceCollection services)
   {
     return services
       .AddLogitarEventSourcingWithEntityFrameworkCoreRelational()
-      .AddFakturInfrastructure(configuration)
+      .AddFakturInfrastructure()
       .AddMediatR(config => config.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()))
       .AddQueriers()
       .AddRepositories()
@@ -37,6 +38,7 @@ public static class DependencyInjectionExtensions
       .AddTransient<IBannerQuerier, BannerQuerier>()
       .AddTransient<IDepartmentQuerier, DepartmentQuerier>()
       .AddTransient<IProductQuerier, ProductQuerier>()
+      .AddTransient<IReceiptQuerier, ReceiptQuerier>()
       .AddTransient<IStoreQuerier, StoreQuerier>();
   }
 
@@ -46,6 +48,7 @@ public static class DependencyInjectionExtensions
       .AddTransient<IArticleRepository, ArticleRepository>()
       .AddTransient<IBannerRepository, BannerRepository>()
       .AddTransient<IProductRepository, ProductRepository>()
+      .AddTransient<IReceiptRepository, ReceiptRepository>()
       .AddTransient<IStoreRepository, StoreRepository>();
   }
 }
