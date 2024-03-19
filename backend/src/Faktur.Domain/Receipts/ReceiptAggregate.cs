@@ -44,13 +44,6 @@ public class ReceiptAggregate : AggregateRoot
     }
   }
 
-  private readonly Dictionary<int, ReceiptItemUnit> _items = [];
-  public IReadOnlyDictionary<int, ReceiptItemUnit> Items => _items.AsReadOnly();
-
-  public ReceiptAggregate(AggregateId id) : base(id)
-  {
-  }
-
   public ReceiptAggregate(StoreAggregate store, DateTime? issuedOn = null, NumberUnit? number = null, ActorId actorId = default, ReceiptId? id = null)
     : base((id ?? ReceiptId.NewId()).AggregateId)
   {
@@ -66,45 +59,6 @@ public class ReceiptAggregate : AggregateRoot
     _storeId = @event.StoreId;
     _issuedOn = @event.IssuedOn;
     _number = @event.Number;
-  }
-
-  public static ReceiptAggregate Import(StoreAggregate store, DateTime? issuedOn = null, NumberUnit? number = null, IEnumerable<ReceiptItemUnit>? items = null, ActorId actorId = default, ReceiptId? id = null)
-  {
-    if (issuedOn.HasValue)
-    {
-      new IssuedOnValidator(nameof(issuedOn)).ValidateAndThrow(issuedOn.Value);
-    }
-
-    ReceiptAggregate receipt = new((id ?? ReceiptId.NewId()).AggregateId);
-
-    Dictionary<int, ReceiptItemUnit> receiptItems = [];
-    if (items != null)
-    {
-      receiptItems = new(capacity: items.Count());
-      int itemNumber = 1;
-      foreach (ReceiptItemUnit item in items)
-      {
-        receiptItems[itemNumber] = item;
-        itemNumber++;
-      }
-    }
-
-    ReceiptImportedEvent @event = new(store.Id, issuedOn ?? DateTime.Now, number, receiptItems, actorId);
-    receipt.Raise(@event);
-
-    return receipt;
-  }
-  protected virtual void Apply(ReceiptImportedEvent @event)
-  {
-    _storeId = @event.StoreId;
-    _issuedOn = @event.IssuedOn;
-    _number = @event.Number;
-
-    _items.Clear();
-    foreach (KeyValuePair<int, ReceiptItemUnit> item in @event.Items)
-    {
-      _items[item.Key] = item.Value;
-    }
   }
 
   public void Delete(ActorId actorId = default)

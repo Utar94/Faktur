@@ -1,6 +1,4 @@
-﻿using Faktur.Domain.Receipts;
-
-namespace Faktur.EntityFrameworkCore.Relational.Entities;
+﻿namespace Faktur.EntityFrameworkCore.Relational.Entities;
 
 internal class ReceiptItemEntity
 {
@@ -34,28 +32,7 @@ internal class ReceiptItemEntity
   public string? DepartmentNumber { get; private set; }
   public string? DepartmentName { get; private set; }
 
-  public ReceiptItemEntity(ReceiptEntity receipt, int number, /*ProductEntity product,*/ ReceiptItemUnit item)
-  {
-    Receipt = receipt;
-    ReceiptId = receipt.ReceiptId;
-
-    Number = number;
-
-    //Product = product;
-    //ProductId = product.ProductId;
-
-    Quantity = item.Quantity;
-    Price = item.Price;
-
-    Gtin = item.Gtin?.Value;
-    Sku = item.Sku?.Value;
-    Label = item.Label.Value;
-    Flags = item.Flags?.Value;
-    UnitPrice = item.UnitPrice;
-
-    // TODO(fpion): Product properties (2)
-    // TODO(fpion): Department properties (2)
-  }
+  // TODO(fpion): public constructor
 
   private ReceiptItemEntity()
   {
