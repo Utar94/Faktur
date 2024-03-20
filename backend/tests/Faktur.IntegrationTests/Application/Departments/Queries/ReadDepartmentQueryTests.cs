@@ -1,5 +1,4 @@
 ﻿using Faktur.Contracts.Departments;
-using Faktur.Domain.Departments;
 using Faktur.Domain.Shared;
 using Faktur.Domain.Stores;
 using Faktur.EntityFrameworkCore.Relational;

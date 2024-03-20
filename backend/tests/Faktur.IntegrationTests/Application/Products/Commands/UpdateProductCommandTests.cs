@@ -1,7 +1,6 @@
 ﻿using Faktur.Contracts;
 using Faktur.Contracts.Products;
 using Faktur.Domain.Articles;
-using Faktur.Domain.Departments;
 using Faktur.Domain.Products;
 using Faktur.Domain.Shared;
 using Faktur.Domain.Stores;

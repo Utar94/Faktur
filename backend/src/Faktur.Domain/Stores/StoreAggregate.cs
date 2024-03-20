@@ -1,6 +1,5 @@
 ﻿using Faktur.Contracts;
 using Faktur.Domain.Banners;
-using Faktur.Domain.Departments;
 using Faktur.Domain.Shared;
 using Faktur.Domain.Stores.Events;
 using Logitar.EventSourcing;

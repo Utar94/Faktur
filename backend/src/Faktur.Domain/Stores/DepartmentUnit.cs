@@ -1,6 +1,6 @@
 ﻿using Faktur.Domain.Shared;
 
-namespace Faktur.Domain.Departments;
+namespace Faktur.Domain.Stores;
 
 public record DepartmentUnit // TODO(fpion): move to Faktur.Domain.Stores
 {
