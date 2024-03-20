@@ -1,5 +1,4 @@
-﻿using Faktur.Domain.Departments;
-using Logitar.EventSourcing;
+﻿using Logitar.EventSourcing;
 using MediatR;
 
 namespace Faktur.Domain.Stores.Events;
