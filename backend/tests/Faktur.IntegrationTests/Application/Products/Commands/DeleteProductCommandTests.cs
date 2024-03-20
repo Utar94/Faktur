@@ -69,6 +69,8 @@ public class DeleteProductCommandTests : IntegrationTests
     Product? product = await Mediator.Send(command);
     Assert.NotNull(product);
     Assert.Equal(aggregate.Id.ToGuid(), product.Id);
+
+    Assert.Empty(await FakturContext.Products.ToArrayAsync());
   }
 
   [Fact(DisplayName = "It should return null when the product cannot be found.")]
