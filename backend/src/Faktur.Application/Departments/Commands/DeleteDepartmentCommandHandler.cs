@@ -23,7 +23,7 @@ internal class DeleteDepartmentCommandHandler : IRequestHandler<DeleteDepartment
     NumberUnit number = new(command.Number, nameof(command.Number));
 
     StoreAggregate? store = await _storeRepository.LoadAsync(command.StoreId, cancellationToken);
-    if (store == null || store.TryFindDepartment(number) == null)
+    if (store == null || !store.HasDepartment(number))
     {
       return null;
     }

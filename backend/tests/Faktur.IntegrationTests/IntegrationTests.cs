@@ -6,6 +6,7 @@ using Faktur.Infrastructure;
 using Faktur.Infrastructure.Commands;
 using Logitar.Data;
 using Logitar.Data.SqlServer;
+using Logitar.EventSourcing;
 using Logitar.Portal.Contracts.Actors;
 using Logitar.Portal.Contracts.Users;
 using MediatR;
@@ -26,8 +27,9 @@ public abstract class IntegrationTests : IAsyncLifetime
   protected FakturContext FakturContext { get; }
   protected IMediator Mediator { get; }
 
-  protected Actor Actor => new(User);
   protected User User => _testContext.User;
+  protected Actor Actor => new(User);
+  protected ActorId ActorId => new(Actor.Id);
 
   protected IntegrationTests()
   {
