@@ -14,7 +14,7 @@ internal class UpdateProductValidator : AbstractValidator<UpdateProductPayload>
 
     When(x => !string.IsNullOrWhiteSpace(x.Sku?.Value), () => RuleFor(x => x.Sku!.Value!).SetValidator(new SkuValidator()));
     When(x => !string.IsNullOrWhiteSpace(x.DisplayName?.Value), () => RuleFor(x => x.DisplayName!.Value!).SetValidator(new DisplayNameValidator()));
-    When(x => !string.IsNullOrWhiteSpace(x.Description?.Value), () => RuleFor(x => x.Sku!.Value!).SetValidator(new DescriptionValidator()));
+    When(x => !string.IsNullOrWhiteSpace(x.Description?.Value), () => RuleFor(x => x.Description!.Value!).SetValidator(new DescriptionValidator()));
 
     When(x => !string.IsNullOrWhiteSpace(x.Flags?.Value), () => RuleFor(x => x.Flags!.Value!).SetValidator(new FlagsValidator()));
 
