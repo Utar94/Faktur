@@ -35,7 +35,7 @@ public class DeleteStoreCommandTests : IntegrationTests
   {
     await base.InitializeAsync();
 
-    TableId[] tables = [FakturDb.Products.Table, FakturDb.Stores.Table, FakturDb.Articles.Table];
+    TableId[] tables = [FakturDb.Receipts.Table, FakturDb.Products.Table, FakturDb.Stores.Table, FakturDb.Articles.Table];
     foreach (TableId table in tables)
     {
       ICommand command = CreateDeleteBuilder(table).Build();
