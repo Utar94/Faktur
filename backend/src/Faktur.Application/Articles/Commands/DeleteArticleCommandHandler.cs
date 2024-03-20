@@ -29,7 +29,7 @@ internal class DeleteArticleCommandHandler : IRequestHandler<DeleteArticleComman
 
     article.Delete(command.ActorId);
 
-    await _publisher.Publish(new DeleteArticleProductsCommand(command.ActorId, article));
+    await _publisher.Publish(new DeleteArticleProductsCommand(command.ActorId, article), cancellationToken);
     await _articleRepository.SaveAsync(article, cancellationToken);
 
     return result;

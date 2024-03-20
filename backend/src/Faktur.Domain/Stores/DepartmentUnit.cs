@@ -2,7 +2,7 @@
 
 namespace Faktur.Domain.Stores;
 
-public record DepartmentUnit // TODO(fpion): move to Faktur.Domain.Stores
+public record DepartmentUnit
 {
   public DisplayNameUnit DisplayName { get; }
   public DescriptionUnit? Description { get; }
