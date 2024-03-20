@@ -8,6 +8,7 @@ public interface IProductRepository
   Task<ProductAggregate?> LoadAsync(Guid id, CancellationToken cancellationToken = default);
   Task<ProductAggregate?> LoadAsync(ProductId id, long version, CancellationToken cancellationToken = default);
   Task<ProductAggregate?> LoadAsync(Guid storeId, Guid articleId, CancellationToken cancellationToken = default);
+  Task<IEnumerable<ProductAggregate>> LoadAsync(CancellationToken cancellationToken = default);
   Task<IEnumerable<ProductAggregate>> LoadAsync(ArticleAggregate article, CancellationToken cancellationToken = default);
   Task<IEnumerable<ProductAggregate>> LoadAsync(StoreAggregate store, CancellationToken cancellationToken = default);
   Task<IEnumerable<ProductAggregate>> LoadAsync(StoreAggregate store, NumberUnit departmentNumber, CancellationToken cancellationToken = default);

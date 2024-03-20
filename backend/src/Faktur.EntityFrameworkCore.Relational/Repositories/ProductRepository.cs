@@ -31,6 +31,11 @@ internal class ProductRepository : Logitar.EventSourcing.EntityFrameworkCore.Rel
     return await base.LoadAsync<ProductAggregate>(id.AggregateId, version, cancellationToken);
   }
 
+  public async Task<IEnumerable<ProductAggregate>> LoadAsync(CancellationToken cancellationToken)
+  {
+    return await base.LoadAsync<ProductAggregate>(cancellationToken);
+  }
+
   public async Task<IEnumerable<ProductAggregate>> LoadAsync(ArticleAggregate article, CancellationToken cancellationToken)
   {
     IQuery query = _sqlHelper.QueryFrom(EventDb.Events.Table)
