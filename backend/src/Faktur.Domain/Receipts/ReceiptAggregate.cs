@@ -44,6 +44,9 @@ public class ReceiptAggregate : AggregateRoot
     }
   }
 
+  private readonly Dictionary<ushort, ReceiptItemUnit> _items = [];
+  public IReadOnlyDictionary<ushort, ReceiptItemUnit> Items => _items.AsReadOnly();
+
   public ReceiptAggregate(AggregateId id) : base(id)
   {
   }
@@ -71,6 +74,42 @@ public class ReceiptAggregate : AggregateRoot
     {
       Raise(new ReceiptDeletedEvent(actorId));
     }
+  }
+
+  public bool HasItem(ushort number) => _items.ContainsKey(number);
+  public ReceiptItemUnit? TryFindItem(ushort number)
+  {
+    if (_items.TryGetValue(number, out ReceiptItemUnit? item))
+    {
+      return item;
+    }
+
+    return null;
+  }
+
+  public void RemoveItem(ushort number, ActorId actorId = default)
+  {
+    if (HasItem(number))
+    {
+      Raise(new ReceiptItemRemovedEvent(number, actorId));
+    }
+  }
+  protected virtual void Apply(ReceiptItemRemovedEvent @event)
+  {
+    _items.Remove(@event.Number);
+  }
+
+  public void SetItem(ushort number, ReceiptItemUnit item, ActorId actorId = default)
+  {
+    ReceiptItemUnit? existingItem = TryFindItem(number);
+    if (existingItem == null || existingItem != item)
+    {
+      Raise(new ReceiptItemChangedEvent(number, item, actorId));
+    }
+  }
+  protected virtual void Apply(ReceiptItemChangedEvent @event)
+  {
+    _items[@event.Number] = @event.Item;
   }
 
   public void Update(ActorId actorId = default)

@@ -109,7 +109,7 @@ internal class Mapper
     return destination;
   }
 
-  public Receipt ToReceipt(ReceiptEntity source)
+  public Receipt ToReceipt(ReceiptEntity source, bool includeItems)
   {
     if (source.Store == null)
     {
@@ -129,7 +129,13 @@ internal class Mapper
       ProcessedOn = AsUniversalTime(source.ProcessedOn)
     };
 
-    // TODO(fpion): Items
+    if (includeItems)
+    {
+      foreach (ReceiptItemEntity item in source.Items)
+      {
+        destination.Items.Add(ToReceiptItem(item, destination));
+      }
+    }
 
     foreach (ReceiptTaxEntity tax in source.Taxes)
     {
@@ -142,6 +148,31 @@ internal class Mapper
     }
 
     MapAggregate(source, destination);
+
+    return destination;
+  }
+  public ReceiptItem ToReceiptItem(ReceiptItemEntity source, Receipt receipt)
+  {
+    ReceiptItem destination = new(receipt, source.Label)
+    {
+      Number = (ushort)source.Number,
+      Gtin = source.Gtin,
+      Sku = source.Sku,
+      Label = source.Label,
+      Flags = source.Flags,
+      Quantity = source.Quantity,
+      UnitPrice = source.UnitPrice,
+      Price = source.Price,
+      CreatedBy = FindActor(source.CreatedBy),
+      CreatedOn = AsUniversalTime(source.CreatedOn),
+      UpdatedBy = FindActor(source.UpdatedBy),
+      UpdatedOn = AsUniversalTime(source.UpdatedOn)
+    };
+
+    if (source.DepartmentNumber != null && source.DepartmentName != null)
+    {
+      destination.Department = new DepartmentSummary(source.DepartmentNumber, source.DepartmentName);
+    }
 
     return destination;
   }

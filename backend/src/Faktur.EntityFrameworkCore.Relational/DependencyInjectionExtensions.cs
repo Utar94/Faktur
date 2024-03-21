@@ -38,6 +38,7 @@ public static class DependencyInjectionExtensions
       .AddTransient<IBannerQuerier, BannerQuerier>()
       .AddTransient<IDepartmentQuerier, DepartmentQuerier>()
       .AddTransient<IProductQuerier, ProductQuerier>()
+      .AddTransient<IReceiptItemQuerier, ReceiptItemQuerier>()
       .AddTransient<IReceiptQuerier, ReceiptQuerier>()
       .AddTransient<IStoreQuerier, StoreQuerier>();
   }

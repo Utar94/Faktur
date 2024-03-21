@@ -1,4 +1,6 @@
 ﻿using Faktur.Contracts.Receipts;
+using Faktur.Domain.Articles;
+using Faktur.Domain.Products;
 using Faktur.Domain.Receipts;
 using Faktur.Domain.Shared;
 using Faktur.Domain.Stores;
@@ -53,13 +55,14 @@ public class SearchReceiptsQueryTests : IntegrationTests
 
     NumberUnit receiptNumber = new("117011");
     ReceiptAggregate otherStoreReceipt = new(otherStore, number: receiptNumber);
-    //ReceiptAggregate notEmpty = new(store, number: new NumberUnit("117012")); // TODO(fpion): set item
+    ReceiptAggregate notEmpty = new(store, number: new NumberUnit("117012"));
+    notEmpty.SetItem(0, new ReceiptItemUnit(new GtinUnit("06038385904"), sku: null, new DisplayNameUnit("PC POULET BBQ"), new FlagsUnit("FPMRJ"), 1.0, 9.99m, 9.99m, departmentNumber: null, department: null));
     //ReceiptAggregate processed = new(store, number: new NumberUnit("118945")); // TODO(fpion): process
     ReceiptAggregate notInIds = new(store, number: new NumberUnit("118899"));
     ReceiptAggregate notMatching = new(store);
     ReceiptAggregate receipt = new(store, DateTime.Now.AddHours(-1), new NumberUnit("117014"));
     ReceiptAggregate expected = new(store, DateTime.Now.AddDays(-1), receiptNumber);
-    await _receiptRepository.SaveAsync([otherStoreReceipt, notInIds, notMatching, receipt, expected]);
+    await _receiptRepository.SaveAsync([otherStoreReceipt, notEmpty, notInIds, notMatching, receipt, expected]);
 
     SearchReceiptsPayload payload = new()
     {
