@@ -15,7 +15,7 @@ public class TaxAggregate : AggregateRoot
   public TaxCodeUnit Code
   {
     get => _code ?? throw new InvalidOperationException($"The {nameof(Code)} has not been initialized yet.");
-    private set
+    set
     {
       if (value != _code)
       {
@@ -28,7 +28,7 @@ public class TaxAggregate : AggregateRoot
   public double Rate
   {
     get => _rate;
-    private set
+    set
     {
       if (value != _rate)
       {
@@ -42,7 +42,7 @@ public class TaxAggregate : AggregateRoot
   public FlagsUnit? Flags
   {
     get => _flags;
-    private set
+    set
     {
       if (value != _flags)
       {

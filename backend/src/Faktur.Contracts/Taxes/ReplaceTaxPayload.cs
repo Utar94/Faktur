@@ -6,4 +6,14 @@ public record ReplaceTaxPayload
   public double Rate { get; set; }
 
   public string? Flags { get; set; }
+
+  public ReplaceTaxPayload() : this(string.Empty, 0.0)
+  {
+  }
+
+  public ReplaceTaxPayload(string code, double rate)
+  {
+    Code = code;
+    Rate = rate;
+  }
 }
