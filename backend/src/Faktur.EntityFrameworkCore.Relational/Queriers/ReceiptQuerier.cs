@@ -42,9 +42,9 @@ internal class ReceiptQuerier : IReceiptQuerier
 
     ReceiptEntity? receipt = await _receipts.AsNoTracking()
       .Include(x => x.Items)
-      .Include(x => x.Store)
+      .Include(x => x.Store).ThenInclude(x => x!.Departments)
       .Include(x => x.Taxes)
-      .SingleOrDefaultAsync(x => x.AggregateId == aggregateId, cancellationToken); // TODO(fpion): other includes
+      .SingleOrDefaultAsync(x => x.AggregateId == aggregateId, cancellationToken);
 
     return receipt == null ? null : await MapAsync(receipt, cancellationToken);
   }
@@ -73,7 +73,7 @@ internal class ReceiptQuerier : IReceiptQuerier
     }
 
     IQueryable<ReceiptEntity> query = _receipts.FromQuery(builder).AsNoTracking()
-      .Include(x => x.Store); // TODO(fpion): other includes
+      .Include(x => x.Store).ThenInclude(x => x!.Departments);
 
     long total = await query.LongCountAsync(cancellationToken);
 
@@ -134,6 +134,6 @@ internal class ReceiptQuerier : IReceiptQuerier
     IEnumerable<Actor> actors = await _actorService.FindAsync(actorIds, cancellationToken);
     Mapper mapper = new(actors);
 
-    return receipts.Select(mapper.ToReceipt);
+    return receipts.Select(receipt => mapper.ToReceipt(receipt, includeItems: true));
   }
 }

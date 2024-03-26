@@ -16,7 +16,7 @@
 
   <ItemGroup>
     <PackageReference Include="Logitar.Data.SqlServer" Version="3.0.0" />
-    <PackageReference Include="Logitar.EventSourcing.EntityFrameworkCore.SqlServer" Version="5.0.1" />
+    <PackageReference Include="Logitar.EventSourcing.EntityFrameworkCore.SqlServer" Version="5.0.2" />
   </ItemGroup>
 
   <ItemGroup>

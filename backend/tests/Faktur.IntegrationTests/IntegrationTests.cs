@@ -7,6 +7,7 @@ using Faktur.Infrastructure.Commands;
 using Logitar.Data;
 using Logitar.Data.SqlServer;
 using Logitar.EventSourcing;
+using Logitar.EventSourcing.EntityFrameworkCore.Relational;
 using Logitar.Portal.Contracts.Actors;
 using Logitar.Portal.Contracts.Users;
 using MediatR;

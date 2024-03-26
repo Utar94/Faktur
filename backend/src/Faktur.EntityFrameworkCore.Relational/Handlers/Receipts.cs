@@ -56,6 +56,52 @@ internal static class Receipts
       }
     }
 
+    public class ReceiptItemChangedEventHandler : INotificationHandler<ReceiptItemChangedEvent>
+    {
+      private readonly FakturContext _context;
+
+      public ReceiptItemChangedEventHandler(FakturContext context)
+      {
+        _context = context;
+      }
+
+      public async Task Handle(ReceiptItemChangedEvent @event, CancellationToken cancellationToken)
+      {
+        ReceiptEntity receipt = await _context.Receipts
+          .Include(x => x.Items)
+          .Include(x => x.Taxes)
+          .SingleOrDefaultAsync(x => x.AggregateId == @event.AggregateId.Value, cancellationToken)
+          ?? throw new InvalidOperationException($"The receipt 'AggregateId={@event.AggregateId}' could not be found.");
+
+        receipt.SetItem(@event);
+
+        await _context.SaveChangesAsync(cancellationToken);
+      }
+    }
+
+    public class ReceiptItemRemovedEventHandler : INotificationHandler<ReceiptItemRemovedEvent>
+    {
+      private readonly FakturContext _context;
+
+      public ReceiptItemRemovedEventHandler(FakturContext context)
+      {
+        _context = context;
+      }
+
+      public async Task Handle(ReceiptItemRemovedEvent @event, CancellationToken cancellationToken)
+      {
+        ReceiptEntity receipt = await _context.Receipts
+          .Include(x => x.Items)
+          .Include(x => x.Taxes)
+          .SingleOrDefaultAsync(x => x.AggregateId == @event.AggregateId.Value, cancellationToken)
+          ?? throw new InvalidOperationException($"The receipt 'AggregateId={@event.AggregateId}' could not be found.");
+
+        receipt.RemoveItem(@event);
+
+        await _context.SaveChangesAsync(cancellationToken);
+      }
+    }
+
     public class ReceiptUpdatedEventHandler : INotificationHandler<ReceiptUpdatedEvent>
     {
       private readonly FakturContext _context;

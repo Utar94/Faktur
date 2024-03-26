@@ -90,6 +90,17 @@ public class StoreAggregate : AggregateRoot
     }
   }
 
+  public bool HasDepartment(NumberUnit number) => _departments.ContainsKey(number);
+  public DepartmentUnit? TryFindDepartment(NumberUnit number)
+  {
+    if (_departments.TryGetValue(number, out DepartmentUnit? department))
+    {
+      return department;
+    }
+
+    return null;
+  }
+
   public void RemoveDepartment(NumberUnit number, ActorId actorId = default)
   {
     if (HasDepartment(number))
@@ -113,17 +124,6 @@ public class StoreAggregate : AggregateRoot
   protected virtual void Apply(StoreDepartmentSavedEvent @event)
   {
     _departments[@event.Number] = @event.Department;
-  }
-
-  public bool HasDepartment(NumberUnit number) => _departments.ContainsKey(number);
-  public DepartmentUnit? TryFindDepartment(NumberUnit number)
-  {
-    if (_departments.TryGetValue(number, out DepartmentUnit? department))
-    {
-      return department;
-    }
-
-    return null;
   }
 
   public void Update(ActorId actorId = default)

@@ -1,4 +1,7 @@
-﻿namespace Faktur.EntityFrameworkCore.Relational.Entities;
+﻿using Faktur.Domain.Receipts.Events;
+using Logitar.EventSourcing;
+
+namespace Faktur.EntityFrameworkCore.Relational.Entities;
 
 internal class ReceiptItemEntity
 {
@@ -9,9 +12,6 @@ internal class ReceiptItemEntity
 
   public ProductEntity? Product { get; private set; }
   public int? ProductId { get; private set; }
-
-  public double Quantity { get; private set; }
-  public decimal Price { get; private set; }
 
   public string? Gtin { get; private set; }
   public long? GtinNormalized
@@ -25,16 +25,66 @@ internal class ReceiptItemEntity
     get => Sku?.ToUpper();
     private set { }
   }
+
   public string Label { get; private set; } = string.Empty;
   public string? Flags { get; private set; }
-  public decimal? UnitPrice { get; private set; }
+  public double Quantity { get; private set; }
+  public decimal UnitPrice { get; private set; }
+  public decimal Price { get; private set; }
 
   public string? DepartmentNumber { get; private set; }
   public string? DepartmentName { get; private set; }
 
-  // TODO(fpion): public constructor
+  public string CreatedBy { get; private set; } = ActorId.DefaultValue;
+  public DateTime CreatedOn { get; private set; }
+  public string UpdatedBy { get; private set; } = ActorId.DefaultValue;
+  public DateTime UpdatedOn { get; private set; }
+
+  public ReceiptItemEntity(ReceiptEntity receipt, ProductEntity? product, ReceiptItemChangedEvent @event)
+  {
+    Receipt = receipt;
+    ReceiptId = receipt.ReceiptId;
+
+    Number = @event.Number;
+
+    Product = product;
+    ProductId = product?.ProductId;
+
+    CreatedBy = @event.ActorId.Value;
+    CreatedOn = @event.OccurredOn.ToUniversalTime();
+
+    Update(@event);
+  }
 
   private ReceiptItemEntity()
   {
+  }
+
+  public IEnumerable<ActorId> GetActorIds(bool includeReceipt)
+  {
+    List<ActorId> actorIds = [new(CreatedBy), new(UpdatedBy)];
+    if (includeReceipt && Receipt != null)
+    {
+      actorIds.AddRange(Receipt.GetActorIds(includeItems: false));
+    }
+    return actorIds.AsReadOnly();
+  }
+
+  public void Update(ReceiptItemChangedEvent @event)
+  {
+    Quantity = @event.Item.Quantity;
+    Price = @event.Item.Price;
+
+    Gtin = @event.Item.Gtin?.Value;
+    Sku = @event.Item.Sku?.Value;
+    Label = @event.Item.Label.Value;
+    Flags = @event.Item.Flags?.Value;
+    UnitPrice = @event.Item.UnitPrice;
+
+    DepartmentNumber = @event.Item.DepartmentNumber?.Value;
+    DepartmentName = @event.Item.Department?.DisplayName.Value;
+
+    UpdatedBy = @event.ActorId.Value;
+    UpdatedOn = @event.OccurredOn.ToUniversalTime();
   }
 }

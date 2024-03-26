@@ -43,13 +43,53 @@ internal class ReceiptEntity : AggregateEntity
 
   public override IEnumerable<ActorId> GetActorIds()
   {
-    List<ActorId> actorIds = new(capacity: 3);
-    actorIds.AddRange(base.GetActorIds());
+    List<ActorId> actorIds = base.GetActorIds().ToList();
     if (ProcessedBy != null)
     {
       actorIds.Add(new ActorId(ProcessedBy));
     }
-    return actorIds;
+    return actorIds.AsReadOnly();
+  }
+  public IEnumerable<ActorId> GetActorIds(bool includeItems)
+  {
+    List<ActorId> actorIds = GetActorIds().ToList();
+    if (includeItems)
+    {
+      foreach (ReceiptItemEntity item in Items)
+      {
+        actorIds.AddRange(item.GetActorIds(includeReceipt: false));
+      }
+    }
+    return actorIds.AsReadOnly();
+  }
+
+  public void RemoveItem(ReceiptItemRemovedEvent @event)
+  {
+    Update(@event);
+
+    ReceiptItemEntity? item = Items.SingleOrDefault(i => i.Number == @event.Number);
+    if (item != null)
+    {
+      Items.Remove(item);
+      ItemCount = Items.Count;
+    }
+  }
+
+  public void SetItem(ReceiptItemChangedEvent @event)
+  {
+    Update(@event);
+
+    ReceiptItemEntity? item = Items.SingleOrDefault(i => i.Number == @event.Number);
+    if (item == null)
+    {
+      item = new(this, product: null, @event); // TODO(fpion): send product
+      Items.Add(item);
+      ItemCount = Items.Count;
+    }
+    else
+    {
+      item.Update(@event);
+    }
   }
 
   public void Update(ReceiptUpdatedEvent @event)

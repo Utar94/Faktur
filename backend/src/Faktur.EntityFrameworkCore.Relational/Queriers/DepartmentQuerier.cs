@@ -30,7 +30,7 @@ internal class DepartmentQuerier : IDepartmentQuerier
   public async Task<Department> ReadAsync(StoreAggregate store, NumberUnit number, CancellationToken cancellationToken)
   {
     return await ReadAsync(store.Id, number.Value, cancellationToken)
-      ?? throw new InvalidOperationException($"The department 'AggregateId={store.Id.Value}' could not be found.");
+      ?? throw new InvalidOperationException($"The department 'StoreId={store.Id.Value},Number={number.Value}' could not be found.");
   }
   public async Task<Department?> ReadAsync(StoreId id, string number, CancellationToken cancellationToken)
   {
