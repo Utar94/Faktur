@@ -4,11 +4,13 @@ using Faktur.Application.Departments;
 using Faktur.Application.Products;
 using Faktur.Application.Receipts;
 using Faktur.Application.Stores;
+using Faktur.Application.Taxes;
 using Faktur.Domain.Articles;
 using Faktur.Domain.Banners;
 using Faktur.Domain.Products;
 using Faktur.Domain.Receipts;
 using Faktur.Domain.Stores;
+using Faktur.Domain.Taxes;
 using Faktur.EntityFrameworkCore.Relational.Actors;
 using Faktur.EntityFrameworkCore.Relational.Queriers;
 using Faktur.EntityFrameworkCore.Relational.Repositories;
@@ -40,7 +42,8 @@ public static class DependencyInjectionExtensions
       .AddTransient<IProductQuerier, ProductQuerier>()
       .AddTransient<IReceiptItemQuerier, ReceiptItemQuerier>()
       .AddTransient<IReceiptQuerier, ReceiptQuerier>()
-      .AddTransient<IStoreQuerier, StoreQuerier>();
+      .AddTransient<IStoreQuerier, StoreQuerier>()
+      .AddTransient<ITaxQuerier, TaxQuerier>();
   }
 
   private static IServiceCollection AddRepositories(this IServiceCollection services)
@@ -50,6 +53,7 @@ public static class DependencyInjectionExtensions
       .AddTransient<IBannerRepository, BannerRepository>()
       .AddTransient<IProductRepository, ProductRepository>()
       .AddTransient<IReceiptRepository, ReceiptRepository>()
-      .AddTransient<IStoreRepository, StoreRepository>();
+      .AddTransient<IStoreRepository, StoreRepository>()
+      .AddTransient<ITaxRepository, TaxRepository>();
   }
 }

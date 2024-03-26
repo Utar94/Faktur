@@ -4,6 +4,7 @@ using Faktur.Contracts.Departments;
 using Faktur.Contracts.Products;
 using Faktur.Contracts.Receipts;
 using Faktur.Contracts.Stores;
+using Faktur.Contracts.Taxes;
 using Faktur.EntityFrameworkCore.Relational.Entities;
 using Logitar.EventSourcing;
 using Logitar.Portal.Contracts;
@@ -197,6 +198,18 @@ internal class Mapper
         destination.Departments.Add(ToDepartment(department, destination));
       }
     }
+
+    MapAggregate(source, destination);
+
+    return destination;
+  }
+
+  public Tax ToTax(TaxEntity source)
+  {
+    Tax destination = new(source.Code, source.Rate)
+    {
+      Flags = source.Flags
+    };
 
     MapAggregate(source, destination);
 

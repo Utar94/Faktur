@@ -68,18 +68,22 @@ public abstract class IntegrationTests : IAsyncLifetime
     IPublisher publisher = ServiceProvider.GetRequiredService<IPublisher>();
     await publisher.Publish(new InitializeDatabaseCommand());
 
-    TableId[] tables = [EventDb.Events.Table, FakturDb.Actors.Table];
-    foreach (TableId table in tables)
-    {
-      ICommand command = CreateDeleteBuilder(table).Build();
-      await FakturContext.Database.ExecuteSqlRawAsync(command.Text, command.Parameters.ToArray());
-    }
+    StringBuilder command = new();
+    command.AppendLine(CreateDeleteBuilder(FakturDb.Taxes.Table).Build().Text);
+    command.AppendLine(CreateDeleteBuilder(FakturDb.Receipts.Table).Build().Text);
+    command.AppendLine(CreateDeleteBuilder(FakturDb.Products.Table).Build().Text);
+    command.AppendLine(CreateDeleteBuilder(FakturDb.Stores.Table).Build().Text);
+    command.AppendLine(CreateDeleteBuilder(FakturDb.Banners.Table).Build().Text);
+    command.AppendLine(CreateDeleteBuilder(FakturDb.Articles.Table).Build().Text);
+    command.AppendLine(CreateDeleteBuilder(FakturDb.Actors.Table).Build().Text);
+    command.AppendLine(CreateDeleteBuilder(EventDb.Events.Table).Build().Text);
+    await FakturContext.Database.ExecuteSqlRawAsync(command.ToString());
 
     ActorEntity actor = new(User);
     FakturContext.Actors.Add(actor);
     await FakturContext.SaveChangesAsync();
   }
-  protected IDeleteBuilder CreateDeleteBuilder(TableId table) => _databaseProvider switch
+  protected IDeleteBuilder CreateDeleteBuilder(TableId table) => _databaseProvider switch // TODO(fpion): private
   {
     //DatabaseProvider.EntityFrameworkCorePostgreSQL => PostgresDeleteBuilder.From(table), // TODO(fpion): PostgreSQL
     DatabaseProvider.EntityFrameworkCoreSqlServer => SqlServerDeleteBuilder.From(table),

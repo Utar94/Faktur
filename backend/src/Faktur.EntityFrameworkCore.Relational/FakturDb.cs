@@ -158,4 +158,21 @@ internal static class FakturDb
     public static readonly ColumnId UpdatedOn = new(nameof(StoreEntity.UpdatedOn), Table);
     public static readonly ColumnId Version = new(nameof(StoreEntity.Version), Table);
   }
+
+  public static class Taxes
+  {
+    public static readonly TableId Table = new(nameof(FakturContext.Taxes));
+
+    public static readonly ColumnId AggregateId = new(nameof(TaxEntity.AggregateId), Table);
+    public static readonly ColumnId Code = new(nameof(TaxEntity.Code), Table);
+    public static readonly ColumnId CodeNormalized = new(nameof(TaxEntity.CodeNormalized), Table);
+    public static readonly ColumnId CreatedBy = new(nameof(TaxEntity.CreatedBy), Table);
+    public static readonly ColumnId CreatedOn = new(nameof(TaxEntity.CreatedOn), Table);
+    public static readonly ColumnId Flags = new(nameof(TaxEntity.Flags), Table);
+    public static readonly ColumnId Rate = new(nameof(TaxEntity.Rate), Table);
+    public static readonly ColumnId TaxId = new(nameof(TaxEntity.TaxId), Table);
+    public static readonly ColumnId UpdatedBy = new(nameof(TaxEntity.UpdatedBy), Table);
+    public static readonly ColumnId UpdatedOn = new(nameof(TaxEntity.UpdatedOn), Table);
+    public static readonly ColumnId Version = new(nameof(TaxEntity.Version), Table);
+  }
 }
