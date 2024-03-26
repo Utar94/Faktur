@@ -47,10 +47,6 @@ public class ReceiptAggregate : AggregateRoot
   private readonly Dictionary<ushort, ReceiptItemUnit> _items = [];
   public IReadOnlyDictionary<ushort, ReceiptItemUnit> Items => _items.AsReadOnly();
 
-  // TODO(fpion): SubTotal
-  // TODO(fpion): Taxes
-  // TODO(fpion): Total
-
   public ReceiptAggregate(AggregateId id) : base(id)
   {
   }
@@ -109,6 +105,7 @@ public class ReceiptAggregate : AggregateRoot
     if (existingItem == null || existingItem != item)
     {
       Raise(new ReceiptItemChangedEvent(number, item, actorId));
+      // TODO(fpion): calculate subtotal, taxes and total
     }
   }
   protected virtual void Apply(ReceiptItemChangedEvent @event)
