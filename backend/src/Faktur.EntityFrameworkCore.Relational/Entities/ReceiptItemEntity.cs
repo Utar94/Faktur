@@ -25,6 +25,7 @@ internal class ReceiptItemEntity
     get => Sku?.ToUpper();
     private set { }
   }
+
   public string Label { get; private set; } = string.Empty;
   public string? Flags { get; private set; }
   public double Quantity { get; private set; }
@@ -39,14 +40,15 @@ internal class ReceiptItemEntity
   public string UpdatedBy { get; private set; } = ActorId.DefaultValue;
   public DateTime UpdatedOn { get; private set; }
 
-  public ReceiptItemEntity(ReceiptEntity receipt, ReceiptItemChangedEvent @event)
+  public ReceiptItemEntity(ReceiptEntity receipt, ProductEntity? product, ReceiptItemChangedEvent @event)
   {
     Receipt = receipt;
     ReceiptId = receipt.ReceiptId;
 
-    // TODO(fpion): Product/ProductId
-
     Number = @event.Number;
+
+    Product = product;
+    ProductId = product?.ProductId;
 
     CreatedBy = @event.ActorId.Value;
     CreatedOn = @event.OccurredOn.ToUniversalTime();

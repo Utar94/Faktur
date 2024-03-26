@@ -47,6 +47,10 @@ public class ReceiptAggregate : AggregateRoot
   private readonly Dictionary<ushort, ReceiptItemUnit> _items = [];
   public IReadOnlyDictionary<ushort, ReceiptItemUnit> Items => _items.AsReadOnly();
 
+  // TODO(fpion): SubTotal
+  // TODO(fpion): Taxes
+  // TODO(fpion): Total
+
   public ReceiptAggregate(AggregateId id) : base(id)
   {
   }

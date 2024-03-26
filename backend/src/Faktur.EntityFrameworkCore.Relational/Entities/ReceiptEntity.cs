@@ -82,7 +82,7 @@ internal class ReceiptEntity : AggregateEntity
     ReceiptItemEntity? item = Items.SingleOrDefault(i => i.Number == @event.Number);
     if (item == null)
     {
-      item = new(this, @event);
+      item = new(this, product: null, @event); // TODO(fpion): send product
       Items.Add(item);
       ItemCount = Items.Count;
     }

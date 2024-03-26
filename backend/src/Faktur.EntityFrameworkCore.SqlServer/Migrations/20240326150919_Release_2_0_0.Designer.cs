@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Faktur.EntityFrameworkCore.SqlServer.Migrations
 {
     [DbContext(typeof(FakturContext))]
-    [Migration("20240319150558_CreateReceiptTables")]
-    partial class CreateReceiptTables
+    [Migration("20240326150919_Release_2_0_0")]
+    partial class Release_2_0_0
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -483,6 +483,14 @@ namespace Faktur.EntityFrameworkCore.SqlServer.Migrations
                     b.Property<int>("Number")
                         .HasColumnType("int");
 
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("DepartmentName")
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
@@ -524,10 +532,22 @@ namespace Faktur.EntityFrameworkCore.SqlServer.Migrations
                         .HasMaxLength(32)
                         .HasColumnType("nvarchar(32)");
 
-                    b.Property<decimal?>("UnitPrice")
+                    b.Property<decimal>("UnitPrice")
                         .HasColumnType("money");
 
+                    b.Property<string>("UpdatedBy")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<DateTime>("UpdatedOn")
+                        .HasColumnType("datetime2");
+
                     b.HasKey("ReceiptId", "Number");
+
+                    b.HasIndex("CreatedBy");
+
+                    b.HasIndex("CreatedOn");
 
                     b.HasIndex("DepartmentName");
 
@@ -554,6 +574,10 @@ namespace Faktur.EntityFrameworkCore.SqlServer.Migrations
                     b.HasIndex("SkuNormalized");
 
                     b.HasIndex("UnitPrice");
+
+                    b.HasIndex("UpdatedBy");
+
+                    b.HasIndex("UpdatedOn");
 
                     b.ToTable("ReceiptItems", (string)null);
                 });
