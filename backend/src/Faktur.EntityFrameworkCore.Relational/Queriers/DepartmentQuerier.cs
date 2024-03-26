@@ -32,13 +32,13 @@ internal class DepartmentQuerier : IDepartmentQuerier
     return await ReadAsync(store.Id, number.Value, cancellationToken)
       ?? throw new InvalidOperationException($"The department 'StoreId={store.Id.Value},Number={number.Value}' could not be found.");
   }
-  public async Task<Department?> ReadAsync(StoreId storeId, string number, CancellationToken cancellationToken)
+  public async Task<Department?> ReadAsync(StoreId id, string number, CancellationToken cancellationToken)
   {
-    return await ReadAsync(storeId.ToGuid(), number, cancellationToken);
+    return await ReadAsync(id.ToGuid(), number, cancellationToken);
   }
-  public async Task<Department?> ReadAsync(Guid storeId, string number, CancellationToken cancellationToken)
+  public async Task<Department?> ReadAsync(Guid id, string number, CancellationToken cancellationToken)
   {
-    string aggregateId = new AggregateId(storeId).Value;
+    string aggregateId = new AggregateId(id).Value;
     string numberNormalized = number.Trim().ToUpper();
 
     DepartmentEntity? department = await _departments.AsNoTracking()
