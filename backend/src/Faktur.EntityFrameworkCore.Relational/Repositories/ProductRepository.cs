@@ -126,7 +126,7 @@ internal class ProductRepository : Logitar.EventSourcing.EntityFrameworkCore.Rel
       )
       .Join(FakturDb.Stores.StoreId, FakturDb.Products.StoreId)
       .Where(FakturDb.Stores.AggregateId, Operators.IsEqualTo(storeId.Value))
-      .Where(FakturDb.Products.SkuNormalized, Operators.IsEqualTo(sku.Value))
+      .Where(FakturDb.Products.SkuNormalized, Operators.IsEqualTo(sku.Value.ToUpper()))
       .SelectAll(EventDb.Events.Table)
       .Build();
 

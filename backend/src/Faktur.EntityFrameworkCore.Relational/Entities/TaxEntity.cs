@@ -28,6 +28,8 @@ internal class TaxEntity : AggregateEntity
 
   public void Update(TaxUpdatedEvent @event)
   {
+    base.Update(@event);
+
     if (@event.Code != null)
     {
       Code = @event.Code.Value;

@@ -9,11 +9,13 @@ namespace Faktur.Application.Taxes.Commands;
 
 internal class UpdateTaxCommandHandler : IRequestHandler<UpdateTaxCommand, Tax?>
 {
+  private readonly IPublisher _publisher;
   private readonly ITaxQuerier _taxQuerier;
   private readonly ITaxRepository _taxRepository;
 
-  public UpdateTaxCommandHandler(ITaxQuerier taxQuerier, ITaxRepository taxRepository)
+  public UpdateTaxCommandHandler(IPublisher publisher, ITaxQuerier taxQuerier, ITaxRepository taxRepository)
   {
+    _publisher = publisher;
     _taxQuerier = taxQuerier;
     _taxRepository = taxRepository;
   }
@@ -46,7 +48,7 @@ internal class UpdateTaxCommandHandler : IRequestHandler<UpdateTaxCommand, Tax?>
 
     tax.Update(command.ActorId);
 
-    await _taxRepository.SaveAsync(tax, cancellationToken);
+    await _publisher.Publish(new SaveTaxCommand(tax), cancellationToken);
 
     return await _taxQuerier.ReadAsync(tax, cancellationToken);
   }

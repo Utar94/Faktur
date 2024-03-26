@@ -28,13 +28,19 @@ internal class TaxRepository : Logitar.EventSourcing.EntityFrameworkCore.Relatio
   {
     return await base.LoadAsync<TaxAggregate>(new AggregateId(id), version, cancellationToken);
   }
+
+  public async Task<IEnumerable<TaxAggregate>> LoadAsync(CancellationToken cancellationToken)
+  {
+    return await base.LoadAsync<TaxAggregate>(cancellationToken);
+  }
+
   public async Task<TaxAggregate?> LoadAsync(TaxCodeUnit code, CancellationToken cancellationToken)
   {
     IQuery query = _sqlHelper.QueryFrom(EventDb.Events.Table)
       .Join(FakturDb.Taxes.AggregateId, EventDb.Events.AggregateId,
         new OperatorCondition(EventDb.Events.AggregateType, Operators.IsEqualTo(AggregateType))
       )
-      .Where(FakturDb.Taxes.CodeNormalized, Operators.IsEqualTo(long.Parse(code.Value)))
+      .Where(FakturDb.Taxes.CodeNormalized, Operators.IsEqualTo(code.Value.ToUpper()))
       .SelectAll(EventDb.Events.Table)
       .Build();
 
@@ -44,11 +50,6 @@ internal class TaxRepository : Logitar.EventSourcing.EntityFrameworkCore.Relatio
       .ToArrayAsync(cancellationToken);
 
     return Load<TaxAggregate>(events.Select(EventSerializer.Deserialize)).SingleOrDefault();
-  }
-
-  public async Task<IEnumerable<TaxAggregate>> LoadAsync(CancellationToken cancellationToken)
-  {
-    return await base.LoadAsync<TaxAggregate>(cancellationToken);
   }
 
   public async Task SaveAsync(TaxAggregate tax, CancellationToken cancellationToken)
