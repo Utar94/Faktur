@@ -20,8 +20,8 @@ public abstract class SearchHelper : ISearchHelper
       {
         string pattern = term.Value.Trim();
         conditions.Add(columns.Length == 1
-          ? new OperatorCondition(columns.Single(), CreateOperator(pattern))
-          : new OrCondition(columns.Select(column => new OperatorCondition(column, CreateOperator(pattern))).ToArray()));
+          ? new OperatorCondition(columns.Single(), CreateLikeOperator(pattern))
+          : new OrCondition(columns.Select(column => new OperatorCondition(column, CreateLikeOperator(pattern))).ToArray()));
       }
     }
 
@@ -38,5 +38,5 @@ public abstract class SearchHelper : ISearchHelper
 
     return builder;
   }
-  protected virtual ConditionalOperator CreateOperator(string pattern) => Operators.IsLike(pattern);
+  public virtual ConditionalOperator CreateLikeOperator(string pattern) => Operators.IsLike(pattern);
 }

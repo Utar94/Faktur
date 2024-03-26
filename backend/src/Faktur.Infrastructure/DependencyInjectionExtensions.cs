@@ -34,7 +34,9 @@ public static class DependencyInjectionExtensions
     new ProductIdConverter(),
     new ReceiptIdConverter(),
     new SkuConverter(),
-    new StoreIdConverter()
+    new StoreIdConverter(),
+    new TaxCodeConverter(),
+    new TaxIdConverter()
   ];
 
   private static CachingSettings InitializeCachingSettings(IServiceProvider serviceProvider)

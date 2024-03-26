@@ -10,8 +10,8 @@ internal class StoreIdConverter : JsonConverter<StoreId>
     return StoreId.TryCreate(value);
   }
 
-  public override void Write(Utf8JsonWriter writer, StoreId bannerId, JsonSerializerOptions options)
+  public override void Write(Utf8JsonWriter writer, StoreId storeId, JsonSerializerOptions options)
   {
-    writer.WriteStringValue(bannerId.Value);
+    writer.WriteStringValue(storeId.Value);
   }
 }

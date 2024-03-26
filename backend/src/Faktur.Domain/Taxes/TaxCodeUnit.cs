@@ -4,7 +4,7 @@ namespace Faktur.Domain.Taxes;
 
 public record TaxCodeUnit
 {
-  public const int MaximumLength = 3;
+  public const int MaximumLength = 4;
 
   public string Value { get; }
 

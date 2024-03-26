@@ -1,4 +1,5 @@
-﻿using Faktur.EntityFrameworkCore.Relational.Entities;
+﻿using Faktur.Domain.Taxes;
+using Faktur.EntityFrameworkCore.Relational.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -16,7 +17,7 @@ internal class ReceiptTaxConfiguration : IEntityTypeConfiguration<ReceiptTaxEnti
     builder.HasIndex(x => x.TaxableAmount);
     builder.HasIndex(x => x.Amount);
 
-    builder.Property(x => x.Code).HasMaxLength(4); // TODO(fpion): constant
+    builder.Property(x => x.Code).HasMaxLength(TaxCodeUnit.MaximumLength);
     builder.Property(x => x.TaxableAmount).HasColumnType("money");
     builder.Property(x => x.Amount).HasColumnType("money");
 

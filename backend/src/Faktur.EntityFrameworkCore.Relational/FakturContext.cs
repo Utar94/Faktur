@@ -18,6 +18,7 @@ public class FakturContext : DbContext
   internal DbSet<ReceiptEntity> Receipts { get; private set; }
   internal DbSet<ReceiptTaxEntity> ReceiptTaxes { get; private set; }
   internal DbSet<StoreEntity> Stores { get; private set; }
+  internal DbSet<TaxEntity> Taxes { get; private set; }
 
   protected override void OnModelCreating(ModelBuilder modelBuilder)
   {
