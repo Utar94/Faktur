@@ -34,7 +34,7 @@ internal class ArticleRepository : Logitar.EventSourcing.EntityFrameworkCore.Rel
       .Join(FakturDb.Articles.AggregateId, EventDb.Events.AggregateId,
         new OperatorCondition(EventDb.Events.AggregateType, Operators.IsEqualTo(AggregateType))
       )
-      .Where(FakturDb.Articles.GtinNormalized, Operators.IsEqualTo(long.Parse(gtin.Value)))
+      .Where(FakturDb.Articles.GtinNormalized, Operators.IsEqualTo(gtin.NormalizedValue))
       .SelectAll(EventDb.Events.Table)
       .Build();
 

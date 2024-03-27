@@ -2,6 +2,7 @@
 using Faktur.Domain.Products;
 using Faktur.Domain.Shared;
 using Faktur.Domain.Stores;
+using Faktur.Domain.Taxes;
 using FluentValidation;
 
 namespace Faktur.Domain.Receipts;
@@ -37,5 +38,21 @@ public record ReceiptItemUnit
     Department = department;
 
     new ReceiptItemValidator().ValidateAndThrow(this);
+  }
+
+  public bool IsTaxable(TaxAggregate tax)
+  {
+    if (Flags != null && tax.Flags != null)
+    {
+      foreach (char flag in Flags.Value)
+      {
+        if (tax.Flags.Value.Contains(flag))
+        {
+          return true;
+        }
+      }
+    }
+
+    return false;
   }
 }
