@@ -47,13 +47,10 @@ internal class ReceiptItemEntity
 
     Number = @event.Number;
 
-    Product = product;
-    ProductId = product?.ProductId;
-
     CreatedBy = @event.ActorId.Value;
     CreatedOn = @event.OccurredOn.ToUniversalTime();
 
-    Update(@event);
+    Update(product, @event);
   }
 
   private ReceiptItemEntity()
@@ -70,16 +67,18 @@ internal class ReceiptItemEntity
     return actorIds.AsReadOnly();
   }
 
-  public void Update(ReceiptItemChangedEvent @event)
+  public void Update(ProductEntity? product, ReceiptItemChangedEvent @event)
   {
-    Quantity = @event.Item.Quantity;
-    Price = @event.Item.Price;
+    Product = product;
+    ProductId = product?.ProductId;
 
     Gtin = @event.Item.Gtin?.Value;
     Sku = @event.Item.Sku?.Value;
     Label = @event.Item.Label.Value;
     Flags = @event.Item.Flags?.Value;
+    Quantity = @event.Item.Quantity;
     UnitPrice = @event.Item.UnitPrice;
+    Price = @event.Item.Price;
 
     DepartmentNumber = @event.Item.DepartmentNumber?.Value;
     DepartmentName = @event.Item.Department?.DisplayName.Value;

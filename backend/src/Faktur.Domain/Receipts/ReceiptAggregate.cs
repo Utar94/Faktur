@@ -1,6 +1,7 @@
 ﻿using Faktur.Contracts;
 using Faktur.Domain.Receipts.Events;
 using Faktur.Domain.Stores;
+using Faktur.Domain.Taxes;
 using FluentValidation;
 using Logitar.EventSourcing;
 
@@ -47,6 +48,11 @@ public class ReceiptAggregate : AggregateRoot
   private readonly Dictionary<ushort, ReceiptItemUnit> _items = [];
   public IReadOnlyDictionary<ushort, ReceiptItemUnit> Items => _items.AsReadOnly();
 
+  public decimal SubTotal { get; private set; }
+  private readonly Dictionary<string, ReceiptTaxUnit> _taxes = [];
+  public IReadOnlyDictionary<string, ReceiptTaxUnit> Taxes => _taxes.AsReadOnly();
+  public decimal Total { get; private set; }
+
   public ReceiptAggregate(AggregateId id) : base(id)
   {
   }
@@ -66,6 +72,57 @@ public class ReceiptAggregate : AggregateRoot
     _storeId = @event.StoreId;
     _issuedOn = @event.IssuedOn;
     _number = @event.Number;
+  }
+
+  public void Calculate(IEnumerable<TaxAggregate> taxes, ActorId actorId = default)
+  {
+    Dictionary<string, decimal> taxableAmounts = [];
+    foreach (TaxAggregate tax in taxes)
+    {
+      taxableAmounts[tax.Code.Value] = 0.0m;
+    }
+
+    decimal subTotal = 0m;
+    foreach (ReceiptItemUnit item in _items.Values)
+    {
+      subTotal += item.Price;
+
+      if (item.Flags != null)
+      {
+        foreach (TaxAggregate tax in taxes)
+        {
+          if (item.IsTaxable(tax))
+          {
+            taxableAmounts[tax.Code.Value] += item.Price;
+          }
+        }
+      }
+    }
+
+    decimal total = subTotal;
+    Dictionary<string, ReceiptTaxUnit> receiptTaxes = [];
+    foreach (TaxAggregate tax in taxes)
+    {
+      decimal taxableAmount = taxableAmounts[tax.Code.Value];
+      if (taxableAmount > 0)
+      {
+        ReceiptTaxUnit receiptTax = ReceiptTaxUnit.Calculate(tax.Rate, taxableAmount);
+        receiptTaxes[tax.Code.Value] = receiptTax;
+        total += receiptTax.Amount;
+      }
+    }
+
+    Raise(new ReceiptCalculatedEvent(subTotal, receiptTaxes, total), actorId);
+  }
+  protected virtual void Apply(ReceiptCalculatedEvent @event)
+  {
+    SubTotal = @event.SubTotal;
+    _taxes.Clear();
+    foreach (KeyValuePair<string, ReceiptTaxUnit> tax in @event.Taxes)
+    {
+      _taxes[tax.Key] = tax.Value;
+    }
+    Total = @event.Total;
   }
 
   public void Delete(ActorId actorId = default)
@@ -105,7 +162,6 @@ public class ReceiptAggregate : AggregateRoot
     if (existingItem == null || existingItem != item)
     {
       Raise(new ReceiptItemChangedEvent(number, item, actorId));
-      // TODO(fpion): calculate subtotal, taxes and total
     }
   }
   protected virtual void Apply(ReceiptItemChangedEvent @event)

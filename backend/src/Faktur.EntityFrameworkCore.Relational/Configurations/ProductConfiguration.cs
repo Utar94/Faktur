@@ -18,7 +18,7 @@ internal class ProductConfiguration : AggregateConfiguration<ProductEntity>, IEn
     builder.HasKey(x => x.ProductId);
 
     builder.HasIndex(x => new { x.StoreId, x.ArticleId }).IsUnique();
-    builder.HasIndex(x => new { x.StoreId, x.Sku }).IsUnique();
+    builder.HasIndex(x => new { x.StoreId, x.SkuNormalized }).IsUnique();
     builder.HasIndex(x => x.Sku);
     builder.HasIndex(x => x.DisplayName);
     builder.HasIndex(x => x.Flags);

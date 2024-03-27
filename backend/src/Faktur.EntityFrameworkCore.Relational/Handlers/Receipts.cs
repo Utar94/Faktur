@@ -7,6 +7,29 @@ namespace Faktur.EntityFrameworkCore.Relational.Handlers;
 
 internal static class Receipts
 {
+  public class ReceiptCalculatedEventHandler : INotificationHandler<ReceiptCalculatedEvent>
+  {
+    private readonly FakturContext _context;
+
+    public ReceiptCalculatedEventHandler(FakturContext context)
+    {
+      _context = context;
+    }
+
+    public async Task Handle(ReceiptCalculatedEvent @event, CancellationToken cancellationToken)
+    {
+      ReceiptEntity receipt = await _context.Receipts
+        .Include(x => x.Items)
+        .Include(x => x.Taxes)
+        .SingleOrDefaultAsync(x => x.AggregateId == @event.AggregateId.Value, cancellationToken)
+        ?? throw new InvalidOperationException($"The receipt 'AggregateId={@event.AggregateId}' could not be found.");
+
+      receipt.Calculate(@event);
+
+      await _context.SaveChangesAsync(cancellationToken);
+    }
+  }
+
   public class ReceiptCreatedEventHandler : INotificationHandler<ReceiptCreatedEvent>
   {
     private readonly FakturContext _context;
@@ -73,7 +96,21 @@ internal static class Receipts
           .SingleOrDefaultAsync(x => x.AggregateId == @event.AggregateId.Value, cancellationToken)
           ?? throw new InvalidOperationException($"The receipt 'AggregateId={@event.AggregateId}' could not be found.");
 
-        receipt.SetItem(@event);
+        ProductEntity? product = null;
+        if (@event.Item.Sku != null)
+        {
+          string skuNormalized = @event.Item.Sku.Value.ToUpper();
+          product = await _context.Products
+            .SingleOrDefaultAsync(x => x.StoreId == receipt.StoreId && x.SkuNormalized == skuNormalized, cancellationToken);
+        }
+        else if (@event.Item.Gtin != null)
+        {
+          product = await _context.Products
+            .Include(x => x.Article)
+            .SingleOrDefaultAsync(x => x.StoreId == receipt.StoreId && x.Article!.GtinNormalized == @event.Item.Gtin.NormalizedValue, cancellationToken);
+        }
+
+        receipt.SetItem(product, @event);
 
         await _context.SaveChangesAsync(cancellationToken);
       }
