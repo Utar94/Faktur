@@ -1,4 +1,5 @@
-﻿using Faktur.Domain.Receipts.Events;
+﻿using Faktur.Domain.Receipts;
+using Faktur.Domain.Receipts.Events;
 using Logitar.EventSourcing;
 
 namespace Faktur.EntityFrameworkCore.Relational.Entities;
@@ -41,6 +42,34 @@ internal class ReceiptEntity : AggregateEntity
   {
   }
 
+  public void Calculate(ReceiptCalculatedEvent @event)
+  {
+    SubTotal = @event.SubTotal;
+    Total = @event.Total;
+
+    foreach (KeyValuePair<string, ReceiptTaxUnit> tax in @event.Taxes)
+    {
+      ReceiptTaxEntity? entity = Taxes.SingleOrDefault(t => t.Code == tax.Key);
+      if (entity == null)
+      {
+        entity = new(this, tax.Key, tax.Value);
+        Taxes.Add(entity);
+      }
+      else
+      {
+        entity.Update(tax.Value);
+      }
+    }
+
+    foreach (ReceiptTaxEntity entity in Taxes)
+    {
+      if (!@event.Taxes.ContainsKey(entity.Code))
+      {
+        Taxes.Remove(entity);
+      }
+    }
+  }
+
   public override IEnumerable<ActorId> GetActorIds()
   {
     List<ActorId> actorIds = base.GetActorIds().ToList();
@@ -75,14 +104,14 @@ internal class ReceiptEntity : AggregateEntity
     }
   }
 
-  public void SetItem(ReceiptItemChangedEvent @event)
+  public void SetItem(ProductEntity? product, ReceiptItemChangedEvent @event)
   {
     Update(@event);
 
     ReceiptItemEntity? item = Items.SingleOrDefault(i => i.Number == @event.Number);
     if (item == null)
     {
-      item = new(this, product: null, @event); // TODO(fpion): send product
+      item = new(this, product, @event);
       Items.Add(item);
       ItemCount = Items.Count;
     }

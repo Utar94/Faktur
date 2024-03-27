@@ -40,6 +40,7 @@ internal class ReceiptItemQuerier : IReceiptItemQuerier
     string aggregateId = new AggregateId(receiptId).Value;
 
     ReceiptItemEntity? item = await _items.AsNoTracking()
+      .Include(x => x.Receipt).ThenInclude(x => x!.Store)
       .Include(x => x.Receipt).ThenInclude(x => x!.Taxes)
       .SingleOrDefaultAsync(x => x.Receipt!.AggregateId == aggregateId && x.Number == number, cancellationToken);
 
@@ -56,6 +57,7 @@ internal class ReceiptItemQuerier : IReceiptItemQuerier
     _searchHelper.ApplyTextSearch(builder, payload.Search, FakturDb.ReceiptItems.Gtin, FakturDb.ReceiptItems.Sku, FakturDb.ReceiptItems.Label);
 
     IQueryable<ReceiptItemEntity> query = _items.FromQuery(builder).AsNoTracking()
+      .Include(x => x.Receipt).ThenInclude(x => x!.Store)
       .Include(x => x.Receipt).ThenInclude(x => x!.Taxes);
 
     long total = await query.LongCountAsync(cancellationToken);
