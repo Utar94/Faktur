@@ -4,7 +4,7 @@ using Logitar.Portal.Contracts.Tokens;
 
 namespace Faktur.Authentication;
 
-public interface IAuthenticationService
+public interface IBearerAuthenticationService
 {
   TokenResponse GetTokenResponse(Session session);
   ValidatedToken ValidateAccessToken(string accessToken);

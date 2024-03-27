@@ -9,7 +9,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace Faktur.Authentication;
 
-internal class AuthenticationService : IAuthenticationService
+internal class BearerAuthenticationService : IBearerAuthenticationService
 {
   private const string AccessTokenType = "at+jwt";
   private const string TokenType = Schemes.Bearer;
@@ -17,7 +17,7 @@ internal class AuthenticationService : IAuthenticationService
   private readonly AuthenticationSettings _settings;
   private readonly JwtSecurityTokenHandler _tokenHandler = new();
 
-  public AuthenticationService(AuthenticationSettings settings)
+  public BearerAuthenticationService(AuthenticationSettings settings)
   {
     _settings = settings;
     _tokenHandler.InboundClaimTypeMap.Clear();

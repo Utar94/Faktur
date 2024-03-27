@@ -44,7 +44,7 @@ internal class Startup : StartupBase
 
     AuthenticationSettings authenticationSettings = _configuration.GetSection("Authentication").Get<AuthenticationSettings>() ?? new();
     services.AddSingleton(authenticationSettings);
-    services.AddSingleton<Authentication.IAuthenticationService, Authentication.AuthenticationService>();
+    services.AddSingleton<IBearerAuthenticationService, BearerAuthenticationService>();
 
     AuthenticationBuilder authenticationBuilder = services.AddAuthentication()
       .AddScheme<BearerAuthenticationOptions, BearerAuthenticationHandler>(Schemes.Bearer, options => { })
