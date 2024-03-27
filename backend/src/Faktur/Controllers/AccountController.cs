@@ -16,16 +16,16 @@ namespace Faktur.Controllers;
 [Route("account")]
 public class AccountController : ControllerBase
 {
-  private readonly IAuthenticationService _authenticationService;
+  private readonly IBearerAuthenticationService _bearerService;
   private readonly IPublisher _publisher;
   private readonly ISessionClient _sessionClient;
   private readonly IUserClient _userClient;
 
   private new User User => HttpContext.GetUser() ?? throw new InvalidOperationException("An authenticated user is required.");
 
-  public AccountController(IAuthenticationService authenticationService, IPublisher publisher, ISessionClient sessionClient, IUserClient userClient)
+  public AccountController(IBearerAuthenticationService bearerService, IPublisher publisher, ISessionClient sessionClient, IUserClient userClient)
   {
-    _authenticationService = authenticationService;
+    _bearerService = bearerService;
     _publisher = publisher;
     _sessionClient = sessionClient;
     _userClient = userClient;
@@ -124,7 +124,7 @@ public class AccountController : ControllerBase
       Error error = new(code: "InvalidTokenRequest", message: $"Exactly one of the following must be provided: {nameof(request.Credentials)}, {nameof(request.RefreshToken)}.");
       return BadRequest(error);
     }
-    TokenResponse token = _authenticationService.GetTokenResponse(session);
+    TokenResponse token = _bearerService.GetTokenResponse(session);
     return Ok(token);
   }
 

@@ -11,13 +11,13 @@ namespace Faktur.Authentication;
 
 internal class BearerAuthenticationHandler : AuthenticationHandler<BearerAuthenticationOptions>
 {
-  private readonly IAuthenticationService _authenticationService;
+  private readonly IBearerAuthenticationService _bearerService;
   private readonly IUserClient _userClient;
 
-  public BearerAuthenticationHandler(IAuthenticationService authenticationService, IUserClient userClient,
+  public BearerAuthenticationHandler(IBearerAuthenticationService bearerService, IUserClient userClient,
     IOptionsMonitor<BearerAuthenticationOptions> options, ILoggerFactory logger, UrlEncoder encoder) : base(options, logger, encoder)
   {
-    _authenticationService = authenticationService;
+    _bearerService = bearerService;
     _userClient = userClient;
   }
 
@@ -37,7 +37,7 @@ internal class BearerAuthenticationHandler : AuthenticationHandler<BearerAuthent
         {
           try
           {
-            ValidatedToken validatedToken = _authenticationService.ValidateAccessToken(values[1]);
+            ValidatedToken validatedToken = _bearerService.ValidateAccessToken(values[1]);
             if (string.IsNullOrWhiteSpace(validatedToken.Subject))
             {
               return AuthenticateResult.Fail($"The '{nameof(validatedToken.Subject)}' claim is required.");
