@@ -117,7 +117,7 @@ internal class ReceiptEntity : AggregateEntity
     }
     else
     {
-      item.Update(@event);
+      item.Update(product, @event);
     }
   }
 

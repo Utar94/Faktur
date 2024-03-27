@@ -5,6 +5,7 @@ using Faktur.Domain.Products;
 using Faktur.Domain.Receipts;
 using Faktur.Domain.Shared;
 using Faktur.Domain.Stores;
+using Faktur.Domain.Taxes;
 using FluentValidation;
 using MediatR;
 
@@ -14,11 +15,13 @@ internal class CreateOrReplaceReceiptItemCommandHandler : IRequestHandler<Create
 {
   private readonly IReceiptItemQuerier _receiptItemQuerier;
   private readonly IReceiptRepository _receiptRepository;
+  private readonly ITaxRepository _taxRepository;
 
-  public CreateOrReplaceReceiptItemCommandHandler(IReceiptItemQuerier receiptItemQuerier, IReceiptRepository receiptRepository)
+  public CreateOrReplaceReceiptItemCommandHandler(IReceiptItemQuerier receiptItemQuerier, IReceiptRepository receiptRepository, ITaxRepository taxRepository)
   {
     _receiptItemQuerier = receiptItemQuerier;
     _receiptRepository = receiptRepository;
+    _taxRepository = taxRepository;
   }
 
   public async Task<CreateOrReplaceReceiptItemResult?> Handle(CreateOrReplaceReceiptItemCommand command, CancellationToken cancellationToken)
@@ -101,6 +104,9 @@ internal class CreateOrReplaceReceiptItemCommandHandler : IRequestHandler<Create
 
     item = new(gtin, sku, label, flags, quantity, unitPrice, price, departmentNumber, department);
     receipt.SetItem(command.ItemNumber, item, command.ActorId);
+
+    IEnumerable<TaxAggregate> taxes = await _taxRepository.LoadAsync(cancellationToken);
+    receipt.Calculate(taxes);
 
     await _receiptRepository.SaveAsync(receipt, cancellationToken);
 

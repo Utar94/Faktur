@@ -5,6 +5,7 @@ using Faktur.Domain.Products;
 using Faktur.Domain.Receipts;
 using Faktur.Domain.Shared;
 using Faktur.Domain.Stores;
+using Faktur.Domain.Taxes;
 using FluentValidation;
 using MediatR;
 
@@ -14,11 +15,13 @@ internal class UpdateReceiptItemCommandHandler : IRequestHandler<UpdateReceiptIt
 {
   private readonly IReceiptItemQuerier _receiptItemQuerier;
   private readonly IReceiptRepository _receiptRepository;
+  private readonly ITaxRepository _taxRepository;
 
-  public UpdateReceiptItemCommandHandler(IReceiptItemQuerier receiptItemQuerier, IReceiptRepository receiptRepository)
+  public UpdateReceiptItemCommandHandler(IReceiptItemQuerier receiptItemQuerier, IReceiptRepository receiptRepository, ITaxRepository taxRepository)
   {
     _receiptItemQuerier = receiptItemQuerier;
     _receiptRepository = receiptRepository;
+    _taxRepository = taxRepository;
   }
 
   public async Task<ReceiptItem?> Handle(UpdateReceiptItemCommand command, CancellationToken cancellationToken)
@@ -41,9 +44,11 @@ internal class UpdateReceiptItemCommandHandler : IRequestHandler<UpdateReceiptIt
       if (long.TryParse(gtinOrSku, out _))
       {
         gtin = new(gtinOrSku);
+        sku = null;
       }
       else
       {
+        gtin = null;
         sku = new(gtinOrSku);
       }
     }
@@ -72,6 +77,9 @@ internal class UpdateReceiptItemCommandHandler : IRequestHandler<UpdateReceiptIt
 
     item = new(gtin, sku, label, flags, quantity, unitPrice, price, departmentNumber, department);
     receipt.SetItem(command.ItemNumber, item, command.ActorId);
+
+    IEnumerable<TaxAggregate> taxes = await _taxRepository.LoadAsync(cancellationToken);
+    receipt.Calculate(taxes);
 
     await _receiptRepository.SaveAsync(receipt, cancellationToken);
 
