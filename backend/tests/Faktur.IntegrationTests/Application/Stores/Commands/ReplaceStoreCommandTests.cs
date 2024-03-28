@@ -88,7 +88,7 @@ public class ReplaceStoreCommandTests : IntegrationTests
     };
     ReplaceStoreCommand command = new(_store.Id.ToGuid(), payload, Version: null);
     var exception = await Assert.ThrowsAsync<BannerNotFoundException>(async () => await Mediator.Send(command));
-    Assert.Equal(payload.BannerId, exception.BannerId);
+    Assert.Equal(payload.BannerId, exception.AggregateId.ToGuid());
     Assert.Equal(nameof(payload.BannerId), exception.PropertyName);
   }
 

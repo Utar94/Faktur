@@ -1,11 +1,12 @@
-﻿using Faktur.Domain.Articles;
+﻿using Faktur.Contracts.Errors;
+using Faktur.Domain.Articles;
 using Logitar;
 
 namespace Faktur.Application.Articles;
 
-public class GtinAlreadyUsedException : Exception
+public class GtinAlreadyUsedException : ConflictException
 {
-  public const string ErrorMessage = "The specified Global Trade Item Number (GTIN) is already used.";
+  private const string ErrorMessage = "The specified Global Trade Item Number (GTIN) is already used.";
 
   public string Gtin
   {
@@ -17,6 +18,8 @@ public class GtinAlreadyUsedException : Exception
     get => (string?)Data[nameof(PropertyName)];
     private set => Data[nameof(PropertyName)] = value;
   }
+
+  public override PropertyError Error => new(this.GetErrorCode(), ErrorMessage, Gtin, PropertyName);
 
   public GtinAlreadyUsedException(GtinUnit gtin, string? propertyName = null) : base(BuildMessage(gtin, propertyName))
   {

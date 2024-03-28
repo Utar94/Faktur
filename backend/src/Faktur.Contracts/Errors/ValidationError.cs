@@ -1,17 +1,24 @@
-﻿using Logitar.Portal.Contracts.Errors;
+﻿namespace Faktur.Contracts.Errors;
 
-namespace Faktur.Contracts.Errors;
-
-public record ValidationError : Error
+public record ValidationError
 {
-  public string? AttemptedValue { get; set; }
-  public string? PropertyName { get; set; }
+  public string Code { get; set; }
+  public string Message { get; set; }
+  public List<PropertyError> Errors { get; set; }
 
-  public ValidationError() : this(string.Empty, string.Empty)
+  public ValidationError() : this("Validation", $"Validation failed. See {nameof(Errors)} for more details.")
   {
   }
 
-  public ValidationError(string code, string message) : base(code, message)
+  public ValidationError(string code, string message)
   {
+    Code = code;
+    Message = message;
+    Errors = [];
+  }
+
+  public ValidationError(string code, string message, IEnumerable<PropertyError> errors) : this(code, message)
+  {
+    Errors.AddRange(errors);
   }
 }

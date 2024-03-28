@@ -1,11 +1,12 @@
-﻿using Faktur.Domain.Taxes;
+﻿using Faktur.Contracts.Errors;
+using Faktur.Domain.Taxes;
 using Logitar;
 
 namespace Faktur.Application.Taxes;
 
-public class TaxCodeAlreadyUsedException : Exception
+public class TaxCodeAlreadyUsedException : ConflictException
 {
-  public const string ErrorMessage = "The specified tax code is already used.";
+  private const string ErrorMessage = "The specified tax code is already used.";
 
   public string TaxCode
   {
@@ -17,6 +18,8 @@ public class TaxCodeAlreadyUsedException : Exception
     get => (string?)Data[nameof(PropertyName)];
     private set => Data[nameof(PropertyName)] = value;
   }
+
+  public override PropertyError Error => new(this.GetErrorCode(), ErrorMessage, TaxCode, PropertyName);
 
   public TaxCodeAlreadyUsedException(TaxCodeUnit code, string? propertyName = null) : base(BuildMessage(code, propertyName))
   {

@@ -78,7 +78,7 @@ public class CreateReceiptCommandTests : IntegrationTests
     };
     CreateReceiptCommand command = new(payload);
     var exception = await Assert.ThrowsAsync<StoreNotFoundException>(async () => await Mediator.Send(command));
-    Assert.Equal(payload.StoreId, exception.StoreId);
+    Assert.Equal(payload.StoreId, exception.AggregateId.ToGuid());
     Assert.Equal("StoreId", exception.PropertyName);
   }
 

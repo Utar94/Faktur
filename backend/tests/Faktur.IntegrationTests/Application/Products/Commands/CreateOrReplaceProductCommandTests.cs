@@ -136,7 +136,7 @@ public class CreateOrReplaceProductCommandTests : IntegrationTests
     CreateOrReplaceProductPayload payload = new();
     CreateOrReplaceProductCommand command = new(_store.Id.ToGuid(), ArticleId: Guid.NewGuid(), payload, Version: null);
     var exception = await Assert.ThrowsAsync<ArticleNotFoundException>(async () => await Mediator.Send(command));
-    Assert.Equal(command.ArticleId, exception.ArticleId);
+    Assert.Equal(command.ArticleId, exception.AggregateId.ToGuid());
     Assert.Equal("ArticleId", exception.PropertyName);
   }
 
@@ -159,7 +159,7 @@ public class CreateOrReplaceProductCommandTests : IntegrationTests
     CreateOrReplaceProductPayload payload = new();
     CreateOrReplaceProductCommand command = new(StoreId: Guid.NewGuid(), _article.Id.ToGuid(), payload, Version: null);
     var exception = await Assert.ThrowsAsync<StoreNotFoundException>(async () => await Mediator.Send(command));
-    Assert.Equal(command.StoreId, exception.StoreId);
+    Assert.Equal(command.StoreId, exception.AggregateId.ToGuid());
     Assert.Equal("StoreId", exception.PropertyName);
   }
 

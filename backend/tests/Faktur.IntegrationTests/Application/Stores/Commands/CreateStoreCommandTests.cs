@@ -67,7 +67,7 @@ public class CreateStoreCommandTests : IntegrationTests
     };
     CreateStoreCommand command = new(payload);
     var exception = await Assert.ThrowsAsync<BannerNotFoundException>(async () => await Mediator.Send(command));
-    Assert.Equal(payload.BannerId, exception.BannerId);
+    Assert.Equal(payload.BannerId, exception.AggregateId.ToGuid());
     Assert.Equal(nameof(payload.BannerId), exception.PropertyName);
   }
 

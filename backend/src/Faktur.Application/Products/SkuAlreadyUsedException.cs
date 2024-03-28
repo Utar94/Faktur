@@ -1,12 +1,13 @@
-﻿using Faktur.Domain.Products;
+﻿using Faktur.Contracts.Errors;
+using Faktur.Domain.Products;
 using Faktur.Domain.Stores;
 using Logitar;
 
 namespace Faktur.Application.Products;
 
-public class SkuAlreadyUsedException : Exception
+public class SkuAlreadyUsedException : ConflictException
 {
-  public const string ErrorMessage = "The specified Stock Keeping Unit (SKU) is already used.";
+  private const string ErrorMessage = "The specified Stock Keeping Unit (SKU) is already used.";
 
   public Guid StoreId
   {
@@ -22,6 +23,16 @@ public class SkuAlreadyUsedException : Exception
   {
     get => (string?)Data[nameof(PropertyName)];
     private set => Data[nameof(PropertyName)] = value;
+  }
+
+  public override PropertyError Error
+  {
+    get
+    {
+      PropertyError error = new(this.GetErrorCode(), ErrorMessage, Sku, PropertyName);
+      error.AddData(nameof(StoreId), StoreId.ToString());
+      return error;
+    }
   }
 
   public SkuAlreadyUsedException(StoreId storeId, SkuUnit sku, string? propertyName = null) : base(BuildMessage(storeId, sku, propertyName))
