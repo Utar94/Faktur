@@ -1,4 +1,5 @@
-﻿using Faktur.Contracts.Stores;
+﻿using Faktur.Application.Banners;
+using Faktur.Contracts.Stores;
 using Faktur.Domain.Banners;
 using Faktur.EntityFrameworkCore.Relational.Entities;
 using FluentValidation.Results;
@@ -55,6 +56,19 @@ public class CreateStoreCommandTests : IntegrationTests
     StoreEntity? entity = await FakturContext.Stores.AsNoTracking()
       .SingleOrDefaultAsync(x => x.AggregateId == new AggregateId(store.Id).Value);
     Assert.NotNull(entity);
+  }
+
+  [Fact(DisplayName = "It should throw BannerNotFoundException when the banner cannot be found.")]
+  public async Task It_should_throw_BannerNotFoundException_when_the_banner_cannot_be_found()
+  {
+    CreateStorePayload payload = new("Maxi Drummondville")
+    {
+      BannerId = Guid.NewGuid()
+    };
+    CreateStoreCommand command = new(payload);
+    var exception = await Assert.ThrowsAsync<BannerNotFoundException>(async () => await Mediator.Send(command));
+    Assert.Equal(payload.BannerId, exception.BannerId);
+    Assert.Equal(nameof(payload.BannerId), exception.PropertyName);
   }
 
   [Fact(DisplayName = "It should throw ValidationException when the payload is not valid.")]

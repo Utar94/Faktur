@@ -5,7 +5,7 @@ namespace Faktur.Application.Taxes;
 
 public class TaxCodeAlreadyUsedException : Exception
 {
-  private const string ErrorMessage = "The specified tax code is already used.";
+  public const string ErrorMessage = "The specified tax code is already used.";
 
   public string TaxCode
   {

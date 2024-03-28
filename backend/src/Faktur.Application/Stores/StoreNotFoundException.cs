@@ -4,7 +4,7 @@ namespace Faktur.Application.Stores;
 
 public class StoreNotFoundException : Exception
 {
-  private const string ErrorMessage = "The specified store could not be found.";
+  public const string ErrorMessage = "The specified store could not be found.";
 
   public Guid StoreId
   {

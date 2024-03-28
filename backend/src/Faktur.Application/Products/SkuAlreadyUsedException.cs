@@ -6,7 +6,7 @@ namespace Faktur.Application.Products;
 
 public class SkuAlreadyUsedException : Exception
 {
-  private const string ErrorMessage = "The specified Stock Keeping Unit (SKU) is already used.";
+  public const string ErrorMessage = "The specified Stock Keeping Unit (SKU) is already used.";
 
   public Guid StoreId
   {

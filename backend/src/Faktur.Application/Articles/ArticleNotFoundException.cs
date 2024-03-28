@@ -4,7 +4,7 @@ namespace Faktur.Application.Articles;
 
 public class ArticleNotFoundException : Exception
 {
-  private const string ErrorMessage = "The specified article could not be found.";
+  public const string ErrorMessage = "The specified article could not be found.";
 
   public Guid ArticleId
   {

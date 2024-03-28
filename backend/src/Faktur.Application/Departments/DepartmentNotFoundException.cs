@@ -5,7 +5,7 @@ namespace Faktur.Application.Departments;
 
 public class DepartmentNotFoundException : Exception
 {
-  private const string ErrorMessage = "The specified department could not be found.";
+  public const string ErrorMessage = "The specified department could not be found.";
 
   public Guid StoreId
   {

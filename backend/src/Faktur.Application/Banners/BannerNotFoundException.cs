@@ -4,7 +4,7 @@ namespace Faktur.Application.Banners;
 
 public class BannerNotFoundException : Exception
 {
-  private const string ErrorMessage = "The specified banner could not be found.";
+  public const string ErrorMessage = "The specified banner could not be found.";
 
   public Guid BannerId
   {
