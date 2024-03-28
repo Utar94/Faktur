@@ -22,6 +22,13 @@ public class ReceiptController : ControllerBase
     _mediator = mediator;
   }
 
+  [HttpPatch("{id}/categorize")]
+  public async Task<ActionResult<Receipt>> CategorizeAsync(Guid id, [FromBody] CategorizeReceiptPayload payload, CancellationToken cancellationToken)
+  {
+    Receipt? receipt = await _mediator.Send(new CategorizeReceiptCommand(id, payload), cancellationToken);
+    return receipt == null ? NotFound() : Ok(receipt);
+  }
+
   [HttpPost]
   public async Task<ActionResult<Receipt>> CreateAsync([FromBody] CreateReceiptPayload payload, CancellationToken cancellationToken)
   {

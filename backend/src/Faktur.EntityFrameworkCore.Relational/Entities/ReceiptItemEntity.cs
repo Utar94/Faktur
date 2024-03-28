@@ -1,4 +1,5 @@
-﻿using Faktur.Domain.Receipts.Events;
+﻿using Faktur.Domain.Receipts;
+using Faktur.Domain.Receipts.Events;
 using Logitar.EventSourcing;
 
 namespace Faktur.EntityFrameworkCore.Relational.Entities;
@@ -35,6 +36,8 @@ internal class ReceiptItemEntity
   public string? DepartmentNumber { get; private set; }
   public string? DepartmentName { get; private set; }
 
+  public string? Category { get; private set; }
+
   public string CreatedBy { get; private set; } = ActorId.DefaultValue;
   public DateTime CreatedOn { get; private set; }
   public string UpdatedBy { get; private set; } = ActorId.DefaultValue;
@@ -55,6 +58,17 @@ internal class ReceiptItemEntity
 
   private ReceiptItemEntity()
   {
+  }
+
+  public void Categorize(ReceiptCategorizedEvent @event)
+  {
+    if (@event.Categories.TryGetValue((ushort)Number, out CategoryUnit? category))
+    {
+      Category = category?.Value;
+
+      UpdatedBy = @event.ActorId.Value;
+      UpdatedOn = @event.OccurredOn.ToUniversalTime();
+    }
   }
 
   public IEnumerable<ActorId> GetActorIds(bool includeReceipt)

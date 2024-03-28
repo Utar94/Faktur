@@ -18,6 +18,8 @@ public class ReceiptItem
 
   public DepartmentSummary? Department { get; set; }
 
+  public string? Category { get; set; }
+
   public Actor CreatedBy { get; set; } = new();
   public DateTime CreatedOn { get; set; }
   public Actor UpdatedBy { get; set; } = new();

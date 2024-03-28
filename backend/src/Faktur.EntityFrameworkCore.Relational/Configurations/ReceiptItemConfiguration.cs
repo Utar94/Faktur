@@ -1,5 +1,6 @@
 ﻿using Faktur.Domain.Articles;
 using Faktur.Domain.Products;
+using Faktur.Domain.Receipts;
 using Faktur.Domain.Stores;
 using Faktur.EntityFrameworkCore.Relational.Entities;
 using Logitar.EventSourcing;
@@ -28,6 +29,7 @@ internal class ReceiptItemConfiguration : IEntityTypeConfiguration<ReceiptItemEn
     builder.HasIndex(x => x.Price);
     builder.HasIndex(x => x.DepartmentNumber);
     builder.HasIndex(x => x.DepartmentName);
+    builder.HasIndex(x => x.Category);
     builder.HasIndex(x => x.CreatedBy);
     builder.HasIndex(x => x.CreatedOn);
     builder.HasIndex(x => x.UpdatedBy);
@@ -42,6 +44,7 @@ internal class ReceiptItemConfiguration : IEntityTypeConfiguration<ReceiptItemEn
     builder.Property(x => x.Price).HasColumnType("money");
     builder.Property(x => x.DepartmentNumber).HasMaxLength(NumberUnit.MaximumLength);
     builder.Property(x => x.DepartmentName).HasMaxLength(DisplayNameUnit.MaximumLength);
+    builder.Property(x => x.Category).HasMaxLength(CategoryUnit.MaximumLength);
     builder.Property(x => x.CreatedBy).HasMaxLength(ActorId.MaximumLength);
     builder.Property(x => x.UpdatedBy).HasMaxLength(ActorId.MaximumLength);
 

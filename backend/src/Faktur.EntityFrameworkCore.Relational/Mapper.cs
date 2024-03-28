@@ -165,6 +165,7 @@ internal class Mapper
       Quantity = source.Quantity,
       UnitPrice = source.UnitPrice,
       Price = source.Price,
+      Category = source.Category,
       CreatedBy = FindActor(source.CreatedBy),
       CreatedOn = AsUniversalTime(source.CreatedOn),
       UpdatedBy = FindActor(source.UpdatedBy),
