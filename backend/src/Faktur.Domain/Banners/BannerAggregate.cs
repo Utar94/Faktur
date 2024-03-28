@@ -1,7 +1,7 @@
 ﻿using Faktur.Contracts;
 using Faktur.Domain.Banners.Events;
-using Faktur.Domain.Shared;
 using Logitar.EventSourcing;
+using Logitar.Identity.Domain.Shared;
 
 namespace Faktur.Domain.Banners;
 
@@ -45,7 +45,7 @@ public class BannerAggregate : AggregateRoot
   public BannerAggregate(DisplayNameUnit displayName, ActorId actorId = default, BannerId? id = null)
     : base((id ?? BannerId.NewId()).AggregateId)
   {
-    Raise(new BannerCreatedEvent(displayName, actorId));
+    Raise(new BannerCreatedEvent(displayName), actorId);
   }
   protected virtual void Apply(BannerCreatedEvent @event)
   {
@@ -56,7 +56,7 @@ public class BannerAggregate : AggregateRoot
   {
     if (!IsDeleted)
     {
-      Raise(new BannerDeletedEvent(actorId));
+      Raise(new BannerDeletedEvent(), actorId);
     }
   }
 
@@ -64,8 +64,7 @@ public class BannerAggregate : AggregateRoot
   {
     if (_updatedEvent.HasChanges)
     {
-      _updatedEvent.ActorId = actorId;
-      Raise(_updatedEvent);
+      Raise(_updatedEvent, actorId, DateTime.Now);
       _updatedEvent = new();
     }
   }

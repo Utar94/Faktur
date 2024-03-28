@@ -1,10 +1,10 @@
 ﻿using Faktur.Application.Stores;
 using Faktur.Contracts.Receipts;
-using Faktur.Domain.Shared;
 using Faktur.Domain.Stores;
 using Faktur.EntityFrameworkCore.Relational;
 using FluentValidation.Results;
 using Logitar.Data;
+using Logitar.Identity.Domain.Shared;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 

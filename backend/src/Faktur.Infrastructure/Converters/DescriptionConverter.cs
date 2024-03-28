@@ -1,4 +1,4 @@
-﻿using Faktur.Domain.Shared;
+﻿using Logitar.Identity.Domain.Shared;
 
 namespace Faktur.Infrastructure.Converters;
 

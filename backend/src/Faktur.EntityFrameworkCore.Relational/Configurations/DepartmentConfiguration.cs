@@ -1,7 +1,7 @@
-﻿using Faktur.Domain.Shared;
-using Faktur.Domain.Stores;
+﻿using Faktur.Domain.Stores;
 using Faktur.EntityFrameworkCore.Relational.Entities;
 using Logitar.EventSourcing;
+using Logitar.Identity.Domain.Shared;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

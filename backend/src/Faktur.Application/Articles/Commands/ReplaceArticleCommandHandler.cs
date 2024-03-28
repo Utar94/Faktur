@@ -1,8 +1,8 @@
 ﻿using Faktur.Application.Articles.Validators;
 using Faktur.Contracts.Articles;
 using Faktur.Domain.Articles;
-using Faktur.Domain.Shared;
 using FluentValidation;
+using Logitar.Identity.Domain.Shared;
 using MediatR;
 
 namespace Faktur.Application.Articles.Commands;

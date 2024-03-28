@@ -1,9 +1,9 @@
 ﻿using Faktur.Contracts.Stores;
 using Faktur.Domain.Banners;
-using Faktur.Domain.Shared;
 using Faktur.EntityFrameworkCore.Relational.Entities;
 using FluentValidation.Results;
 using Logitar.EventSourcing;
+using Logitar.Identity.Domain.Shared;
 using Logitar.Portal.Contracts.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;

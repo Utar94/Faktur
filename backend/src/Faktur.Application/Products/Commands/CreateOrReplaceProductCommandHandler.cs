@@ -5,9 +5,9 @@ using Faktur.Application.Stores;
 using Faktur.Contracts.Products;
 using Faktur.Domain.Articles;
 using Faktur.Domain.Products;
-using Faktur.Domain.Shared;
 using Faktur.Domain.Stores;
 using FluentValidation;
+using Logitar.Identity.Domain.Shared;
 using MediatR;
 
 namespace Faktur.Application.Products.Commands;

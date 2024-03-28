@@ -1,7 +1,7 @@
 ﻿using Faktur.Contracts.Products;
 using Faktur.Domain.Products;
-using Faktur.Domain.Shared;
 using Faktur.EntityFrameworkCore.Relational.Entities;
+using Logitar.Identity.Domain.Shared;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;

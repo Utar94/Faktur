@@ -2,11 +2,11 @@
 using Faktur.Contracts.Products;
 using Faktur.Domain.Articles;
 using Faktur.Domain.Products;
-using Faktur.Domain.Shared;
 using Faktur.Domain.Stores;
 using Faktur.EntityFrameworkCore.Relational;
 using FluentValidation.Results;
 using Logitar.Data;
+using Logitar.Identity.Domain.Shared;
 using Logitar.Security.Cryptography;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;

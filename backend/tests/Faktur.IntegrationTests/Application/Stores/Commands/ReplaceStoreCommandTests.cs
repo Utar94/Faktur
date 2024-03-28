@@ -1,8 +1,8 @@
 ﻿using Faktur.Contracts.Stores;
 using Faktur.Domain.Banners;
-using Faktur.Domain.Shared;
 using Faktur.Domain.Stores;
 using FluentValidation.Results;
+using Logitar.Identity.Domain.Shared;
 using Logitar.Portal.Contracts.Users;
 using Microsoft.Extensions.DependencyInjection;
 

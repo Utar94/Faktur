@@ -65,7 +65,7 @@ public class ReceiptAggregate : AggregateRoot
       new IssuedOnValidator(nameof(issuedOn)).ValidateAndThrow(issuedOn.Value);
     }
 
-    Raise(new ReceiptCreatedEvent(store.Id, issuedOn ?? DateTime.Now, number, actorId));
+    Raise(new ReceiptCreatedEvent(store.Id, issuedOn ?? DateTime.Now, number), actorId);
   }
   protected virtual void Apply(ReceiptCreatedEvent @event)
   {
@@ -129,7 +129,7 @@ public class ReceiptAggregate : AggregateRoot
   {
     if (!IsDeleted)
     {
-      Raise(new ReceiptDeletedEvent(actorId));
+      Raise(new ReceiptDeletedEvent(), actorId);
     }
   }
 
@@ -148,7 +148,7 @@ public class ReceiptAggregate : AggregateRoot
   {
     if (HasItem(number))
     {
-      Raise(new ReceiptItemRemovedEvent(number, actorId));
+      Raise(new ReceiptItemRemovedEvent(number), actorId);
     }
   }
   protected virtual void Apply(ReceiptItemRemovedEvent @event)
@@ -161,7 +161,7 @@ public class ReceiptAggregate : AggregateRoot
     ReceiptItemUnit? existingItem = TryFindItem(number);
     if (existingItem == null || existingItem != item)
     {
-      Raise(new ReceiptItemChangedEvent(number, item, actorId));
+      Raise(new ReceiptItemChangedEvent(number, item), actorId);
     }
   }
   protected virtual void Apply(ReceiptItemChangedEvent @event)
@@ -173,8 +173,7 @@ public class ReceiptAggregate : AggregateRoot
   {
     if (_updatedEvent.HasChanges)
     {
-      _updatedEvent.ActorId = actorId;
-      Raise(_updatedEvent);
+      Raise(_updatedEvent, actorId, DateTime.Now);
       _updatedEvent = new();
     }
   }

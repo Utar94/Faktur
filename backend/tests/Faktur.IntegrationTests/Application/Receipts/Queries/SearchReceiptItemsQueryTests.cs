@@ -2,8 +2,8 @@
 using Faktur.Domain.Articles;
 using Faktur.Domain.Products;
 using Faktur.Domain.Receipts;
-using Faktur.Domain.Shared;
 using Faktur.Domain.Stores;
+using Logitar.Identity.Domain.Shared;
 using Logitar.Portal.Contracts.Search;
 using Microsoft.Extensions.DependencyInjection;
 

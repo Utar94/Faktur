@@ -3,15 +3,4 @@ using MediatR;
 
 namespace Faktur.Domain.Receipts.Events;
 
-public record ReceiptItemChangedEvent : DomainEvent, INotification
-{
-  public ushort Number { get; }
-  public ReceiptItemUnit Item { get; }
-
-  public ReceiptItemChangedEvent(ushort number, ReceiptItemUnit item, ActorId actorId)
-  {
-    Number = number;
-    Item = item;
-    ActorId = actorId;
-  }
-}
+public record ReceiptItemChangedEvent(ushort Number, ReceiptItemUnit Item) : DomainEvent, INotification;

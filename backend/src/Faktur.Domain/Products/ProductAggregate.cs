@@ -2,9 +2,9 @@
 using Faktur.Contracts.Products;
 using Faktur.Domain.Articles;
 using Faktur.Domain.Products.Events;
-using Faktur.Domain.Shared;
 using Faktur.Domain.Stores;
 using Logitar.EventSourcing;
+using Logitar.Identity.Domain.Shared;
 
 namespace Faktur.Domain.Products;
 
@@ -120,7 +120,7 @@ public class ProductAggregate : AggregateRoot
   public ProductAggregate(StoreAggregate store, ArticleAggregate article, ActorId actorId = default, ProductId? id = null)
     : base((id ?? ProductId.NewId()).AggregateId)
   {
-    Raise(new ProductCreatedEvent(store.Id, article.Id, actorId));
+    Raise(new ProductCreatedEvent(store.Id, article.Id), actorId);
   }
   protected virtual void Apply(ProductCreatedEvent @event)
   {
@@ -132,7 +132,7 @@ public class ProductAggregate : AggregateRoot
   {
     if (!IsDeleted)
     {
-      Raise(new ProductDeletedEvent(actorId));
+      Raise(new ProductDeletedEvent(), actorId);
     }
   }
 
@@ -140,8 +140,7 @@ public class ProductAggregate : AggregateRoot
   {
     if (_updatedEvent.HasChanges)
     {
-      _updatedEvent.ActorId = actorId;
-      Raise(_updatedEvent);
+      Raise(_updatedEvent, actorId, DateTime.Now);
       _updatedEvent = new();
     }
   }

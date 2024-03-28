@@ -1,7 +1,7 @@
 ﻿using Faktur.Contracts;
 using Faktur.Domain.Banners;
-using Faktur.Domain.Shared;
 using Logitar.EventSourcing;
+using Logitar.Identity.Domain.Shared;
 using Logitar.Identity.Domain.Users;
 using MediatR;
 

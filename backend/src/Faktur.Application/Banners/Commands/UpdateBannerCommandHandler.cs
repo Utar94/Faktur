@@ -1,8 +1,8 @@
 ﻿using Faktur.Application.Banners.Validators;
 using Faktur.Contracts.Banners;
 using Faktur.Domain.Banners;
-using Faktur.Domain.Shared;
 using FluentValidation;
+using Logitar.Identity.Domain.Shared;
 using MediatR;
 
 namespace Faktur.Application.Banners.Commands;

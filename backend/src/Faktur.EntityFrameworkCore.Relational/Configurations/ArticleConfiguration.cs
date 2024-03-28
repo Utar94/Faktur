@@ -1,6 +1,6 @@
 ﻿using Faktur.Domain.Articles;
-using Faktur.Domain.Shared;
 using Faktur.EntityFrameworkCore.Relational.Entities;
+using Logitar.Identity.Domain.Shared;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

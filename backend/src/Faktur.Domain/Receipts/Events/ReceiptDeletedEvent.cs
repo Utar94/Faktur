@@ -5,9 +5,8 @@ namespace Faktur.Domain.Receipts.Events;
 
 public record ReceiptDeletedEvent : DomainEvent, INotification
 {
-  public ReceiptDeletedEvent(ActorId actorId)
+  public ReceiptDeletedEvent()
   {
-    ActorId = actorId;
     IsDeleted = true;
   }
 }

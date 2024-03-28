@@ -1,16 +1,7 @@
-﻿using Faktur.Domain.Shared;
-using Logitar.EventSourcing;
+﻿using Logitar.EventSourcing;
+using Logitar.Identity.Domain.Shared;
 using MediatR;
 
 namespace Faktur.Domain.Banners.Events;
 
-public record BannerCreatedEvent : DomainEvent, INotification
-{
-  public DisplayNameUnit DisplayName { get; }
-
-  public BannerCreatedEvent(DisplayNameUnit displayName, ActorId actorId)
-  {
-    DisplayName = displayName;
-    ActorId = actorId;
-  }
-}
+public record BannerCreatedEvent(DisplayNameUnit DisplayName) : DomainEvent, INotification;
