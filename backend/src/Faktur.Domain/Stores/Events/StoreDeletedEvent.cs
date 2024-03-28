@@ -5,9 +5,8 @@ namespace Faktur.Domain.Stores.Events;
 
 public record StoreDeletedEvent : DomainEvent, INotification
 {
-  public StoreDeletedEvent(ActorId actorId)
+  public StoreDeletedEvent()
   {
-    ActorId = actorId;
     IsDeleted = true;
   }
 }

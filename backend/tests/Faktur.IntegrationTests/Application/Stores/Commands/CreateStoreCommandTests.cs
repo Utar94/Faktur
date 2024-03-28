@@ -1,9 +1,10 @@
 ﻿using Faktur.Contracts.Stores;
 using Faktur.Domain.Banners;
 using Faktur.Domain.Shared;
-using Faktur.EntityFrameworkCore.Relational;
+using Faktur.EntityFrameworkCore.Relational.Entities;
 using FluentValidation.Results;
-using Logitar.Data;
+using Logitar.EventSourcing;
+using Logitar.Portal.Contracts.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -19,18 +20,6 @@ public class CreateStoreCommandTests : IntegrationTests
     _bannerRepository = ServiceProvider.GetRequiredService<IBannerRepository>();
   }
 
-  public override async Task InitializeAsync()
-  {
-    await base.InitializeAsync();
-
-    TableId[] tables = [FakturDb.Stores.Table, FakturDb.Banners.Table];
-    foreach (TableId table in tables)
-    {
-      ICommand command = CreateDeleteBuilder(table).Build();
-      await FakturContext.Database.ExecuteSqlRawAsync(command.Text, command.Parameters.ToArray());
-    }
-  }
-
   [Fact(DisplayName = "It should create a new store.")]
   public async Task It_should_create_a_new_store()
   {
@@ -40,7 +29,8 @@ public class CreateStoreCommandTests : IntegrationTests
     CreateStorePayload payload = new("Maxi Drummondville")
     {
       BannerId = banner.Id.ToGuid(),
-      Number = "08872"
+      Number = "08872",
+      Phone = new PhonePayload(countryCode: "CA", "(819)-472-1197", extension: null, isVerified: true)
     };
     CreateStoreCommand command = new(payload);
     Store store = await Mediator.Send(command);
@@ -48,11 +38,23 @@ public class CreateStoreCommandTests : IntegrationTests
     Assert.Equal(2, store.Version);
     Assert.Equal(Actor, store.CreatedBy);
     Assert.Equal(Actor, store.UpdatedBy);
+    Assert.True(store.CreatedOn < store.UpdatedOn);
 
     Assert.Equal(payload.Number, store.Number);
     Assert.Equal(payload.DisplayName, store.DisplayName);
     Assert.Equal(payload.Description, store.Description);
     Assert.Equal(payload.BannerId, store.Banner?.Id);
+
+    Assert.NotNull(store.Phone);
+    Assert.Equal(payload.Phone.CountryCode, store.Phone.CountryCode);
+    Assert.Equal(payload.Phone.Number, store.Phone.Number);
+    Assert.Equal(payload.Phone.Extension, store.Phone.Extension);
+    Assert.Equal("+18194721197", store.Phone.E164Formatted);
+    Assert.Equal(payload.Phone.IsVerified, store.Phone.IsVerified);
+
+    StoreEntity? entity = await FakturContext.Stores.AsNoTracking()
+      .SingleOrDefaultAsync(x => x.AggregateId == new AggregateId(store.Id).Value);
+    Assert.NotNull(entity);
   }
 
   [Fact(DisplayName = "It should throw ValidationException when the payload is not valid.")]
@@ -63,6 +65,6 @@ public class CreateStoreCommandTests : IntegrationTests
     var exception = await Assert.ThrowsAsync<FluentValidation.ValidationException>(async () => await Mediator.Send(command));
     ValidationFailure error = Assert.Single(exception.Errors);
     Assert.Equal("NotEmptyValidator", error.ErrorCode);
-    Assert.Equal("DisplayName", error.PropertyName);
+    Assert.Equal(nameof(payload.DisplayName), error.PropertyName);
   }
 }

@@ -1,7 +1,7 @@
 ﻿using Faktur.Contracts.Receipts;
-using Faktur.Domain.Shared;
 using Faktur.Domain.Stores;
 using FluentValidation;
+using Logitar.Identity.Domain.Shared;
 
 namespace Faktur.Application.Receipts.Validators;
 

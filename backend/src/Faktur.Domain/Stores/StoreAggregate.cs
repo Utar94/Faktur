@@ -3,6 +3,7 @@ using Faktur.Domain.Banners;
 using Faktur.Domain.Shared;
 using Faktur.Domain.Stores.Events;
 using Logitar.EventSourcing;
+using Logitar.Identity.Domain.Users;
 
 namespace Faktur.Domain.Stores;
 
@@ -65,6 +66,46 @@ public class StoreAggregate : AggregateRoot
     }
   }
 
+  private AddressUnit? _address = null;
+  public AddressUnit? Address
+  {
+    get => _address;
+    set
+    {
+      if (value != _address)
+      {
+        _address = value;
+        _updatedEvent.Address = new Modification<AddressUnit>(value);
+      }
+    }
+  }
+  private EmailUnit? _email = null;
+  public EmailUnit? Email
+  {
+    get => _email;
+    set
+    {
+      if (value != _email)
+      {
+        _email = value;
+        _updatedEvent.Email = new Modification<EmailUnit>(value);
+      }
+    }
+  }
+  private PhoneUnit? _phone = null;
+  public PhoneUnit? Phone
+  {
+    get => _phone;
+    set
+    {
+      if (value != _phone)
+      {
+        _phone = value;
+        _updatedEvent.Phone = new Modification<PhoneUnit>(value);
+      }
+    }
+  }
+
   private readonly Dictionary<NumberUnit, DepartmentUnit> _departments = [];
   public IReadOnlyDictionary<NumberUnit, DepartmentUnit> Departments => _departments.AsReadOnly();
 
@@ -75,7 +116,7 @@ public class StoreAggregate : AggregateRoot
   public StoreAggregate(DisplayNameUnit displayName, ActorId actorId = default, StoreId? id = null)
     : base((id ?? StoreId.NewId()).AggregateId)
   {
-    Raise(new StoreCreatedEvent(displayName, actorId));
+    Raise(new StoreCreatedEvent(displayName), actorId);
   }
   protected virtual void Apply(StoreCreatedEvent @event)
   {
@@ -86,7 +127,7 @@ public class StoreAggregate : AggregateRoot
   {
     if (!IsDeleted)
     {
-      Raise(new StoreDeletedEvent(actorId));
+      Raise(new StoreDeletedEvent(), actorId);
     }
   }
 
@@ -105,7 +146,7 @@ public class StoreAggregate : AggregateRoot
   {
     if (HasDepartment(number))
     {
-      Raise(new StoreDepartmentRemovedEvent(number, actorId));
+      Raise(new StoreDepartmentRemovedEvent(number), actorId);
     }
   }
   protected virtual void Apply(StoreDepartmentRemovedEvent @event)
@@ -118,7 +159,7 @@ public class StoreAggregate : AggregateRoot
     DepartmentUnit? existingDepartment = TryFindDepartment(number);
     if (existingDepartment == null || existingDepartment != department)
     {
-      Raise(new StoreDepartmentSavedEvent(number, department, actorId));
+      Raise(new StoreDepartmentSavedEvent(number, department), actorId);
     }
   }
   protected virtual void Apply(StoreDepartmentSavedEvent @event)
@@ -130,8 +171,7 @@ public class StoreAggregate : AggregateRoot
   {
     if (_updatedEvent.HasChanges)
     {
-      _updatedEvent.ActorId = actorId;
-      Raise(_updatedEvent);
+      Raise(_updatedEvent, actorId, DateTime.Now);
       _updatedEvent = new();
     }
   }
@@ -152,6 +192,19 @@ public class StoreAggregate : AggregateRoot
     if (@event.Description != null)
     {
       _description = @event.Description.Value;
+    }
+
+    if (@event.Address != null)
+    {
+      _address = @event.Address.Value;
+    }
+    if (@event.Email != null)
+    {
+      _email = @event.Email.Value;
+    }
+    if (@event.Phone != null)
+    {
+      _phone = @event.Phone.Value;
     }
   }
 
