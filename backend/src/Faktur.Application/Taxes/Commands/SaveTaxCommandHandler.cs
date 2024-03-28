@@ -5,7 +5,7 @@ using MediatR;
 
 namespace Faktur.Application.Taxes.Commands;
 
-internal class SaveTaxCommandHandler : INotificationHandler<SaveTaxCommand>
+internal class SaveTaxCommandHandler : IRequestHandler<SaveTaxCommand>
 {
   private readonly ITaxRepository _taxRepository;
 

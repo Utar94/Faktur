@@ -5,7 +5,7 @@ using MediatR;
 
 namespace Faktur.Application.Articles.Commands;
 
-internal class SaveArticleCommandHandler : INotificationHandler<SaveArticleCommand>
+internal class SaveArticleCommandHandler : IRequestHandler<SaveArticleCommand>
 {
   private readonly IArticleRepository _articleRepository;
 

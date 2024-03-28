@@ -10,12 +10,12 @@ namespace Faktur.Application.Articles.Commands;
 internal class CreateArticleCommandHandler : IRequestHandler<CreateArticleCommand, Article>
 {
   private readonly IArticleQuerier _articleQuerier;
-  private readonly IPublisher _publisher;
+  private readonly ISender _sender;
 
-  public CreateArticleCommandHandler(IArticleQuerier articleQuerier, IPublisher publisher)
+  public CreateArticleCommandHandler(IArticleQuerier articleQuerier, ISender sender)
   {
     _articleQuerier = articleQuerier;
-    _publisher = publisher;
+    _sender = sender;
   }
 
   public async Task<Article> Handle(CreateArticleCommand command, CancellationToken cancellationToken)
@@ -32,7 +32,7 @@ internal class CreateArticleCommandHandler : IRequestHandler<CreateArticleComman
 
     article.Update(command.ActorId);
 
-    await _publisher.Publish(new SaveArticleCommand(article), cancellationToken);
+    await _sender.Send(new SaveArticleCommand(article), cancellationToken);
 
     return await _articleQuerier.ReadAsync(article, cancellationToken);
   }

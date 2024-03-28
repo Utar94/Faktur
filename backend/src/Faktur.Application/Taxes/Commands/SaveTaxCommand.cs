@@ -3,4 +3,4 @@ using MediatR;
 
 namespace Faktur.Application.Taxes.Commands;
 
-internal record SaveTaxCommand(TaxAggregate Tax) : INotification;
+internal record SaveTaxCommand(TaxAggregate Tax) : IRequest;
