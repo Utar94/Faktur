@@ -1,10 +1,7 @@
 ﻿using Faktur.Contracts.Receipts;
 using Faktur.Domain.Receipts;
 using Faktur.Domain.Stores;
-using Faktur.EntityFrameworkCore.Relational;
-using Logitar.Data;
 using Logitar.Identity.Domain.Shared;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Faktur.Application.Receipts.Queries;
@@ -19,18 +16,6 @@ public class ReadReceiptQueryTests : IntegrationTests
   {
     _receiptRepository = ServiceProvider.GetRequiredService<IReceiptRepository>();
     _storeRepository = ServiceProvider.GetRequiredService<IStoreRepository>();
-  }
-
-  public override async Task InitializeAsync()
-  {
-    await base.InitializeAsync();
-
-    TableId[] tables = [FakturDb.Receipts.Table, FakturDb.Stores.Table];
-    foreach (TableId table in tables)
-    {
-      ICommand command = CreateDeleteBuilder(table).Build();
-      await FakturContext.Database.ExecuteSqlRawAsync(command.Text, command.Parameters.ToArray());
-    }
   }
 
   [Fact(DisplayName = "It should return null when the receipt cannot be found.")]

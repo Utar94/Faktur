@@ -1,12 +1,9 @@
 ﻿using Faktur.Contracts.Receipts;
 using Faktur.Domain.Receipts;
 using Faktur.Domain.Stores;
-using Faktur.EntityFrameworkCore.Relational;
 using FluentValidation.Results;
-using Logitar.Data;
 using Logitar.Identity.Domain.Shared;
 using Logitar.Security.Cryptography;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Faktur.Application.Receipts.Commands;
@@ -23,31 +20,19 @@ public class ReplaceReceiptCommandTests : IntegrationTests
     _storeRepository = ServiceProvider.GetRequiredService<IStoreRepository>();
   }
 
-  public override async Task InitializeAsync()
-  {
-    await base.InitializeAsync();
-
-    TableId[] tables = [FakturDb.Receipts.Table, FakturDb.Stores.Table];
-    foreach (TableId table in tables)
-    {
-      ICommand command = CreateDeleteBuilder(table).Build();
-      await FakturContext.Database.ExecuteSqlRawAsync(command.Text, command.Parameters.ToArray());
-    }
-  }
-
   [Fact(DisplayName = "It should replace an existing receipt.")]
   public async Task It_should_replace_an_existing_receipt()
   {
-    StoreAggregate store = new(new DisplayNameUnit("Maxi Drummondville"));
+    StoreAggregate store = new(new DisplayNameUnit("Maxi Drummondville"), ActorId);
     await _storeRepository.SaveAsync(store);
 
-    ReceiptAggregate receipt = new(store);
+    ReceiptAggregate receipt = new(store, actorId: ActorId);
     long version = receipt.Version;
     await _receiptRepository.SaveAsync(receipt);
 
     NumberUnit number = new("117011");
     receipt.Number = number;
-    receipt.Update();
+    receipt.Update(ActorId);
     await _receiptRepository.SaveAsync(receipt);
 
     ReplaceReceiptPayload payload = new()
@@ -59,6 +44,10 @@ public class ReplaceReceiptCommandTests : IntegrationTests
     Receipt? result = await Mediator.Send(command);
     Assert.NotNull(result);
     Assert.Equal(receipt.Id.ToGuid(), result.Id);
+    Assert.Equal(version + 1, result.Version);
+    Assert.Equal(Actor, result.CreatedBy);
+    Assert.Equal(Actor, result.UpdatedBy);
+    Assert.True(result.CreatedOn < result.UpdatedOn);
 
     Assert.Equal(payload.IssuedOn.ToUniversalTime(), result.IssuedOn);
     Assert.Equal(number.Value, result.Number);

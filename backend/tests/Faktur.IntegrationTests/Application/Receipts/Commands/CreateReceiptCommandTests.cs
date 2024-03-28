@@ -1,9 +1,9 @@
 ﻿using Faktur.Application.Stores;
 using Faktur.Contracts.Receipts;
 using Faktur.Domain.Stores;
-using Faktur.EntityFrameworkCore.Relational;
+using Faktur.EntityFrameworkCore.Relational.Entities;
 using FluentValidation.Results;
-using Logitar.Data;
+using Logitar.EventSourcing;
 using Logitar.Identity.Domain.Shared;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,18 +18,6 @@ public class CreateReceiptCommandTests : IntegrationTests
   public CreateReceiptCommandTests() : base()
   {
     _storeRepository = ServiceProvider.GetRequiredService<IStoreRepository>();
-  }
-
-  public override async Task InitializeAsync()
-  {
-    await base.InitializeAsync();
-
-    TableId[] tables = [FakturDb.Receipts.Table, FakturDb.Stores.Table];
-    foreach (TableId table in tables)
-    {
-      ICommand command = CreateDeleteBuilder(table).Build();
-      await FakturContext.Database.ExecuteSqlRawAsync(command.Text, command.Parameters.ToArray());
-    }
   }
 
   [Fact(DisplayName = "It should create a new receipt.")]
@@ -67,6 +55,10 @@ public class CreateReceiptCommandTests : IntegrationTests
     Assert.Null(receipt.ProcessedOn);
 
     Assert.Equal(store.Id.ToGuid(), receipt.Store.Id);
+
+    ReceiptEntity? entity = await FakturContext.Receipts.AsNoTracking()
+      .SingleOrDefaultAsync(x => x.AggregateId == new AggregateId(receipt.Id).Value);
+    Assert.NotNull(entity);
   }
 
   [Fact(DisplayName = "It should throw StoreNotFoundException when the store cannot be found.")]
@@ -79,7 +71,7 @@ public class CreateReceiptCommandTests : IntegrationTests
     CreateReceiptCommand command = new(payload);
     var exception = await Assert.ThrowsAsync<StoreNotFoundException>(async () => await Mediator.Send(command));
     Assert.Equal(payload.StoreId, exception.AggregateId.ToGuid());
-    Assert.Equal("StoreId", exception.PropertyName);
+    Assert.Equal(nameof(payload.StoreId), exception.PropertyName);
   }
 
   [Fact(DisplayName = "It should throw ValidationException when the payload is not valid.")]

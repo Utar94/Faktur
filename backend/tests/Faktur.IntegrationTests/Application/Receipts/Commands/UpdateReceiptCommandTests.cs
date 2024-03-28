@@ -2,12 +2,9 @@
 using Faktur.Contracts.Receipts;
 using Faktur.Domain.Receipts;
 using Faktur.Domain.Stores;
-using Faktur.EntityFrameworkCore.Relational;
 using FluentValidation.Results;
-using Logitar.Data;
 using Logitar.Identity.Domain.Shared;
 using Logitar.Security.Cryptography;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Faktur.Application.Receipts.Commands;
@@ -22,18 +19,6 @@ public class UpdateReceiptCommandTests : IntegrationTests
   {
     _receiptRepository = ServiceProvider.GetRequiredService<IReceiptRepository>();
     _storeRepository = ServiceProvider.GetRequiredService<IStoreRepository>();
-  }
-
-  public override async Task InitializeAsync()
-  {
-    await base.InitializeAsync();
-
-    TableId[] tables = [FakturDb.Receipts.Table, FakturDb.Stores.Table];
-    foreach (TableId table in tables)
-    {
-      ICommand command = CreateDeleteBuilder(table).Build();
-      await FakturContext.Database.ExecuteSqlRawAsync(command.Text, command.Parameters.ToArray());
-    }
   }
 
   [Fact(DisplayName = "It should return null when the receipt cannot be found.")]
@@ -61,10 +46,10 @@ public class UpdateReceiptCommandTests : IntegrationTests
   [Fact(DisplayName = "It should update an existing receipt.")]
   public async Task It_should_update_an_existing_receipt()
   {
-    StoreAggregate store = new(new DisplayNameUnit("Maxi Drummondville"));
+    StoreAggregate store = new(new DisplayNameUnit("Maxi Drummondville"), ActorId);
     await _storeRepository.SaveAsync(store);
 
-    ReceiptAggregate receipt = new(store);
+    ReceiptAggregate receipt = new(store, actorId: ActorId);
     await _receiptRepository.SaveAsync(receipt);
 
     UpdateReceiptPayload payload = new()
@@ -75,6 +60,10 @@ public class UpdateReceiptCommandTests : IntegrationTests
     Receipt? result = await Mediator.Send(command);
     Assert.NotNull(result);
     Assert.Equal(receipt.Id.ToGuid(), result.Id);
+    Assert.Equal(receipt.Version + 1, result.Version);
+    Assert.Equal(Actor, result.CreatedBy);
+    Assert.Equal(Actor, result.UpdatedBy);
+    Assert.True(result.CreatedOn < result.UpdatedOn);
 
     Assert.Equal(payload.Number.Value, result.Number);
   }
