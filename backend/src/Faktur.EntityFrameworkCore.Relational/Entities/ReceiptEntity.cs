@@ -70,6 +70,17 @@ internal class ReceiptEntity : AggregateEntity
     }
   }
 
+  public void Categorize(ReceiptCategorizedEvent @event)
+  {
+    foreach (ReceiptItemEntity item in Items)
+    {
+      item.Categorize(@event);
+    }
+
+    ProcessedBy = @event.ActorId.Value;
+    ProcessedOn = @event.OccurredOn.ToUniversalTime();
+  }
+
   public override IEnumerable<ActorId> GetActorIds()
   {
     List<ActorId> actorIds = base.GetActorIds().ToList();

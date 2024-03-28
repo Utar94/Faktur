@@ -30,6 +30,28 @@ internal static class Receipts
     }
   }
 
+  public class ReceiptCategorizedEventHandler : INotificationHandler<ReceiptCategorizedEvent>
+  {
+    private readonly FakturContext _context;
+
+    public ReceiptCategorizedEventHandler(FakturContext context)
+    {
+      _context = context;
+    }
+
+    public async Task Handle(ReceiptCategorizedEvent @event, CancellationToken cancellationToken)
+    {
+      ReceiptEntity receipt = await _context.Receipts
+        .Include(x => x.Items)
+        .SingleOrDefaultAsync(x => x.AggregateId == @event.AggregateId.Value, cancellationToken)
+        ?? throw new InvalidOperationException($"The receipt 'AggregateId={@event.AggregateId}' could not be found.");
+
+      receipt.Categorize(@event);
+
+      await _context.SaveChangesAsync(cancellationToken);
+    }
+  }
+
   public class ReceiptCreatedEventHandler : INotificationHandler<ReceiptCreatedEvent>
   {
     private readonly FakturContext _context;

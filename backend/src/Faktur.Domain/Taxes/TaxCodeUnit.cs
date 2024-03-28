@@ -11,7 +11,7 @@ public record TaxCodeUnit
   public TaxCodeUnit(string value)
   {
     Value = value.Trim();
-    new TaxCodeValidator().ValidateAndThrow(value);
+    new TaxCodeValidator().ValidateAndThrow(Value);
   }
 
   public static TaxCodeUnit? TryCreate(string? value)

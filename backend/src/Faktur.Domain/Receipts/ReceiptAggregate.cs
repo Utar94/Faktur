@@ -48,6 +48,9 @@ public class ReceiptAggregate : AggregateRoot
   private readonly Dictionary<ushort, ReceiptItemUnit> _items = [];
   public IReadOnlyDictionary<ushort, ReceiptItemUnit> Items => _items.AsReadOnly();
 
+  private readonly Dictionary<ushort, CategoryUnit> _categories = [];
+  public IReadOnlyDictionary<ushort, CategoryUnit> Categories => _categories.AsReadOnly();
+
   public decimal SubTotal { get; private set; }
   private readonly Dictionary<string, ReceiptTaxUnit> _taxes = [];
   public IReadOnlyDictionary<string, ReceiptTaxUnit> Taxes => _taxes.AsReadOnly();
@@ -125,12 +128,58 @@ public class ReceiptAggregate : AggregateRoot
     Total = @event.Total;
   }
 
+  public void Categorize(IEnumerable<KeyValuePair<ushort, CategoryUnit?>> itemCategories, ActorId actorId = default)
+  {
+    Dictionary<ushort, CategoryUnit?> updatedCategories = new(capacity: itemCategories.Count());
+    foreach (KeyValuePair<ushort, CategoryUnit?> itemCategory in itemCategories)
+    {
+      if (_items.ContainsKey(itemCategory.Key))
+      {
+        CategoryUnit? existingCategory = TryFindCategory(itemCategory.Key);
+        if (existingCategory != itemCategory.Value)
+        {
+          updatedCategories[itemCategory.Key] = itemCategory.Value;
+        }
+      }
+    }
+
+    if (updatedCategories.Count > 0)
+    {
+      Raise(new ReceiptCategorizedEvent(updatedCategories), actorId);
+    }
+  }
+  protected virtual void Apply(ReceiptCategorizedEvent @event)
+  {
+    foreach (KeyValuePair<ushort, CategoryUnit?> itemCategory in @event.Categories)
+    {
+      if (itemCategory.Value == null)
+      {
+        _categories.Remove(itemCategory.Key);
+      }
+      else
+      {
+        _categories[itemCategory.Key] = itemCategory.Value;
+      }
+    }
+  }
+
   public void Delete(ActorId actorId = default)
   {
     if (!IsDeleted)
     {
       Raise(new ReceiptDeletedEvent(), actorId);
     }
+  }
+
+  public bool HasCategory(ushort number) => _categories.ContainsKey(number);
+  public CategoryUnit? TryFindCategory(ushort number)
+  {
+    if (_categories.TryGetValue(number, out CategoryUnit? category))
+    {
+      return category;
+    }
+
+    return null;
   }
 
   public bool HasItem(ushort number) => _items.ContainsKey(number);
@@ -153,6 +202,7 @@ public class ReceiptAggregate : AggregateRoot
   }
   protected virtual void Apply(ReceiptItemRemovedEvent @event)
   {
+    _categories.Remove(@event.Number);
     _items.Remove(@event.Number);
   }
 
