@@ -15,7 +15,15 @@ internal class ExceptionHandling : ExceptionFilterAttribute
 
   public override void OnException(ExceptionContext context)
   {
-    base.OnException(context);
+    if (_handlers.TryGetValue(context.Exception.GetType(), out Func<ExceptionContext, ActionResult>? handler))
+    {
+      context.Result = handler(context);
+      context.ExceptionHandled = true;
+    }
+    else
+    {
+      base.OnException(context);
+    }
   }
 
   private static ConflictObjectResult HandleGtinAlreadyUsedException(ExceptionContext context)
