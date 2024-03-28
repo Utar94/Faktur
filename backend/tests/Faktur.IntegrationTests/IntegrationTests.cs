@@ -83,7 +83,7 @@ public abstract class IntegrationTests : IAsyncLifetime
     FakturContext.Actors.Add(actor);
     await FakturContext.SaveChangesAsync();
   }
-  protected IDeleteBuilder CreateDeleteBuilder(TableId table) => _databaseProvider switch // TODO(fpion): private
+  private IDeleteBuilder CreateDeleteBuilder(TableId table) => _databaseProvider switch
   {
     //DatabaseProvider.EntityFrameworkCorePostgreSQL => PostgresDeleteBuilder.From(table), // TODO(fpion): PostgreSQL
     DatabaseProvider.EntityFrameworkCoreSqlServer => SqlServerDeleteBuilder.From(table),

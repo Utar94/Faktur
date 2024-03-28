@@ -1,9 +1,6 @@
 ﻿using Faktur.Contracts.Departments;
 using Faktur.Domain.Stores;
-using Faktur.EntityFrameworkCore.Relational;
-using Logitar.Data;
 using Logitar.Identity.Domain.Shared;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Faktur.Application.Departments.Queries;
@@ -25,13 +22,6 @@ public class ReadDepartmentQueryTests : IntegrationTests
   public override async Task InitializeAsync()
   {
     await base.InitializeAsync();
-
-    TableId[] tables = [FakturDb.Stores.Table];
-    foreach (TableId table in tables)
-    {
-      ICommand command = CreateDeleteBuilder(table).Build();
-      await FakturContext.Database.ExecuteSqlRawAsync(command.Text, command.Parameters.ToArray());
-    }
 
     await _storeRepository.SaveAsync(_store);
   }

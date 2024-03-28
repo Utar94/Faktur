@@ -72,6 +72,6 @@ public class ReplaceReceiptCommandTests : IntegrationTests
     var exception = await Assert.ThrowsAsync<FluentValidation.ValidationException>(async () => await Mediator.Send(command));
     ValidationFailure error = Assert.Single(exception.Errors);
     Assert.Equal("MaximumLengthValidator", error.ErrorCode);
-    Assert.Equal("Number", error.PropertyName);
+    Assert.Equal(nameof(payload.Number), error.PropertyName);
   }
 }

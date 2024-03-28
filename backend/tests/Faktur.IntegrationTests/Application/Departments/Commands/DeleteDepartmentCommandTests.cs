@@ -3,7 +3,7 @@ using Faktur.Domain.Articles;
 using Faktur.Domain.Products;
 using Faktur.Domain.Stores;
 using Faktur.EntityFrameworkCore.Relational;
-using Logitar.Data;
+using Faktur.EntityFrameworkCore.Relational.Entities;
 using Logitar.Identity.Domain.Shared;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -32,13 +32,6 @@ public class DeleteDepartmentCommandTests : IntegrationTests
   {
     await base.InitializeAsync();
 
-    TableId[] tables = [FakturDb.Products.Table, FakturDb.Stores.Table, FakturDb.Articles.Table];
-    foreach (TableId table in tables)
-    {
-      ICommand command = CreateDeleteBuilder(table).Build();
-      await FakturContext.Database.ExecuteSqlRawAsync(command.Text, command.Parameters.ToArray());
-    }
-
     await _storeRepository.SaveAsync(_store);
   }
 
@@ -56,7 +49,10 @@ public class DeleteDepartmentCommandTests : IntegrationTests
     Assert.Equal(number.Value, deleted.Number);
     Assert.Equal(_store.Id.ToGuid(), deleted.Store.Id);
 
-    Assert.Empty(await FakturContext.Departments.ToArrayAsync());
+    DepartmentEntity? entity = await FakturContext.Departments.AsNoTracking()
+      .Include(x => x.Store)
+      .SingleOrDefaultAsync(x => x.Store!.AggregateId == _store.Id.Value && x.NumberNormalized == command.Number);
+    Assert.Null(entity);
   }
 
   [Fact(DisplayName = "It should remove the product departments.")]

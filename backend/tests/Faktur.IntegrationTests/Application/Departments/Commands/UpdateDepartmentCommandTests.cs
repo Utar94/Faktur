@@ -1,12 +1,9 @@
 ﻿using Faktur.Contracts;
 using Faktur.Contracts.Departments;
 using Faktur.Domain.Stores;
-using Faktur.EntityFrameworkCore.Relational;
 using FluentValidation.Results;
-using Logitar.Data;
 using Logitar.Identity.Domain.Shared;
 using Logitar.Security.Cryptography;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Faktur.Application.Departments.Commands;
@@ -28,13 +25,6 @@ public class UpdateDepartmentCommandTests : IntegrationTests
   public override async Task InitializeAsync()
   {
     await base.InitializeAsync();
-
-    TableId[] tables = [FakturDb.Stores.Table];
-    foreach (TableId table in tables)
-    {
-      ICommand command = CreateDeleteBuilder(table).Build();
-      await FakturContext.Database.ExecuteSqlRawAsync(command.Text, command.Parameters.ToArray());
-    }
 
     await _storeRepository.SaveAsync(_store);
   }
@@ -66,7 +56,7 @@ public class UpdateDepartmentCommandTests : IntegrationTests
     var exception = await Assert.ThrowsAsync<FluentValidation.ValidationException>(async () => await Mediator.Send(command));
     ValidationFailure error = Assert.Single(exception.Errors);
     Assert.Equal("MaximumLengthValidator", error.ErrorCode);
-    Assert.Equal("DisplayName", error.PropertyName);
+    Assert.Equal(nameof(payload.DisplayName), error.PropertyName);
   }
 
   [Fact(DisplayName = "It should throw ValidationException when the payload is not valid.")]
@@ -78,7 +68,7 @@ public class UpdateDepartmentCommandTests : IntegrationTests
     var exception = await Assert.ThrowsAsync<FluentValidation.ValidationException>(async () => await Mediator.Send(command));
     ValidationFailure error = Assert.Single(exception.Errors);
     Assert.Equal("MaximumLengthValidator", error.ErrorCode);
-    Assert.Equal("Number", error.PropertyName);
+    Assert.Equal(nameof(command.Number), error.PropertyName);
   }
 
   [Fact(DisplayName = "It should update an existing department.")]
