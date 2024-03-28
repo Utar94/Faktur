@@ -1,10 +1,7 @@
 ﻿using Faktur.Contracts.Articles;
 using Faktur.Domain.Articles;
-using Faktur.EntityFrameworkCore.Relational;
 using FluentValidation.Results;
-using Logitar.Data;
 using Logitar.Identity.Domain.Shared;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Faktur.Application.Articles.Commands;
@@ -14,43 +11,44 @@ public class ReplaceArticleCommandTests : IntegrationTests
 {
   private readonly IArticleRepository _articleRepository;
 
+  private readonly ArticleAggregate _article;
+
   public ReplaceArticleCommandTests() : base()
   {
     _articleRepository = ServiceProvider.GetRequiredService<IArticleRepository>();
+
+    _article = new(new DisplayNameUnit("PC POULET BBQ"), ActorId);
   }
 
   public override async Task InitializeAsync()
   {
     await base.InitializeAsync();
 
-    TableId[] tables = [FakturDb.Articles.Table];
-    foreach (TableId table in tables)
-    {
-      ICommand command = CreateDeleteBuilder(table).Build();
-      await FakturContext.Database.ExecuteSqlRawAsync(command.Text, command.Parameters.ToArray());
-    }
+    await _articleRepository.SaveAsync(_article);
   }
 
   [Fact(DisplayName = "It should replace an existing article.")]
   public async Task It_should_replace_an_existing_article()
   {
-    ArticleAggregate article = new(new DisplayNameUnit("PC POULET BBQ"));
-    long version = article.Version;
-    await _articleRepository.SaveAsync(article);
+    long version = _article.Version;
 
     GtinUnit gtin = new("06038385904");
-    article.Gtin = gtin;
-    article.Update();
-    await _articleRepository.SaveAsync(article);
+    _article.Gtin = gtin;
+    _article.Update(ActorId);
+    await _articleRepository.SaveAsync(_article);
 
-    ReplaceArticlePayload payload = new(article.DisplayName.Value)
+    ReplaceArticlePayload payload = new(_article.DisplayName.Value)
     {
       Gtin = null
     };
-    ReplaceArticleCommand command = new(article.Id.ToGuid(), payload, version);
+    ReplaceArticleCommand command = new(_article.Id.ToGuid(), payload, version);
     Article? result = await Mediator.Send(command);
     Assert.NotNull(result);
-    Assert.Equal(article.Id.ToGuid(), result.Id);
+    Assert.Equal(_article.Id.ToGuid(), result.Id);
+    Assert.Equal(version + 1, result.Version);
+    Assert.Equal(Actor, result.CreatedBy);
+    Assert.Equal(Actor, result.UpdatedBy);
+    Assert.True(result.CreatedOn < result.UpdatedOn);
 
     Assert.Equal(gtin.Value, result.Gtin);
     Assert.Equal(payload.DisplayName, result.DisplayName);
@@ -63,6 +61,24 @@ public class ReplaceArticleCommandTests : IntegrationTests
     ReplaceArticlePayload payload = new("PC POULET BBQ");
     ReplaceArticleCommand command = new(Guid.NewGuid(), payload, Version: null);
     Assert.Null(await Mediator.Send(command));
+  }
+
+  [Fact(DisplayName = "It should throw GtinAlreadyUsedException when the Gtin is already used.")]
+  public async Task It_should_throw_GtinAlreadyUsedException_when_the_Gtin_is_already_used()
+  {
+    _article.Gtin = new GtinUnit("06038385904");
+    _article.Update(ActorId);
+    ArticleAggregate article = new(new DisplayNameUnit("PC POULET BBQ"));
+    await _articleRepository.SaveAsync([_article, article]);
+
+    ReplaceArticlePayload payload = new(article.DisplayName.Value)
+    {
+      Gtin = _article.Gtin.Value
+    };
+    ReplaceArticleCommand command = new(article.Id.ToGuid(), payload, Version: null);
+    var exception = await Assert.ThrowsAsync<GtinAlreadyUsedException>(async () => await Mediator.Send(command));
+    Assert.Equal(payload.Gtin, exception.Gtin);
+    Assert.Equal(nameof(payload.Gtin), exception.PropertyName);
   }
 
   [Fact(DisplayName = "It should throw ValidationException when the payload is not valid.")]

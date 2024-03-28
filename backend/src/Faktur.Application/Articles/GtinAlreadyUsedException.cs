@@ -5,7 +5,7 @@ namespace Faktur.Application.Articles;
 
 public class GtinAlreadyUsedException : Exception
 {
-  private const string ErrorMessage = "The specified Global Trade Item Number (GTIN) is already used.";
+  public const string ErrorMessage = "The specified Global Trade Item Number (GTIN) is already used.";
 
   public string Gtin
   {
