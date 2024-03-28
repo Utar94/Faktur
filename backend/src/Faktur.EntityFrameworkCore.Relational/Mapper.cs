@@ -9,6 +9,7 @@ using Faktur.EntityFrameworkCore.Relational.Entities;
 using Logitar.EventSourcing;
 using Logitar.Portal.Contracts;
 using Logitar.Portal.Contracts.Actors;
+using Logitar.Portal.Contracts.Users;
 
 namespace Faktur.EntityFrameworkCore.Relational;
 
@@ -186,6 +187,35 @@ internal class Mapper
       Description = source.Description,
       DepartmentCount = source.DepartmentCount
     };
+
+    if (source.AddressStreet != null && source.AddressLocality != null && source.AddressCountry != null && source.AddressFormatted != null)
+    {
+      destination.Address = new Address(source.AddressStreet, source.AddressLocality, source.AddressPostalCode, source.AddressRegion, source.AddressCountry, source.AddressFormatted)
+      {
+        VerifiedBy = TryFindActor(source.AddressVerifiedBy),
+        VerifiedOn = AsUniversalTime(source.AddressVerifiedOn),
+        IsVerified = source.IsAddressVerified
+      };
+    }
+    if (source.EmailAddress != null)
+    {
+      destination.Email = new Email(source.EmailAddress)
+      {
+        VerifiedBy = TryFindActor(source.EmailVerifiedBy),
+        VerifiedOn = AsUniversalTime(source.EmailVerifiedOn),
+        IsVerified = source.IsEmailVerified
+      };
+    }
+    if (source.PhoneNumber != null && source.PhoneE164Formatted != null)
+    {
+      destination.Phone = new Phone(source.PhoneCountryCode, source.PhoneNumber, source.PhoneExtension, source.PhoneE164Formatted)
+      {
+        VerifiedBy = TryFindActor(source.PhoneVerifiedBy),
+        VerifiedOn = AsUniversalTime(source.PhoneVerifiedOn),
+        IsVerified = source.IsPhoneVerified
+      };
+    }
+
     if (source.Banner != null)
     {
       destination.Banner = ToBanner(source.Banner);

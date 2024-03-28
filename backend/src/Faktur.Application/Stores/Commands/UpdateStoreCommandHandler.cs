@@ -57,6 +57,19 @@ internal class UpdateStoreCommandHandler : IRequestHandler<UpdateStoreCommand, S
       store.Description = DescriptionUnit.TryCreate(payload.Description.Value);
     }
 
+    if (payload.Address != null)
+    {
+      store.Address = payload.Address.Value?.ToAddressUnit(payload.Address.Value.IsVerified);
+    }
+    if (payload.Email != null)
+    {
+      store.Email = payload.Email.Value?.ToEmailUnit(payload.Email.Value.IsVerified);
+    }
+    if (payload.Phone != null)
+    {
+      store.Phone = payload.Phone.Value?.ToPhoneUnit(payload.Phone.Value.IsVerified);
+    }
+
     store.Update(command.ActorId);
 
     await _storeRepository.SaveAsync(store, cancellationToken);

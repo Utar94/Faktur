@@ -3,11 +3,9 @@ using Faktur.Contracts.Stores;
 using Faktur.Domain.Banners;
 using Faktur.Domain.Shared;
 using Faktur.Domain.Stores;
-using Faktur.EntityFrameworkCore.Relational;
 using FluentValidation.Results;
-using Logitar.Data;
+using Logitar.Portal.Contracts.Users;
 using Logitar.Security.Cryptography;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Faktur.Application.Stores.Commands;
@@ -22,18 +20,6 @@ public class UpdateStoreCommandTests : IntegrationTests
   {
     _bannerRepository = ServiceProvider.GetRequiredService<IBannerRepository>();
     _storeRepository = ServiceProvider.GetRequiredService<IStoreRepository>();
-  }
-
-  public override async Task InitializeAsync()
-  {
-    await base.InitializeAsync();
-
-    TableId[] tables = [FakturDb.Stores.Table, FakturDb.Banners.Table];
-    foreach (TableId table in tables)
-    {
-      ICommand command = CreateDeleteBuilder(table).Build();
-      await FakturContext.Database.ExecuteSqlRawAsync(command.Text, command.Parameters.ToArray());
-    }
   }
 
   [Fact(DisplayName = "It should return null when the store cannot be found.")]
@@ -61,27 +47,43 @@ public class UpdateStoreCommandTests : IntegrationTests
   [Fact(DisplayName = "It should update an existing store.")]
   public async Task It_should_update_an_existing_store()
   {
-    BannerAggregate banner = new(new DisplayNameUnit("MAXI"));
+    BannerAggregate banner = new(new DisplayNameUnit("MAXI"), ActorId);
     await _bannerRepository.SaveAsync(banner);
 
-    StoreAggregate store = new(new DisplayNameUnit("Maxi Drummondville"))
+    StoreAggregate store = new(new DisplayNameUnit("Maxi Drummondville"), ActorId)
     {
       BannerId = banner.Id
     };
-    store.Update();
+    store.Update(ActorId);
     await _storeRepository.SaveAsync(store);
 
     UpdateStorePayload payload = new()
     {
       BannerId = new Modification<Guid?>(null),
-      Number = new Modification<string>("08872")
+      Number = new Modification<string>("08872"),
+      Address = new Modification<AddressPayload>(new AddressPayload("1870 Bd Saint-Joseph", "Drummondville", "J2B 1R2", "QC", "CA", isVerified: true))
     };
     UpdateStoreCommand command = new(store.Id.ToGuid(), payload);
     Store? result = await Mediator.Send(command);
     Assert.NotNull(result);
+
     Assert.Equal(store.Id.ToGuid(), result.Id);
+    Assert.Equal(3, result.Version);
+    Assert.Equal(Actor, result.CreatedBy);
+    Assert.Equal(Actor, result.UpdatedBy);
+    Assert.True(store.CreatedOn < store.UpdatedOn);
 
     Assert.Equal(payload.Number.Value, result.Number);
     Assert.Null(result.Banner);
+
+    Assert.NotNull(result.Address);
+    Assert.NotNull(payload.Address.Value);
+    Assert.Equal(payload.Address.Value.Street, result.Address.Street);
+    Assert.Equal(payload.Address.Value.Locality, result.Address.Locality);
+    Assert.Equal(payload.Address.Value.PostalCode, result.Address.PostalCode);
+    Assert.Equal(payload.Address.Value.Region, result.Address.Region);
+    Assert.Equal(payload.Address.Value.Country, result.Address.Country);
+    Assert.Equal("1870 Bd Saint-Joseph\r\nDrummondville QC J2B 1R2\r\nCA", result.Address.Formatted);
+    Assert.Equal(payload.Address.Value.IsVerified, result.Address.IsVerified);
   }
 }

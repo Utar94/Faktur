@@ -5,7 +5,7 @@ using Faktur.Domain.Receipts;
 using Faktur.Domain.Shared;
 using Faktur.Domain.Stores;
 using Faktur.EntityFrameworkCore.Relational;
-using Logitar.Data;
+using Faktur.EntityFrameworkCore.Relational.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -35,13 +35,6 @@ public class DeleteStoreCommandTests : IntegrationTests
   {
     await base.InitializeAsync();
 
-    TableId[] tables = [FakturDb.Receipts.Table, FakturDb.Products.Table, FakturDb.Stores.Table, FakturDb.Articles.Table];
-    foreach (TableId table in tables)
-    {
-      ICommand command = CreateDeleteBuilder(table).Build();
-      await FakturContext.Database.ExecuteSqlRawAsync(command.Text, command.Parameters.ToArray());
-    }
-
     await _storeRepository.SaveAsync(_store);
   }
 
@@ -54,6 +47,9 @@ public class DeleteStoreCommandTests : IntegrationTests
     Assert.Equal(_store.Id.ToGuid(), result.Id);
 
     Assert.Empty(await FakturContext.Stores.ToArrayAsync());
+
+    StoreEntity? entity = await FakturContext.Stores.AsNoTracking().SingleOrDefaultAsync(x => x.AggregateId == _store.Id.Value);
+    Assert.Null(entity);
   }
 
   [Fact(DisplayName = "It should delete the store products.")]

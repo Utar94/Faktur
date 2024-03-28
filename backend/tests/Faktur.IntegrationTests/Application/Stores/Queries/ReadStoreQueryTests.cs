@@ -1,9 +1,6 @@
 ﻿using Faktur.Contracts.Stores;
 using Faktur.Domain.Shared;
 using Faktur.Domain.Stores;
-using Faktur.EntityFrameworkCore.Relational;
-using Logitar.Data;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Faktur.Application.Stores.Queries;
@@ -16,18 +13,6 @@ public class ReadStoreQueryTests : IntegrationTests
   public ReadStoreQueryTests() : base()
   {
     _storeRepository = ServiceProvider.GetRequiredService<IStoreRepository>();
-  }
-
-  public override async Task InitializeAsync()
-  {
-    await base.InitializeAsync();
-
-    TableId[] tables = [FakturDb.Stores.Table];
-    foreach (TableId table in tables)
-    {
-      ICommand command = CreateDeleteBuilder(table).Build();
-      await FakturContext.Database.ExecuteSqlRawAsync(command.Text, command.Parameters.ToArray());
-    }
   }
 
   [Fact(DisplayName = "It should return null when the store cannot be found.")]

@@ -1,8 +1,9 @@
 ﻿using FluentValidation;
+using Logitar.Identity.Domain.Shared;
 
 namespace Faktur.Domain.Shared;
 
-public record DescriptionUnit
+public record DescriptionUnit // TODO(fpion): remove this
 {
   public string Value { get; }
 

@@ -1,6 +1,6 @@
 ﻿using Faktur.Contracts.Departments;
-using Faktur.Domain.Shared;
 using FluentValidation;
+using Logitar.Identity.Domain.Shared;
 
 namespace Faktur.Application.Departments.Validators;
 

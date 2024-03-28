@@ -3,15 +3,4 @@ using MediatR;
 
 namespace Faktur.Domain.Stores.Events;
 
-public record StoreDepartmentSavedEvent : DomainEvent, INotification
-{
-  public NumberUnit Number { get; }
-  public DepartmentUnit Department { get; }
-
-  public StoreDepartmentSavedEvent(NumberUnit number, DepartmentUnit department, ActorId actorId)
-  {
-    Number = number;
-    Department = department;
-    ActorId = actorId;
-  }
-}
+public record StoreDepartmentSavedEvent(NumberUnit Number, DepartmentUnit Department) : DomainEvent, INotification;

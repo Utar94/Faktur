@@ -1,7 +1,7 @@
 ﻿using Faktur.Contracts.Articles;
 using Faktur.Domain.Articles;
-using Faktur.Domain.Shared;
 using FluentValidation;
+using Logitar.Identity.Domain.Shared;
 
 namespace Faktur.Application.Articles.Validators;
 

@@ -1,8 +1,9 @@
 ﻿using FluentValidation;
+using Logitar.Identity.Domain.Shared;
 
 namespace Faktur.Domain.Shared;
 
-public record DisplayNameUnit
+public record DisplayNameUnit // TODO(fpion): remove this
 {
   public const int MaximumLength = byte.MaxValue;
 

@@ -4,13 +4,4 @@ using MediatR;
 
 namespace Faktur.Domain.Stores.Events;
 
-public record StoreCreatedEvent : DomainEvent, INotification
-{
-  public DisplayNameUnit DisplayName { get; }
-
-  public StoreCreatedEvent(DisplayNameUnit displayName, ActorId actorId)
-  {
-    DisplayName = displayName;
-    ActorId = actorId;
-  }
-}
+public record StoreCreatedEvent(DisplayNameUnit DisplayName) : DomainEvent, INotification;

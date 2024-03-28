@@ -5,6 +5,7 @@ using Faktur.Domain.Banners;
 using Faktur.Domain.Shared;
 using Faktur.Domain.Stores;
 using FluentValidation;
+using Logitar.Identity.Domain.Users;
 using MediatR;
 
 namespace Faktur.Application.Stores.Commands;
@@ -63,6 +64,22 @@ internal class ReplaceStoreCommandHandler : IRequestHandler<ReplaceStoreCommand,
     if (reference == null || description != reference.Description)
     {
       store.Description = description;
+    }
+
+    AddressUnit? address = payload.Address?.ToAddressUnit(payload.Address.IsVerified);
+    if (reference == null || address != reference.Address)
+    {
+      store.Address = address;
+    }
+    EmailUnit? email = payload.Email?.ToEmailUnit(payload.Email.IsVerified);
+    if (reference == null || email != reference.Email)
+    {
+      store.Email = email;
+    }
+    PhoneUnit? phone = payload.Phone?.ToPhoneUnit(payload.Phone.IsVerified);
+    if (reference == null || phone != reference.Phone)
+    {
+      store.Phone = phone;
     }
 
     store.Update(command.ActorId);

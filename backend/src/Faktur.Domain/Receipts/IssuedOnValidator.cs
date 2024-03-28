@@ -1,5 +1,5 @@
-﻿using Faktur.Domain.Shared;
-using FluentValidation;
+﻿using FluentValidation;
+using Logitar.Identity.Domain.Shared;
 
 namespace Faktur.Domain.Receipts;
 

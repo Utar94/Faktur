@@ -39,7 +39,10 @@ internal class CreateStoreCommandHandler : IRequestHandler<CreateStoreCommand, S
     {
       BannerId = banner?.Id,
       Number = NumberUnit.TryCreate(payload.Number),
-      Description = DescriptionUnit.TryCreate(payload.Description)
+      Description = DescriptionUnit.TryCreate(payload.Description),
+      Address = payload.Address?.ToAddressUnit(payload.Address.IsVerified),
+      Email = payload.Email?.ToEmailUnit(payload.Email.IsVerified),
+      Phone = payload.Phone?.ToPhoneUnit(payload.Phone.IsVerified)
     };
 
     store.Update(command.ActorId);

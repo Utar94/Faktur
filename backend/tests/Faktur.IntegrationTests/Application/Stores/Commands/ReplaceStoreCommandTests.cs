@@ -2,10 +2,8 @@
 using Faktur.Domain.Banners;
 using Faktur.Domain.Shared;
 using Faktur.Domain.Stores;
-using Faktur.EntityFrameworkCore.Relational;
 using FluentValidation.Results;
-using Logitar.Data;
-using Microsoft.EntityFrameworkCore;
+using Logitar.Portal.Contracts.Users;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Faktur.Application.Stores.Commands;
@@ -22,47 +20,45 @@ public class ReplaceStoreCommandTests : IntegrationTests
     _storeRepository = ServiceProvider.GetRequiredService<IStoreRepository>();
   }
 
-  public override async Task InitializeAsync()
-  {
-    await base.InitializeAsync();
-
-    TableId[] tables = [FakturDb.Stores.Table, FakturDb.Banners.Table];
-    foreach (TableId table in tables)
-    {
-      ICommand command = CreateDeleteBuilder(table).Build();
-      await FakturContext.Database.ExecuteSqlRawAsync(command.Text, command.Parameters.ToArray());
-    }
-  }
-
   [Fact(DisplayName = "It should replace an existing store.")]
   public async Task It_should_replace_an_existing_store()
   {
-    BannerAggregate banner = new(new DisplayNameUnit("MAXI"));
+    BannerAggregate banner = new(new DisplayNameUnit("MAXI"), ActorId);
     await _bannerRepository.SaveAsync(banner);
 
-    StoreAggregate store = new(new DisplayNameUnit("Maxi Drummondville"));
+    StoreAggregate store = new(new DisplayNameUnit("Maxi Drummondville"), ActorId);
     long version = store.Version;
     await _storeRepository.SaveAsync(store);
 
     NumberUnit number = new("08872");
     store.Number = number;
-    store.Update();
+    store.Update(ActorId);
     await _storeRepository.SaveAsync(store);
 
     ReplaceStorePayload payload = new(store.DisplayName.Value)
     {
       BannerId = banner.Id.ToGuid(),
-      Number = null
+      Number = null,
+      Email = new EmailPayload("drummondville-08872@maxi.ca", isVerified: false)
     };
     ReplaceStoreCommand command = new(store.Id.ToGuid(), payload, version);
     Store? result = await Mediator.Send(command);
     Assert.NotNull(result);
+
     Assert.Equal(store.Id.ToGuid(), result.Id);
+    Assert.Equal(version + 1, store.Version);
+    Assert.Equal(Actor, result.CreatedBy);
+    Assert.Equal(Actor, result.UpdatedBy);
+    Assert.True(store.CreatedOn < store.UpdatedOn);
 
     Assert.Equal(number.Value, result.Number);
     Assert.Equal(payload.DisplayName, result.DisplayName);
     Assert.Equal(payload.Description, result.Description);
     Assert.Equal(payload.BannerId, result.Banner?.Id);
+
+    Assert.NotNull(result.Email);
+    Assert.Equal(payload.Email.Address, result.Email.Address);
+    Assert.Equal(payload.Email.IsVerified, result.Email.IsVerified);
   }
 
   [Fact(DisplayName = "It should return null when the store cannot be found.")]
@@ -81,6 +77,6 @@ public class ReplaceStoreCommandTests : IntegrationTests
     var exception = await Assert.ThrowsAsync<FluentValidation.ValidationException>(async () => await Mediator.Send(command));
     ValidationFailure error = Assert.Single(exception.Errors);
     Assert.Equal("NotEmptyValidator", error.ErrorCode);
-    Assert.Equal("DisplayName", error.PropertyName);
+    Assert.Equal(nameof(payload.DisplayName), error.PropertyName);
   }
 }
