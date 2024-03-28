@@ -42,12 +42,14 @@ public class SearchReceiptsQueryTests : IntegrationTests
     ReceiptAggregate otherStoreReceipt = new(otherStore, number: receiptNumber);
     ReceiptAggregate notEmpty = new(store, number: new NumberUnit("117012"));
     notEmpty.SetItem(0, new ReceiptItemUnit(new GtinUnit("06038385904"), sku: null, new DisplayNameUnit("PC POULET BBQ"), new FlagsUnit("FPMRJ"), 1.0, 9.99m, 9.99m, departmentNumber: null, department: null));
-    //ReceiptAggregate processed = new(store, number: new NumberUnit("118945")); // TODO(fpion): process
+    ReceiptAggregate processed = new(store, number: new NumberUnit("118945"));
+    processed.SetItem(0, new ReceiptItemUnit(new GtinUnit("06038385904"), sku: null, new DisplayNameUnit("PC POULET BBQ"), new FlagsUnit("FPMRJ"), 1.0, 9.99m, 9.99m, departmentNumber: null, department: null));
+    processed.Categorize([new KeyValuePair<ushort, CategoryUnit?>(0, new CategoryUnit("Test"))]);
     ReceiptAggregate notInIds = new(store, number: new NumberUnit("118899"));
     ReceiptAggregate notMatching = new(store);
     ReceiptAggregate receipt = new(store, DateTime.Now.AddHours(-1), new NumberUnit("117014"));
     ReceiptAggregate expected = new(store, DateTime.Now.AddDays(-1), receiptNumber);
-    await _receiptRepository.SaveAsync([otherStoreReceipt, notEmpty, notInIds, notMatching, receipt, expected]);
+    await _receiptRepository.SaveAsync([otherStoreReceipt, notEmpty, processed, notInIds, notMatching, receipt, expected]);
 
     SearchReceiptsPayload payload = new()
     {
