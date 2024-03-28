@@ -83,9 +83,9 @@ public abstract class IntegrationTests : IAsyncLifetime
     FakturContext.Actors.Add(actor);
     await FakturContext.SaveChangesAsync();
   }
-  protected IDeleteBuilder CreateDeleteBuilder(TableId table) => _databaseProvider switch // TODO(fpion): private
+  private IDeleteBuilder CreateDeleteBuilder(TableId table) => _databaseProvider switch
   {
-    //DatabaseProvider.EntityFrameworkCorePostgreSQL => PostgresDeleteBuilder.From(table), // TODO(fpion): PostgreSQL
+    //DatabaseProvider.EntityFrameworkCorePostgreSQL => PostgresDeleteBuilder.From(table), // ISSUE #77 (https://github.com/Utar94/Faktur/issues/77): implement PostgreSQL persistence
     DatabaseProvider.EntityFrameworkCoreSqlServer => SqlServerDeleteBuilder.From(table),
     _ => throw new DatabaseProviderNotSupportedException(_databaseProvider),
   };

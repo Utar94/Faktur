@@ -1,9 +1,6 @@
 ﻿using Faktur.Contracts.Banners;
 using Faktur.Domain.Banners;
-using Faktur.EntityFrameworkCore.Relational;
-using Logitar.Data;
 using Logitar.Identity.Domain.Shared;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Faktur.Application.Banners.Queries;
@@ -16,18 +13,6 @@ public class ReadBannerQueryTests : IntegrationTests
   public ReadBannerQueryTests() : base()
   {
     _bannerRepository = ServiceProvider.GetRequiredService<IBannerRepository>();
-  }
-
-  public override async Task InitializeAsync()
-  {
-    await base.InitializeAsync();
-
-    TableId[] tables = [FakturDb.Banners.Table];
-    foreach (TableId table in tables)
-    {
-      ICommand command = CreateDeleteBuilder(table).Build();
-      await FakturContext.Database.ExecuteSqlRawAsync(command.Text, command.Parameters.ToArray());
-    }
   }
 
   [Fact(DisplayName = "It should return null when the banner cannot be found.")]

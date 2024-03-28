@@ -1,10 +1,7 @@
 ﻿using Faktur.Contracts.Banners;
 using Faktur.Domain.Banners;
-using Faktur.EntityFrameworkCore.Relational;
 using FluentValidation.Results;
-using Logitar.Data;
 using Logitar.Identity.Domain.Shared;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Faktur.Application.Banners.Commands;
@@ -19,28 +16,16 @@ public class ReplaceBannerCommandTests : IntegrationTests
     _bannerRepository = ServiceProvider.GetRequiredService<IBannerRepository>();
   }
 
-  public override async Task InitializeAsync()
-  {
-    await base.InitializeAsync();
-
-    TableId[] tables = [FakturDb.Banners.Table];
-    foreach (TableId table in tables)
-    {
-      ICommand command = CreateDeleteBuilder(table).Build();
-      await FakturContext.Database.ExecuteSqlRawAsync(command.Text, command.Parameters.ToArray());
-    }
-  }
-
   [Fact(DisplayName = "It should replace an existing banner.")]
   public async Task It_should_replace_an_existing_banner()
   {
-    BannerAggregate banner = new(new DisplayNameUnit("MAXI"));
+    BannerAggregate banner = new(new DisplayNameUnit("MAXI"), ActorId);
     long version = banner.Version;
     await _bannerRepository.SaveAsync(banner);
 
     DescriptionUnit description = new("Imbattable, point final");
     banner.Description = description;
-    banner.Update();
+    banner.Update(ActorId);
     await _bannerRepository.SaveAsync(banner);
 
     ReplaceBannerPayload payload = new(banner.DisplayName.Value)
@@ -51,6 +36,10 @@ public class ReplaceBannerCommandTests : IntegrationTests
     Banner? result = await Mediator.Send(command);
     Assert.NotNull(result);
     Assert.Equal(banner.Id.ToGuid(), result.Id);
+    Assert.Equal(version + 1, result.Version);
+    Assert.Equal(Actor, result.CreatedBy);
+    Assert.Equal(Actor, result.UpdatedBy);
+    Assert.True(result.CreatedOn < result.UpdatedOn);
 
     Assert.Equal(description.Value, result.Description);
     Assert.Equal(payload.DisplayName, result.DisplayName);
@@ -73,6 +62,6 @@ public class ReplaceBannerCommandTests : IntegrationTests
     var exception = await Assert.ThrowsAsync<FluentValidation.ValidationException>(async () => await Mediator.Send(command));
     ValidationFailure error = Assert.Single(exception.Errors);
     Assert.Equal("NotEmptyValidator", error.ErrorCode);
-    Assert.Equal("DisplayName", error.PropertyName);
+    Assert.Equal(nameof(payload.DisplayName), error.PropertyName);
   }
 }

@@ -1,7 +1,7 @@
 ﻿using Faktur.Contracts.Banners;
-using Faktur.EntityFrameworkCore.Relational;
+using Faktur.EntityFrameworkCore.Relational.Entities;
 using FluentValidation.Results;
-using Logitar.Data;
+using Logitar.EventSourcing;
 using Microsoft.EntityFrameworkCore;
 
 namespace Faktur.Application.Banners.Commands;
@@ -13,18 +13,6 @@ public class CreateBannerCommandTests : IntegrationTests
   {
   }
 
-  public override async Task InitializeAsync()
-  {
-    await base.InitializeAsync();
-
-    TableId[] tables = [FakturDb.Banners.Table];
-    foreach (TableId table in tables)
-    {
-      ICommand command = CreateDeleteBuilder(table).Build();
-      await FakturContext.Database.ExecuteSqlRawAsync(command.Text, command.Parameters.ToArray());
-    }
-  }
-
   [Fact(DisplayName = "It should create a new banner.")]
   public async Task It_should_create_a_new_banner()
   {
@@ -33,12 +21,16 @@ public class CreateBannerCommandTests : IntegrationTests
     Banner banner = await Mediator.Send(command);
 
     Assert.Equal(1, banner.Version);
-    Assert.Equal(banner.CreatedOn, banner.UpdatedOn);
     Assert.Equal(Actor, banner.CreatedBy);
     Assert.Equal(Actor, banner.UpdatedBy);
+    Assert.Equal(banner.CreatedOn, banner.UpdatedOn);
 
     Assert.Equal(payload.DisplayName, banner.DisplayName);
     Assert.Equal(payload.Description, banner.Description);
+
+    BannerEntity? entity = await FakturContext.Banners.AsNoTracking()
+      .SingleOrDefaultAsync(x => x.AggregateId == new AggregateId(banner.Id).Value);
+    Assert.NotNull(entity);
   }
 
   [Fact(DisplayName = "It should throw ValidationException when the payload is not valid.")]
@@ -49,6 +41,6 @@ public class CreateBannerCommandTests : IntegrationTests
     var exception = await Assert.ThrowsAsync<FluentValidation.ValidationException>(async () => await Mediator.Send(command));
     ValidationFailure error = Assert.Single(exception.Errors);
     Assert.Equal("NotEmptyValidator", error.ErrorCode);
-    Assert.Equal("DisplayName", error.PropertyName);
+    Assert.Equal(nameof(payload.DisplayName), error.PropertyName);
   }
 }

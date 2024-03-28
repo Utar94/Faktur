@@ -3,7 +3,7 @@ using Faktur.Domain.Articles;
 using Faktur.Domain.Products;
 using Faktur.Domain.Stores;
 using Faktur.EntityFrameworkCore.Relational;
-using Logitar.Data;
+using Faktur.EntityFrameworkCore.Relational.Entities;
 using Logitar.Identity.Domain.Shared;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -30,15 +30,6 @@ public class DeleteArticleCommandTests : IntegrationTests
 
   public override async Task InitializeAsync()
   {
-    await base.InitializeAsync();
-
-    TableId[] tables = [FakturDb.Products.Table, FakturDb.Stores.Table, FakturDb.Articles.Table];
-    foreach (TableId table in tables)
-    {
-      ICommand command = CreateDeleteBuilder(table).Build();
-      await FakturContext.Database.ExecuteSqlRawAsync(command.Text, command.Parameters.ToArray());
-    }
-
     await _articleRepository.SaveAsync(_article);
   }
 
@@ -50,7 +41,9 @@ public class DeleteArticleCommandTests : IntegrationTests
     Assert.NotNull(result);
     Assert.Equal(_article.Id.ToGuid(), result.Id);
 
-    Assert.Empty(await FakturContext.Articles.ToArrayAsync());
+    ArticleEntity? entity = await FakturContext.Articles.AsNoTracking()
+      .SingleOrDefaultAsync(x => x.AggregateId == _article.Id.Value);
+    Assert.Null(entity);
   }
 
   [Fact(DisplayName = "It should delete the article products.")]

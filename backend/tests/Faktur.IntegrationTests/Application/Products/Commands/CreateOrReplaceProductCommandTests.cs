@@ -5,9 +5,9 @@ using Faktur.Contracts.Products;
 using Faktur.Domain.Articles;
 using Faktur.Domain.Products;
 using Faktur.Domain.Stores;
-using Faktur.EntityFrameworkCore.Relational;
+using Faktur.EntityFrameworkCore.Relational.Entities;
 using FluentValidation.Results;
-using Logitar.Data;
+using Logitar.EventSourcing;
 using Logitar.Identity.Domain.Shared;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -47,13 +47,6 @@ public class CreateOrReplaceProductCommandTests : IntegrationTests
   {
     await base.InitializeAsync();
 
-    TableId[] tables = [FakturDb.Products.Table, FakturDb.Stores.Table, FakturDb.Articles.Table];
-    foreach (TableId table in tables)
-    {
-      ICommand command = CreateDeleteBuilder(table).Build();
-      await FakturContext.Database.ExecuteSqlRawAsync(command.Text, command.Parameters.ToArray());
-    }
-
     await _articleRepository.SaveAsync(_article);
     await _storeRepository.SaveAsync(_store);
   }
@@ -87,6 +80,11 @@ public class CreateOrReplaceProductCommandTests : IntegrationTests
     Assert.Equal(2, product.Version);
     Assert.Equal(Actor, product.CreatedBy);
     Assert.Equal(Actor, product.UpdatedBy);
+    Assert.True(product.CreatedOn < product.UpdatedOn);
+
+    ProductEntity? entity = await FakturContext.Products.AsNoTracking()
+      .SingleOrDefaultAsync(x => x.AggregateId == new AggregateId(product.Id).Value);
+    Assert.NotNull(entity);
   }
 
   [Fact(DisplayName = "It should replace an existing product.")]
@@ -136,8 +134,8 @@ public class CreateOrReplaceProductCommandTests : IntegrationTests
     CreateOrReplaceProductPayload payload = new();
     CreateOrReplaceProductCommand command = new(_store.Id.ToGuid(), ArticleId: Guid.NewGuid(), payload, Version: null);
     var exception = await Assert.ThrowsAsync<ArticleNotFoundException>(async () => await Mediator.Send(command));
-    Assert.Equal(command.ArticleId, exception.ArticleId);
-    Assert.Equal("ArticleId", exception.PropertyName);
+    Assert.Equal(command.ArticleId, exception.AggregateId.ToGuid());
+    Assert.Equal(nameof(command.ArticleId), exception.PropertyName);
   }
 
   [Fact(DisplayName = "It should throw DepartmentNotFoundException when the department cannot be found.")]
@@ -159,8 +157,8 @@ public class CreateOrReplaceProductCommandTests : IntegrationTests
     CreateOrReplaceProductPayload payload = new();
     CreateOrReplaceProductCommand command = new(StoreId: Guid.NewGuid(), _article.Id.ToGuid(), payload, Version: null);
     var exception = await Assert.ThrowsAsync<StoreNotFoundException>(async () => await Mediator.Send(command));
-    Assert.Equal(command.StoreId, exception.StoreId);
-    Assert.Equal("StoreId", exception.PropertyName);
+    Assert.Equal(command.StoreId, exception.AggregateId.ToGuid());
+    Assert.Equal(nameof(command.StoreId), exception.PropertyName);
   }
 
   [Fact(DisplayName = "It should throw ValidationException when the payload is not valid.")]

@@ -1,4 +1,5 @@
-﻿using Faktur.Contracts.Stores;
+﻿using Faktur.Application.Banners;
+using Faktur.Contracts.Stores;
 using Faktur.Domain.Banners;
 using Faktur.Domain.Stores;
 using FluentValidation.Results;
@@ -14,10 +15,21 @@ public class ReplaceStoreCommandTests : IntegrationTests
   private readonly IBannerRepository _bannerRepository;
   private readonly IStoreRepository _storeRepository;
 
+  private readonly StoreAggregate _store;
+
   public ReplaceStoreCommandTests() : base()
   {
     _bannerRepository = ServiceProvider.GetRequiredService<IBannerRepository>();
     _storeRepository = ServiceProvider.GetRequiredService<IStoreRepository>();
+
+    _store = new(new DisplayNameUnit("Maxi Drummondville"), ActorId);
+  }
+
+  public override async Task InitializeAsync()
+  {
+    await base.InitializeAsync();
+
+    await _storeRepository.SaveAsync(_store);
   }
 
   [Fact(DisplayName = "It should replace an existing store.")]
@@ -26,30 +38,28 @@ public class ReplaceStoreCommandTests : IntegrationTests
     BannerAggregate banner = new(new DisplayNameUnit("MAXI"), ActorId);
     await _bannerRepository.SaveAsync(banner);
 
-    StoreAggregate store = new(new DisplayNameUnit("Maxi Drummondville"), ActorId);
-    long version = store.Version;
-    await _storeRepository.SaveAsync(store);
+    long version = _store.Version;
 
     NumberUnit number = new("08872");
-    store.Number = number;
-    store.Update(ActorId);
-    await _storeRepository.SaveAsync(store);
+    _store.Number = number;
+    _store.Update(ActorId);
+    await _storeRepository.SaveAsync(_store);
 
-    ReplaceStorePayload payload = new(store.DisplayName.Value)
+    ReplaceStorePayload payload = new(_store.DisplayName.Value)
     {
       BannerId = banner.Id.ToGuid(),
       Number = null,
       Email = new EmailPayload("drummondville-08872@maxi.ca", isVerified: false)
     };
-    ReplaceStoreCommand command = new(store.Id.ToGuid(), payload, version);
+    ReplaceStoreCommand command = new(_store.Id.ToGuid(), payload, version);
     Store? result = await Mediator.Send(command);
     Assert.NotNull(result);
 
-    Assert.Equal(store.Id.ToGuid(), result.Id);
-    Assert.Equal(version + 1, store.Version);
+    Assert.Equal(_store.Id.ToGuid(), result.Id);
+    Assert.Equal(version + 1, _store.Version);
     Assert.Equal(Actor, result.CreatedBy);
     Assert.Equal(Actor, result.UpdatedBy);
-    Assert.True(store.CreatedOn < store.UpdatedOn);
+    Assert.True(_store.CreatedOn < _store.UpdatedOn);
 
     Assert.Equal(number.Value, result.Number);
     Assert.Equal(payload.DisplayName, result.DisplayName);
@@ -67,6 +77,19 @@ public class ReplaceStoreCommandTests : IntegrationTests
     ReplaceStorePayload payload = new("Maxi Drummondville");
     ReplaceStoreCommand command = new(Guid.NewGuid(), payload, Version: null);
     Assert.Null(await Mediator.Send(command));
+  }
+
+  [Fact(DisplayName = "It should throw BannerNotFoundException when the banner cannot be found.")]
+  public async Task It_should_throw_BannerNotFoundException_when_the_banner_cannot_be_found()
+  {
+    ReplaceStorePayload payload = new("Maxi Drummondville")
+    {
+      BannerId = Guid.NewGuid()
+    };
+    ReplaceStoreCommand command = new(_store.Id.ToGuid(), payload, Version: null);
+    var exception = await Assert.ThrowsAsync<BannerNotFoundException>(async () => await Mediator.Send(command));
+    Assert.Equal(payload.BannerId, exception.AggregateId.ToGuid());
+    Assert.Equal(nameof(payload.BannerId), exception.PropertyName);
   }
 
   [Fact(DisplayName = "It should throw ValidationException when the payload is not valid.")]

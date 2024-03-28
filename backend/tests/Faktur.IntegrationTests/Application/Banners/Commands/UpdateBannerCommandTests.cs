@@ -1,12 +1,9 @@
 ﻿using Faktur.Contracts;
 using Faktur.Contracts.Banners;
 using Faktur.Domain.Banners;
-using Faktur.EntityFrameworkCore.Relational;
 using FluentValidation.Results;
-using Logitar.Data;
 using Logitar.Identity.Domain.Shared;
 using Logitar.Security.Cryptography;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Faktur.Application.Banners.Commands;
@@ -19,18 +16,6 @@ public class UpdateBannerCommandTests : IntegrationTests
   public UpdateBannerCommandTests() : base()
   {
     _bannerRepository = ServiceProvider.GetRequiredService<IBannerRepository>();
-  }
-
-  public override async Task InitializeAsync()
-  {
-    await base.InitializeAsync();
-
-    TableId[] tables = [FakturDb.Banners.Table];
-    foreach (TableId table in tables)
-    {
-      ICommand command = CreateDeleteBuilder(table).Build();
-      await FakturContext.Database.ExecuteSqlRawAsync(command.Text, command.Parameters.ToArray());
-    }
   }
 
   [Fact(DisplayName = "It should return null when the banner cannot be found.")]
@@ -52,13 +37,13 @@ public class UpdateBannerCommandTests : IntegrationTests
     var exception = await Assert.ThrowsAsync<FluentValidation.ValidationException>(async () => await Mediator.Send(command));
     ValidationFailure error = Assert.Single(exception.Errors);
     Assert.Equal("MaximumLengthValidator", error.ErrorCode);
-    Assert.Equal("DisplayName", error.PropertyName);
+    Assert.Equal(nameof(payload.DisplayName), error.PropertyName);
   }
 
   [Fact(DisplayName = "It should update an existing banner.")]
   public async Task It_should_update_an_existing_banner()
   {
-    BannerAggregate banner = new(new DisplayNameUnit("MAXI"));
+    BannerAggregate banner = new(new DisplayNameUnit("MAXI"), ActorId);
     await _bannerRepository.SaveAsync(banner);
 
     UpdateBannerPayload payload = new()
@@ -69,6 +54,10 @@ public class UpdateBannerCommandTests : IntegrationTests
     Banner? result = await Mediator.Send(command);
     Assert.NotNull(result);
     Assert.Equal(banner.Id.ToGuid(), result.Id);
+    Assert.Equal(banner.Version + 1, result.Version);
+    Assert.Equal(Actor, result.CreatedBy);
+    Assert.Equal(Actor, result.UpdatedBy);
+    Assert.True(result.CreatedOn < result.UpdatedOn);
 
     Assert.Equal(payload.Description.Value, result.Description);
   }

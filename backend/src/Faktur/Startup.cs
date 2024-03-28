@@ -3,6 +3,7 @@ using Faktur.Constants;
 using Faktur.EntityFrameworkCore.Relational;
 using Faktur.EntityFrameworkCore.SqlServer;
 using Faktur.Extensions;
+using Faktur.Filters;
 using Faktur.Infrastructure;
 using Faktur.Middlewares;
 using Faktur.Settings;
@@ -31,7 +32,7 @@ internal class Startup : StartupBase
   {
     base.ConfigureServices(services);
 
-    services.AddControllers()
+    services.AddControllers(options => options.Filters.Add<ExceptionHandling>())
       .AddJsonOptions(options =>
       {
         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());

@@ -1,8 +1,7 @@
 ﻿using Faktur.Contracts.Departments;
 using Faktur.Domain.Stores;
-using Faktur.EntityFrameworkCore.Relational;
+using Faktur.EntityFrameworkCore.Relational.Entities;
 using FluentValidation.Results;
-using Logitar.Data;
 using Logitar.Identity.Domain.Shared;
 using Logitar.Security.Cryptography;
 using Microsoft.EntityFrameworkCore;
@@ -28,13 +27,6 @@ public class CreateOrReplaceDepartmentCommandTests : IntegrationTests
   {
     await base.InitializeAsync();
 
-    TableId[] tables = [FakturDb.Stores.Table];
-    foreach (TableId table in tables)
-    {
-      ICommand command = CreateDeleteBuilder(table).Build();
-      await FakturContext.Database.ExecuteSqlRawAsync(command.Text, command.Parameters.ToArray());
-    }
-
     await _storeRepository.SaveAsync(_store);
   }
 
@@ -56,6 +48,11 @@ public class CreateOrReplaceDepartmentCommandTests : IntegrationTests
     Assert.Equal(Actor, department.CreatedBy);
     Assert.Equal(Actor, department.UpdatedBy);
     Assert.Equal(department.CreatedOn, department.UpdatedOn);
+
+    DepartmentEntity? entity = await FakturContext.Departments.AsNoTracking()
+      .Include(x => x.Store)
+      .SingleOrDefaultAsync(x => x.Store!.AggregateId == _store.Id.Value && x.NumberNormalized == command.Number);
+    Assert.NotNull(entity);
   }
 
   [Fact(DisplayName = "It should replace an existing department.")]
@@ -106,7 +103,7 @@ public class CreateOrReplaceDepartmentCommandTests : IntegrationTests
     var exception = await Assert.ThrowsAsync<FluentValidation.ValidationException>(async () => await Mediator.Send(command));
     ValidationFailure error = Assert.Single(exception.Errors);
     Assert.Equal("MaximumLengthValidator", error.ErrorCode);
-    Assert.Equal("Number", error.PropertyName);
+    Assert.Equal(nameof(command.Number), error.PropertyName);
   }
 
   [Fact(DisplayName = "It should throw ValidationException when the payload is not valid.")]
@@ -117,6 +114,6 @@ public class CreateOrReplaceDepartmentCommandTests : IntegrationTests
     var exception = await Assert.ThrowsAsync<FluentValidation.ValidationException>(async () => await Mediator.Send(command));
     ValidationFailure error = Assert.Single(exception.Errors);
     Assert.Equal("NotEmptyValidator", error.ErrorCode);
-    Assert.Equal("DisplayName", error.PropertyName);
+    Assert.Equal(nameof(payload.DisplayName), error.PropertyName);
   }
 }

@@ -2,7 +2,7 @@
 using Faktur.Domain.Receipts;
 using Faktur.Domain.Stores;
 using Faktur.EntityFrameworkCore.Relational;
-using Logitar.Data;
+using Faktur.EntityFrameworkCore.Relational.Entities;
 using Logitar.Identity.Domain.Shared;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,18 +21,6 @@ public class DeleteReceiptCommandTests : IntegrationTests
     _storeRepository = ServiceProvider.GetRequiredService<IStoreRepository>();
   }
 
-  public override async Task InitializeAsync()
-  {
-    await base.InitializeAsync();
-
-    TableId[] tables = [FakturDb.Receipts.Table, FakturDb.Stores.Table];
-    foreach (TableId table in tables)
-    {
-      ICommand command = CreateDeleteBuilder(table).Build();
-      await FakturContext.Database.ExecuteSqlRawAsync(command.Text, command.Parameters.ToArray());
-    }
-  }
-
   [Fact(DisplayName = "It should delete an existing receipt.")]
   public async Task It_should_delete_an_existing_receipt()
   {
@@ -47,7 +35,9 @@ public class DeleteReceiptCommandTests : IntegrationTests
     Assert.NotNull(result);
     Assert.Equal(receipt.Id.ToGuid(), result.Id);
 
-    Assert.Empty(await FakturContext.Receipts.ToArrayAsync());
+    ReceiptEntity? entity = await FakturContext.Receipts.AsNoTracking()
+      .SingleOrDefaultAsync(x => x.AggregateId == receipt.Id.Value);
+    Assert.Null(entity);
   }
 
   [Fact(DisplayName = "It should return null when the receipt cannot be found.")]

@@ -2,11 +2,8 @@
 using Faktur.Domain.Articles;
 using Faktur.Domain.Products;
 using Faktur.Domain.Stores;
-using Faktur.EntityFrameworkCore.Relational;
-using Logitar.Data;
 using Logitar.Identity.Domain.Shared;
 using Logitar.Portal.Contracts;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Faktur.Application.Products.Queries;
@@ -52,13 +49,6 @@ public class ReadProductQueryTests : IntegrationTests
   public override async Task InitializeAsync()
   {
     await base.InitializeAsync();
-
-    TableId[] tables = [FakturDb.Products.Table, FakturDb.Stores.Table, FakturDb.Articles.Table];
-    foreach (TableId table in tables)
-    {
-      ICommand command = CreateDeleteBuilder(table).Build();
-      await FakturContext.Database.ExecuteSqlRawAsync(command.Text, command.Parameters.ToArray());
-    }
 
     await _articleRepository.SaveAsync(_article);
     await _storeRepository.SaveAsync(_store);

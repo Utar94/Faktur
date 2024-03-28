@@ -1,4 +1,5 @@
-﻿using Faktur.Contracts;
+﻿using Faktur.Application.Banners;
+using Faktur.Contracts;
 using Faktur.Contracts.Stores;
 using Faktur.Domain.Banners;
 using Faktur.Domain.Stores;
@@ -16,10 +17,28 @@ public class UpdateStoreCommandTests : IntegrationTests
   private readonly IBannerRepository _bannerRepository;
   private readonly IStoreRepository _storeRepository;
 
+  private readonly BannerAggregate _banner;
+  private readonly StoreAggregate _store;
+
   public UpdateStoreCommandTests() : base()
   {
     _bannerRepository = ServiceProvider.GetRequiredService<IBannerRepository>();
     _storeRepository = ServiceProvider.GetRequiredService<IStoreRepository>();
+
+    _banner = new(new DisplayNameUnit("MAXI"), ActorId);
+    _store = new(new DisplayNameUnit("Maxi Drummondville"), ActorId)
+    {
+      BannerId = _banner.Id
+    };
+    _store.Update(ActorId);
+  }
+
+  public override async Task InitializeAsync()
+  {
+    await base.InitializeAsync();
+
+    await _bannerRepository.SaveAsync(_banner);
+    await _storeRepository.SaveAsync(_store);
   }
 
   [Fact(DisplayName = "It should return null when the store cannot be found.")]
@@ -28,6 +47,19 @@ public class UpdateStoreCommandTests : IntegrationTests
     UpdateStorePayload payload = new();
     UpdateStoreCommand command = new(Guid.NewGuid(), payload);
     Assert.Null(await Mediator.Send(command));
+  }
+
+  [Fact(DisplayName = "It should throw BannerNotFoundException when the banner cannot be found.")]
+  public async Task It_should_throw_BannerNotFoundException_when_the_banner_cannot_be_found()
+  {
+    UpdateStorePayload payload = new()
+    {
+      BannerId = new Modification<Guid?>(Guid.NewGuid())
+    };
+    UpdateStoreCommand command = new(_store.Id.ToGuid(), payload);
+    var exception = await Assert.ThrowsAsync<BannerNotFoundException>(async () => await Mediator.Send(command));
+    Assert.Equal(payload.BannerId.Value, exception.AggregateId.ToGuid());
+    Assert.Equal(nameof(payload.BannerId), exception.PropertyName);
   }
 
   [Fact(DisplayName = "It should throw ValidationException when the payload is not valid.")]
@@ -47,31 +79,21 @@ public class UpdateStoreCommandTests : IntegrationTests
   [Fact(DisplayName = "It should update an existing store.")]
   public async Task It_should_update_an_existing_store()
   {
-    BannerAggregate banner = new(new DisplayNameUnit("MAXI"), ActorId);
-    await _bannerRepository.SaveAsync(banner);
-
-    StoreAggregate store = new(new DisplayNameUnit("Maxi Drummondville"), ActorId)
-    {
-      BannerId = banner.Id
-    };
-    store.Update(ActorId);
-    await _storeRepository.SaveAsync(store);
-
     UpdateStorePayload payload = new()
     {
       BannerId = new Modification<Guid?>(null),
       Number = new Modification<string>("08872"),
       Address = new Modification<AddressPayload>(new AddressPayload("1870 Bd Saint-Joseph", "Drummondville", "J2B 1R2", "QC", "CA", isVerified: true))
     };
-    UpdateStoreCommand command = new(store.Id.ToGuid(), payload);
+    UpdateStoreCommand command = new(_store.Id.ToGuid(), payload);
     Store? result = await Mediator.Send(command);
     Assert.NotNull(result);
 
-    Assert.Equal(store.Id.ToGuid(), result.Id);
+    Assert.Equal(_store.Id.ToGuid(), result.Id);
     Assert.Equal(3, result.Version);
     Assert.Equal(Actor, result.CreatedBy);
     Assert.Equal(Actor, result.UpdatedBy);
-    Assert.True(store.CreatedOn < store.UpdatedOn);
+    Assert.True(_store.CreatedOn < _store.UpdatedOn);
 
     Assert.Equal(payload.Number.Value, result.Number);
     Assert.Null(result.Banner);

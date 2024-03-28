@@ -1,10 +1,7 @@
 ﻿using Faktur.Contracts.Articles;
 using Faktur.Domain.Articles;
-using Faktur.EntityFrameworkCore.Relational;
-using Logitar.Data;
 using Logitar.Identity.Domain.Shared;
 using Logitar.Portal.Contracts;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Faktur.Application.Articles.Queries;
@@ -17,18 +14,6 @@ public class ReadArticleQueryTests : IntegrationTests
   public ReadArticleQueryTests() : base()
   {
     _articleRepository = ServiceProvider.GetRequiredService<IArticleRepository>();
-  }
-
-  public override async Task InitializeAsync()
-  {
-    await base.InitializeAsync();
-
-    TableId[] tables = [FakturDb.Articles.Table];
-    foreach (TableId table in tables)
-    {
-      ICommand command = CreateDeleteBuilder(table).Build();
-      await FakturContext.Database.ExecuteSqlRawAsync(command.Text, command.Parameters.ToArray());
-    }
   }
 
   [Fact(DisplayName = "It should return null when the article cannot be found.")]
