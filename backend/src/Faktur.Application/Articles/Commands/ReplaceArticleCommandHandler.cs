@@ -11,13 +11,13 @@ internal class ReplaceArticleCommandHandler : IRequestHandler<ReplaceArticleComm
 {
   private readonly IArticleQuerier _articleQuerier;
   private readonly IArticleRepository _articleRepository;
-  private readonly IPublisher _publisher;
+  private readonly ISender _sender;
 
-  public ReplaceArticleCommandHandler(IArticleQuerier articleQuerier, IArticleRepository articleRepository, IPublisher publisher)
+  public ReplaceArticleCommandHandler(IArticleQuerier articleQuerier, IArticleRepository articleRepository, ISender sender)
   {
     _articleQuerier = articleQuerier;
     _articleRepository = articleRepository;
-    _publisher = publisher;
+    _sender = sender;
   }
 
   public async Task<Article?> Handle(ReplaceArticleCommand command, CancellationToken cancellationToken)
@@ -54,7 +54,7 @@ internal class ReplaceArticleCommandHandler : IRequestHandler<ReplaceArticleComm
 
     article.Update(command.ActorId);
 
-    await _publisher.Publish(new SaveArticleCommand(article), cancellationToken);
+    await _sender.Send(new SaveArticleCommand(article), cancellationToken);
 
     return await _articleQuerier.ReadAsync(article, cancellationToken);
   }

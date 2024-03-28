@@ -17,16 +17,16 @@ internal class CreateOrReplaceProductCommandHandler : IRequestHandler<CreateOrRe
   private readonly IArticleRepository _articleRepository;
   private readonly IProductQuerier _productQuerier;
   private readonly IProductRepository _productRepository;
-  private readonly IPublisher _publisher;
+  private readonly ISender _sender;
   private readonly IStoreRepository _storeRepository;
 
   public CreateOrReplaceProductCommandHandler(IArticleRepository articleRepository, IProductQuerier productQuerier,
-    IProductRepository productRepository, IPublisher publisher, IStoreRepository storeRepository)
+    IProductRepository productRepository, ISender sender, IStoreRepository storeRepository)
   {
     _articleRepository = articleRepository;
     _productQuerier = productQuerier;
     _productRepository = productRepository;
-    _publisher = publisher;
+    _sender = sender;
     _storeRepository = storeRepository;
   }
 
@@ -100,7 +100,7 @@ internal class CreateOrReplaceProductCommandHandler : IRequestHandler<CreateOrRe
 
     product.Update(command.ActorId);
 
-    await _publisher.Publish(new SaveProductCommand(product), cancellationToken);
+    await _sender.Send(new SaveProductCommand(product), cancellationToken);
 
     Product result = await _productQuerier.ReadAsync(product, cancellationToken);
     return new CreateOrReplaceProductResult(isCreated, result);

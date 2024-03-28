@@ -11,13 +11,13 @@ internal class UpdateArticleCommandHandler : IRequestHandler<UpdateArticleComman
 {
   private readonly IArticleQuerier _articleQuerier;
   private readonly IArticleRepository _articleRepository;
-  private readonly IPublisher _publisher;
+  private readonly ISender _sender;
 
-  public UpdateArticleCommandHandler(IArticleQuerier articleQuerier, IArticleRepository articleRepository, IPublisher publisher)
+  public UpdateArticleCommandHandler(IArticleQuerier articleQuerier, IArticleRepository articleRepository, ISender sender)
   {
     _articleQuerier = articleQuerier;
     _articleRepository = articleRepository;
-    _publisher = publisher;
+    _sender = sender;
   }
 
   public async Task<Article?> Handle(UpdateArticleCommand command, CancellationToken cancellationToken)
@@ -46,7 +46,7 @@ internal class UpdateArticleCommandHandler : IRequestHandler<UpdateArticleComman
 
     article.Update(command.ActorId);
 
-    await _publisher.Publish(new SaveArticleCommand(article), cancellationToken);
+    await _sender.Send(new SaveArticleCommand(article), cancellationToken);
 
     return await _articleQuerier.ReadAsync(article, cancellationToken);
   }

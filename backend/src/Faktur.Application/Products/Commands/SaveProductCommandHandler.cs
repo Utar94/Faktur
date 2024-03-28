@@ -5,7 +5,7 @@ using MediatR;
 
 namespace Faktur.Application.Products.Commands;
 
-internal class SaveProductCommandHandler : INotificationHandler<SaveProductCommand>
+internal class SaveProductCommandHandler : IRequestHandler<SaveProductCommand>
 {
   private readonly IProductRepository _productRepository;
 

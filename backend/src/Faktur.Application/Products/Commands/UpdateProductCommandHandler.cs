@@ -13,14 +13,14 @@ internal class UpdateProductCommandHandler : IRequestHandler<UpdateProductComman
 {
   private readonly IProductQuerier _productQuerier;
   private readonly IProductRepository _productRepository;
-  private readonly IPublisher _publisher;
+  private readonly ISender _sender;
   private readonly IStoreRepository _storeRepository;
 
-  public UpdateProductCommandHandler(IProductQuerier productQuerier, IProductRepository productRepository, IPublisher publisher, IStoreRepository storeRepository)
+  public UpdateProductCommandHandler(IProductQuerier productQuerier, IProductRepository productRepository, ISender sender, IStoreRepository storeRepository)
   {
     _productQuerier = productQuerier;
     _productRepository = productRepository;
-    _publisher = publisher;
+    _sender = sender;
     _storeRepository = storeRepository;
   }
 
@@ -79,7 +79,7 @@ internal class UpdateProductCommandHandler : IRequestHandler<UpdateProductComman
 
     product.Update(command.ActorId);
 
-    await _publisher.Publish(new SaveProductCommand(product), cancellationToken);
+    await _sender.Send(new SaveProductCommand(product), cancellationToken);
 
     return await _productQuerier.ReadAsync(product, cancellationToken);
   }

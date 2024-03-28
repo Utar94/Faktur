@@ -3,4 +3,4 @@ using MediatR;
 
 namespace Faktur.Application.Articles.Commands;
 
-internal record SaveArticleCommand(ArticleAggregate Article) : INotification;
+internal record SaveArticleCommand(ArticleAggregate Article) : IRequest;
