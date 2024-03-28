@@ -1,8 +1,8 @@
 ﻿using Faktur.Contracts.Articles;
 using Faktur.Domain.Articles;
-using Faktur.Domain.Shared;
 using Faktur.EntityFrameworkCore.Relational;
 using Logitar.Data;
+using Logitar.Identity.Domain.Shared;
 using Logitar.Portal.Contracts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;

@@ -4,11 +4,11 @@ using Faktur.Contracts.Receipts;
 using Faktur.Domain.Articles;
 using Faktur.Domain.Products;
 using Faktur.Domain.Receipts;
-using Faktur.Domain.Shared;
 using Faktur.Domain.Stores;
 using Faktur.Domain.Taxes;
 using Faktur.EntityFrameworkCore.Relational.Entities;
 using FluentValidation.Results;
+using Logitar.Identity.Domain.Shared;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 

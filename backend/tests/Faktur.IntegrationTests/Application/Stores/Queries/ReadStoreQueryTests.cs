@@ -1,6 +1,6 @@
 ﻿using Faktur.Contracts.Stores;
-using Faktur.Domain.Shared;
 using Faktur.Domain.Stores;
+using Logitar.Identity.Domain.Shared;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Faktur.Application.Stores.Queries;

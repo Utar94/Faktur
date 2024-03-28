@@ -2,9 +2,9 @@
 using Faktur.Application.Stores.Validators;
 using Faktur.Contracts.Stores;
 using Faktur.Domain.Banners;
-using Faktur.Domain.Shared;
 using Faktur.Domain.Stores;
 using FluentValidation;
+using Logitar.Identity.Domain.Shared;
 using MediatR;
 
 namespace Faktur.Application.Stores.Commands;

@@ -5,9 +5,8 @@ namespace Faktur.Domain.Banners.Events;
 
 public record BannerDeletedEvent : DomainEvent, INotification
 {
-  public BannerDeletedEvent(ActorId actorId)
+  public BannerDeletedEvent()
   {
-    ActorId = actorId;
     IsDeleted = true;
   }
 }

@@ -1,8 +1,8 @@
 ﻿using Faktur.Domain.Articles;
 using Faktur.Domain.Products;
-using Faktur.Domain.Shared;
 using Faktur.Domain.Stores;
 using Faktur.Domain.Taxes;
+using Logitar.Identity.Domain.Shared;
 
 namespace Faktur.Domain.Receipts;
 

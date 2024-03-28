@@ -1,8 +1,8 @@
 ﻿using Faktur.Contracts;
 using Faktur.Domain.Banners;
-using Faktur.Domain.Shared;
 using Faktur.Domain.Stores.Events;
 using Logitar.EventSourcing;
+using Logitar.Identity.Domain.Shared;
 using Logitar.Identity.Domain.Users;
 
 namespace Faktur.Domain.Stores;

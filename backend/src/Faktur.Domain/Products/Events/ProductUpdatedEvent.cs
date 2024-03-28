@@ -1,8 +1,8 @@
 ﻿using Faktur.Contracts;
 using Faktur.Contracts.Products;
-using Faktur.Domain.Shared;
 using Faktur.Domain.Stores;
 using Logitar.EventSourcing;
+using Logitar.Identity.Domain.Shared;
 using MediatR;
 
 namespace Faktur.Domain.Products.Events;

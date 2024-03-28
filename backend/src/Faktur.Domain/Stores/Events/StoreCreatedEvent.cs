@@ -1,5 +1,5 @@
-﻿using Faktur.Domain.Shared;
-using Logitar.EventSourcing;
+﻿using Logitar.EventSourcing;
+using Logitar.Identity.Domain.Shared;
 using MediatR;
 
 namespace Faktur.Domain.Stores.Events;

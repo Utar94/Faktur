@@ -5,9 +5,8 @@ namespace Faktur.Domain.Products.Events;
 
 public record ProductDeletedEvent : DomainEvent, INotification
 {
-  public ProductDeletedEvent(ActorId actorId)
+  public ProductDeletedEvent()
   {
-    ActorId = actorId;
     IsDeleted = true;
   }
 }

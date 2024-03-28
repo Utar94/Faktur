@@ -1,7 +1,7 @@
 ﻿using Faktur.Contracts.Stores;
 using Faktur.Domain.Banners;
-using Faktur.Domain.Shared;
 using Faktur.Domain.Stores;
+using Logitar.Identity.Domain.Shared;
 using Logitar.Portal.Contracts.Search;
 using Microsoft.Extensions.DependencyInjection;
 

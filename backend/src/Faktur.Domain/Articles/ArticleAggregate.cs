@@ -1,7 +1,7 @@
 ﻿using Faktur.Contracts;
 using Faktur.Domain.Articles.Events;
-using Faktur.Domain.Shared;
 using Logitar.EventSourcing;
+using Logitar.Identity.Domain.Shared;
 
 namespace Faktur.Domain.Articles;
 
@@ -58,7 +58,7 @@ public class ArticleAggregate : AggregateRoot
   public ArticleAggregate(DisplayNameUnit displayName, ActorId actorId = default, ArticleId? id = null)
     : base((id ?? ArticleId.NewId()).AggregateId)
   {
-    Raise(new ArticleCreatedEvent(displayName, actorId));
+    Raise(new ArticleCreatedEvent(displayName), actorId);
   }
   protected virtual void Apply(ArticleCreatedEvent @event)
   {
@@ -69,7 +69,7 @@ public class ArticleAggregate : AggregateRoot
   {
     if (!IsDeleted)
     {
-      Raise(new ArticleDeletedEvent(actorId));
+      Raise(new ArticleDeletedEvent(), actorId);
     }
   }
 
@@ -77,8 +77,7 @@ public class ArticleAggregate : AggregateRoot
   {
     if (_updatedEvent.HasChanges)
     {
-      _updatedEvent.ActorId = actorId;
-      Raise(_updatedEvent);
+      Raise(_updatedEvent, actorId, DateTime.Now);
       _updatedEvent = new();
     }
   }
