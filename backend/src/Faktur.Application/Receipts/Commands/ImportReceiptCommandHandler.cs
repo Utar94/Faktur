@@ -43,7 +43,14 @@ internal class ImportReceiptCommandHandler : IRequestHandler<ImportReceiptComman
       LocaleUnit? locale = LocaleUnit.TryCreate(payload.Locale);
       items = await _receiptParser.ExecuteAsync(payload.Lines, locale, cancellationToken);
 
-      // TODO(fpion): create missing departments
+      foreach (ReceiptItemUnit item in items)
+      {
+        if (item.DepartmentNumber != null && item.Department != null && !store.HasDepartment(item.DepartmentNumber))
+        {
+          store.SetDepartment(item.DepartmentNumber, item.Department, command.ActorId);
+        }
+      }
+
       // TODO(fpion): create missing articles
       // TODO(fpion): create missing products
     }
@@ -54,6 +61,7 @@ internal class ImportReceiptCommandHandler : IRequestHandler<ImportReceiptComman
     IEnumerable<TaxAggregate> taxes = await _taxRepository.LoadAsync(cancellationToken);
     receipt.Calculate(taxes, command.ActorId);
 
+    await _storeRepository.SaveAsync(store, cancellationToken);
     await _receiptRepository.SaveAsync(receipt, cancellationToken);
 
     return await _receiptQuerier.ReadAsync(receipt, cancellationToken);

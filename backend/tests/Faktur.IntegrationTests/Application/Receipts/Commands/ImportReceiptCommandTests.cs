@@ -141,8 +141,11 @@ public class ImportReceiptCommandTests : IntegrationTests
     Assert.Equal(_store.Id.ToGuid(), receipt.Store.Id);
 
     ReceiptEntity? entity = await FakturContext.Receipts.AsNoTracking()
+      .Include(x => x.Store).ThenInclude(x => x!.Departments)
       .SingleOrDefaultAsync(x => x.AggregateId == new AggregateId(receipt.Id).Value);
     Assert.NotNull(entity);
+    Assert.NotNull(entity.Store);
+    Assert.Contains(entity.Store.Departments, d => d.NumberNormalized == department.Number && d.DisplayName == department.DisplayName);
   }
 
   [Fact(DisplayName = "It should throw StoreNotFoundException when the store could not be found.")]
