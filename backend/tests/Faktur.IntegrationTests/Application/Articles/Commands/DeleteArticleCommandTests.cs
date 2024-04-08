@@ -30,6 +30,8 @@ public class DeleteArticleCommandTests : IntegrationTests
 
   public override async Task InitializeAsync()
   {
+    await base.InitializeAsync();
+
     await _articleRepository.SaveAsync(_article);
   }
 
