@@ -42,6 +42,10 @@ internal class ImportReceiptCommandHandler : IRequestHandler<ImportReceiptComman
     {
       LocaleUnit? locale = LocaleUnit.TryCreate(payload.Locale);
       items = await _receiptParser.ExecuteAsync(payload.Lines, locale, cancellationToken);
+
+      // TODO(fpion): create missing departments
+      // TODO(fpion): create missing articles
+      // TODO(fpion): create missing products
     }
 
     NumberUnit? number = NumberUnit.TryCreate(payload.Number);
