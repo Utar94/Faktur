@@ -78,108 +78,137 @@ internal static class Receipts
         await _context.SaveChangesAsync(cancellationToken);
       }
     }
+  }
 
-    public class ReceiptDeletedEventHandler : INotificationHandler<ReceiptDeletedEvent>
+  public class ReceiptDeletedEventHandler : INotificationHandler<ReceiptDeletedEvent>
+  {
+    private readonly FakturContext _context;
+
+    public ReceiptDeletedEventHandler(FakturContext context)
     {
-      private readonly FakturContext _context;
-
-      public ReceiptDeletedEventHandler(FakturContext context)
-      {
-        _context = context;
-      }
-
-      public async Task Handle(ReceiptDeletedEvent @event, CancellationToken cancellationToken)
-      {
-        ReceiptEntity? receipt = await _context.Receipts
-          .SingleOrDefaultAsync(x => x.AggregateId == @event.AggregateId.Value, cancellationToken);
-        if (receipt != null)
-        {
-          _context.Receipts.Remove(receipt);
-
-          await _context.SaveChangesAsync(cancellationToken);
-        }
-      }
+      _context = context;
     }
 
-    public class ReceiptItemChangedEventHandler : INotificationHandler<ReceiptItemChangedEvent>
+    public async Task Handle(ReceiptDeletedEvent @event, CancellationToken cancellationToken)
     {
-      private readonly FakturContext _context;
-
-      public ReceiptItemChangedEventHandler(FakturContext context)
+      ReceiptEntity? receipt = await _context.Receipts
+        .SingleOrDefaultAsync(x => x.AggregateId == @event.AggregateId.Value, cancellationToken);
+      if (receipt != null)
       {
-        _context = context;
-      }
-
-      public async Task Handle(ReceiptItemChangedEvent @event, CancellationToken cancellationToken)
-      {
-        ReceiptEntity receipt = await _context.Receipts
-          .Include(x => x.Items)
-          .Include(x => x.Taxes)
-          .SingleOrDefaultAsync(x => x.AggregateId == @event.AggregateId.Value, cancellationToken)
-          ?? throw new InvalidOperationException($"The receipt 'AggregateId={@event.AggregateId}' could not be found.");
-
-        ProductEntity? product = null;
-        if (@event.Item.Sku != null)
-        {
-          string skuNormalized = @event.Item.Sku.Value.ToUpper();
-          product = await _context.Products
-            .SingleOrDefaultAsync(x => x.StoreId == receipt.StoreId && x.SkuNormalized == skuNormalized, cancellationToken);
-        }
-        else if (@event.Item.Gtin != null)
-        {
-          product = await _context.Products
-            .Include(x => x.Article)
-            .SingleOrDefaultAsync(x => x.StoreId == receipt.StoreId && x.Article!.GtinNormalized == @event.Item.Gtin.NormalizedValue, cancellationToken);
-        }
-
-        receipt.SetItem(product, @event);
+        _context.Receipts.Remove(receipt);
 
         await _context.SaveChangesAsync(cancellationToken);
       }
     }
+  }
 
-    public class ReceiptItemRemovedEventHandler : INotificationHandler<ReceiptItemRemovedEvent>
+  public class ReceiptImportedEventHandler : INotificationHandler<ReceiptImportedEvent>
+  {
+    private readonly FakturContext _context;
+
+    public ReceiptImportedEventHandler(FakturContext context)
     {
-      private readonly FakturContext _context;
+      _context = context;
+    }
 
-      public ReceiptItemRemovedEventHandler(FakturContext context)
+    public async Task Handle(ReceiptImportedEvent @event, CancellationToken cancellationToken)
+    {
+      ReceiptEntity? receipt = await _context.Receipts.AsNoTracking()
+        .SingleOrDefaultAsync(x => x.AggregateId == @event.AggregateId.Value, cancellationToken);
+      if (receipt == null)
       {
-        _context = context;
-      }
+        StoreEntity store = await _context.Stores
+          .Include(x => x.Products).ThenInclude(x => x.Article)
+          .SingleOrDefaultAsync(x => x.AggregateId == @event.StoreId.Value, cancellationToken)
+          ?? throw new InvalidOperationException($"The store 'AggregateId={@event.StoreId.Value}' could not be found.");
 
-      public async Task Handle(ReceiptItemRemovedEvent @event, CancellationToken cancellationToken)
-      {
-        ReceiptEntity receipt = await _context.Receipts
-          .Include(x => x.Items)
-          .Include(x => x.Taxes)
-          .SingleOrDefaultAsync(x => x.AggregateId == @event.AggregateId.Value, cancellationToken)
-          ?? throw new InvalidOperationException($"The receipt 'AggregateId={@event.AggregateId}' could not be found.");
+        receipt = new(store, @event);
 
-        receipt.RemoveItem(@event);
+        _context.Receipts.Add(receipt);
 
         await _context.SaveChangesAsync(cancellationToken);
       }
     }
+  }
 
-    public class ReceiptUpdatedEventHandler : INotificationHandler<ReceiptUpdatedEvent>
+  public class ReceiptItemChangedEventHandler : INotificationHandler<ReceiptItemChangedEvent>
+  {
+    private readonly FakturContext _context;
+
+    public ReceiptItemChangedEventHandler(FakturContext context)
     {
-      private readonly FakturContext _context;
+      _context = context;
+    }
 
-      public ReceiptUpdatedEventHandler(FakturContext context)
+    public async Task Handle(ReceiptItemChangedEvent @event, CancellationToken cancellationToken)
+    {
+      ReceiptEntity receipt = await _context.Receipts
+        .Include(x => x.Items)
+        .Include(x => x.Taxes)
+        .SingleOrDefaultAsync(x => x.AggregateId == @event.AggregateId.Value, cancellationToken)
+        ?? throw new InvalidOperationException($"The receipt 'AggregateId={@event.AggregateId}' could not be found.");
+
+      ProductEntity? product = null;
+      if (@event.Item.Sku != null)
       {
-        _context = context;
+        string skuNormalized = @event.Item.Sku.Value.ToUpper();
+        product = await _context.Products
+          .SingleOrDefaultAsync(x => x.StoreId == receipt.StoreId && x.SkuNormalized == skuNormalized, cancellationToken);
+      }
+      else if (@event.Item.Gtin != null)
+      {
+        product = await _context.Products
+          .Include(x => x.Article)
+          .SingleOrDefaultAsync(x => x.StoreId == receipt.StoreId && x.Article!.GtinNormalized == @event.Item.Gtin.NormalizedValue, cancellationToken);
       }
 
-      public async Task Handle(ReceiptUpdatedEvent @event, CancellationToken cancellationToken)
-      {
-        ReceiptEntity receipt = await _context.Receipts
-          .SingleOrDefaultAsync(x => x.AggregateId == @event.AggregateId.Value, cancellationToken)
-          ?? throw new InvalidOperationException($"The receipt 'AggregateId={@event.AggregateId}' could not be found.");
+      receipt.SetItem(product, @event);
 
-        receipt.Update(@event);
+      await _context.SaveChangesAsync(cancellationToken);
+    }
+  }
 
-        await _context.SaveChangesAsync(cancellationToken);
-      }
+  public class ReceiptItemRemovedEventHandler : INotificationHandler<ReceiptItemRemovedEvent>
+  {
+    private readonly FakturContext _context;
+
+    public ReceiptItemRemovedEventHandler(FakturContext context)
+    {
+      _context = context;
+    }
+
+    public async Task Handle(ReceiptItemRemovedEvent @event, CancellationToken cancellationToken)
+    {
+      ReceiptEntity receipt = await _context.Receipts
+        .Include(x => x.Items)
+        .Include(x => x.Taxes)
+        .SingleOrDefaultAsync(x => x.AggregateId == @event.AggregateId.Value, cancellationToken)
+        ?? throw new InvalidOperationException($"The receipt 'AggregateId={@event.AggregateId}' could not be found.");
+
+      receipt.RemoveItem(@event);
+
+      await _context.SaveChangesAsync(cancellationToken);
+    }
+  }
+
+  public class ReceiptUpdatedEventHandler : INotificationHandler<ReceiptUpdatedEvent>
+  {
+    private readonly FakturContext _context;
+
+    public ReceiptUpdatedEventHandler(FakturContext context)
+    {
+      _context = context;
+    }
+
+    public async Task Handle(ReceiptUpdatedEvent @event, CancellationToken cancellationToken)
+    {
+      ReceiptEntity receipt = await _context.Receipts
+        .SingleOrDefaultAsync(x => x.AggregateId == @event.AggregateId.Value, cancellationToken)
+        ?? throw new InvalidOperationException($"The receipt 'AggregateId={@event.AggregateId}' could not be found.");
+
+      receipt.Update(@event);
+
+      await _context.SaveChangesAsync(cancellationToken);
     }
   }
 }

@@ -77,6 +77,40 @@ public class ReceiptAggregate : AggregateRoot
     _number = @event.Number;
   }
 
+  public static ReceiptAggregate Import(StoreAggregate store, DateTime? issuedOn = null, NumberUnit? number = null, IEnumerable<ReceiptItemUnit>? items = null, ActorId actorId = default, ReceiptId? id = null)
+  {
+    if (issuedOn.HasValue)
+    {
+      new IssuedOnValidator(nameof(issuedOn)).ValidateAndThrow(issuedOn.Value);
+    }
+
+    ReceiptAggregate receipt = new((id ?? ReceiptId.NewId()).AggregateId);
+
+    items ??= [];
+    Dictionary<ushort, ReceiptItemUnit> receiptItems = new(capacity: items.Count());
+    ushort itemNumber = 0;
+    foreach (ReceiptItemUnit item in items)
+    {
+      receiptItems[itemNumber] = item;
+      itemNumber++;
+    }
+    receipt.Raise(new ReceiptImportedEvent(store.Id, issuedOn ?? DateTime.Now, number, receiptItems), actorId);
+
+    return receipt;
+  }
+  protected virtual void Apply(ReceiptImportedEvent @event)
+  {
+    _storeId = @event.StoreId;
+    _issuedOn = @event.IssuedOn;
+    _number = @event.Number;
+
+    _items.Clear();
+    foreach (KeyValuePair<ushort, ReceiptItemUnit> item in @event.Items)
+    {
+      _items[item.Key] = item.Value;
+    }
+  }
+
   public void Calculate(IEnumerable<TaxAggregate> taxes, ActorId actorId = default)
   {
     Dictionary<string, decimal> taxableAmounts = [];

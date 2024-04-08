@@ -37,18 +37,15 @@ internal class ImportReceiptCommandHandler : IRequestHandler<ImportReceiptComman
     StoreAggregate store = await _storeRepository.LoadAsync(payload.StoreId, cancellationToken)
       ?? throw new StoreNotFoundException(payload.StoreId, nameof(payload.StoreId));
 
-    NumberUnit? number = NumberUnit.TryCreate(payload.Number);
-    ReceiptAggregate receipt = new(store, payload.IssuedOn, number, command.ActorId);
-
+    IEnumerable<ReceiptItemUnit> items = [];
     if (!string.IsNullOrWhiteSpace(payload.Lines))
     {
       LocaleUnit? locale = LocaleUnit.TryCreate(payload.Locale);
-      ReceiptItemUnit[] items = (await _receiptParser.ExecuteAsync(payload.Lines, locale, cancellationToken)).ToArray();
-      for (ushort itemNumber = 0; itemNumber < items.Length; itemNumber++)
-      {
-        receipt.SetItem(itemNumber, items[itemNumber], command.ActorId); // TODO(fpion): optimize (2+N events)
-      }
+      items = await _receiptParser.ExecuteAsync(payload.Lines, locale, cancellationToken);
     }
+
+    NumberUnit? number = NumberUnit.TryCreate(payload.Number);
+    ReceiptAggregate receipt = ReceiptAggregate.Import(store, payload.IssuedOn, number, items, command.ActorId);
 
     IEnumerable<TaxAggregate> taxes = await _taxRepository.LoadAsync(cancellationToken);
     receipt.Calculate(taxes, command.ActorId);

@@ -56,6 +56,19 @@ internal class ReceiptItemEntity
     Update(product, @event);
   }
 
+  public ReceiptItemEntity(ReceiptEntity receipt, ProductEntity? product, ushort number, ReceiptItemUnit item, ReceiptImportedEvent @event)
+  {
+    Receipt = receipt;
+    ReceiptId = receipt.ReceiptId;
+
+    Number = number;
+
+    CreatedBy = @event.ActorId.Value;
+    CreatedOn = @event.OccurredOn.ToUniversalTime();
+
+    Update(product, item, @event);
+  }
+
   private ReceiptItemEntity()
   {
   }
@@ -83,19 +96,23 @@ internal class ReceiptItemEntity
 
   public void Update(ProductEntity? product, ReceiptItemChangedEvent @event)
   {
+    Update(product, @event.Item, @event);
+  }
+  private void Update(ProductEntity? product, ReceiptItemUnit item, DomainEvent @event)
+  {
     Product = product;
     ProductId = product?.ProductId;
 
-    Gtin = @event.Item.Gtin?.Value;
-    Sku = @event.Item.Sku?.Value;
-    Label = @event.Item.Label.Value;
-    Flags = @event.Item.Flags?.Value;
-    Quantity = @event.Item.Quantity;
-    UnitPrice = @event.Item.UnitPrice;
-    Price = @event.Item.Price;
+    Gtin = item.Gtin?.Value;
+    Sku = item.Sku?.Value;
+    Label = item.Label.Value;
+    Flags = item.Flags?.Value;
+    Quantity = item.Quantity;
+    UnitPrice = item.UnitPrice;
+    Price = item.Price;
 
-    DepartmentNumber = @event.Item.DepartmentNumber?.Value;
-    DepartmentName = @event.Item.Department?.DisplayName.Value;
+    DepartmentNumber = item.DepartmentNumber?.Value;
+    DepartmentName = item.Department?.DisplayName.Value;
 
     UpdatedBy = @event.ActorId.Value;
     UpdatedOn = @event.OccurredOn.ToUniversalTime();
