@@ -1,0 +1,5 @@
+{
+  "devDependencies": {
+    "@vitest/coverage-v8": "^1.4.0"
+  }
+}
