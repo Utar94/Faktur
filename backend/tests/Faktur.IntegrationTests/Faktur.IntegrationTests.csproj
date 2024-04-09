@@ -43,7 +43,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Faktur\Faktur.csproj" />
+    <ProjectReference Include="..\..\src\Faktur.EntityFrameworkCore.SqlServer\Faktur.EntityFrameworkCore.SqlServer.csproj" />
     <ProjectReference Include="..\Faktur.Tests\Faktur.Tests.csproj" />
   </ItemGroup>
   

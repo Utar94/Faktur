@@ -44,6 +44,14 @@ public class ReceiptController : ControllerBase
     return receipt == null ? NotFound() : Ok(receipt);
   }
 
+  [HttpPost("import")]
+  public async Task<ActionResult<Receipt>> ImportAsync([FromBody] ImportReceiptPayload payload, CancellationToken cancellationToken)
+  {
+    Receipt receipt = await _mediator.Send(new ImportReceiptCommand(payload), cancellationToken);
+    Uri location = HttpContext.BuildLocation("receipts/{id}", new Dictionary<string, string> { ["id"] = receipt.Id.ToString() });
+    return Created(location, receipt);
+  }
+
   [HttpGet("{id}")]
   public async Task<ActionResult<Receipt>> ReadAsync(Guid id, CancellationToken cancellationToken)
   {

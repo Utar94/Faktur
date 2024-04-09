@@ -38,12 +38,51 @@ internal class ReceiptEntity : AggregateEntity
     Number = @event.Number?.Value;
   }
 
+  public ReceiptEntity(StoreEntity store, ReceiptImportedEvent @event) : base(@event)
+  {
+    Store = store;
+    StoreId = store.StoreId;
+
+    IssuedOn = @event.IssuedOn.ToUniversalTime();
+    Number = @event.Number?.Value;
+
+    Dictionary<string, ProductEntity> products = new(capacity: 2 * store.Products.Count);
+    foreach (ProductEntity product in store.Products)
+    {
+      if (product.Article != null)
+      {
+        products[$"Gtin:{product.Article.GtinNormalized}"] = product;
+      }
+      if (product.SkuNormalized != null)
+      {
+        products[$"Sku:{product.SkuNormalized}"] = product;
+      }
+    }
+
+    foreach (KeyValuePair<ushort, ReceiptItemUnit> item in @event.Items)
+    {
+      ProductEntity? product = null;
+      if (item.Value.Gtin != null)
+      {
+        _ = products.TryGetValue($"Gtin:{item.Value.Gtin.NormalizedValue}", out product);
+      }
+      else if (item.Value.Sku != null)
+      {
+        _ = products.TryGetValue($"Sku:{item.Value.Sku.Value.ToUpper()}", out product);
+      }
+      Items.Add(new ReceiptItemEntity(this, product, item.Key, item.Value, @event));
+    }
+    ItemCount = Items.Count;
+  }
+
   private ReceiptEntity() : base()
   {
   }
 
   public void Calculate(ReceiptCalculatedEvent @event)
   {
+    Update(@event);
+
     SubTotal = @event.SubTotal;
     Total = @event.Total;
 
@@ -72,6 +111,8 @@ internal class ReceiptEntity : AggregateEntity
 
   public void Categorize(ReceiptCategorizedEvent @event)
   {
+    Update(@event);
+
     foreach (ReceiptItemEntity item in Items)
     {
       item.Categorize(@event);
