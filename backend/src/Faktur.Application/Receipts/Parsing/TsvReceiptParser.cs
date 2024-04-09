@@ -2,6 +2,8 @@
 using Faktur.Domain.Products;
 using Faktur.Domain.Receipts;
 using Faktur.Domain.Stores;
+using FluentValidation;
+using FluentValidation.Results;
 using Logitar;
 using Logitar.Identity.Domain.Shared;
 
@@ -19,7 +21,10 @@ internal class TsvReceiptParser : IReceiptParser
     DepartmentUnit? department = null;
 
     string[] lines = linesRaw.Trim().Remove("\r").Split('\n');
-    List<ReceiptItemUnit> items = new(capacity: lines.Length);
+
+    int capacity = lines.Length;
+    List<ReceiptItemUnit> items = new(capacity);
+    List<ValidationFailure> errors = new(capacity);
 
     for (int i = 0; i < lines.Length; i++)
     {
@@ -70,6 +75,11 @@ internal class TsvReceiptParser : IReceiptParser
         ReceiptItemUnit item = new(gtin, sku, label, flags, quantity, unitPrice, price, departmentNumber, department);
         items.Add(item);
       }
+    }
+
+    if (errors.Count > 0)
+    {
+      throw new ValidationException(errors);
     }
 
     return Task.FromResult<IEnumerable<ReceiptItemUnit>>(items);
