@@ -15,7 +15,7 @@ internal class TsvReceiptParser : IReceiptParser
   private const char DepartmentSeparator = '-';
   private const char ItemSeparator = '\t';
 
-  public Task<IEnumerable<ReceiptItemUnit>> ExecuteAsync(string linesRaw, LocaleUnit? locale, CancellationToken cancellationToken)
+  public Task<IEnumerable<ReceiptItemUnit>> ExecuteAsync(string linesRaw, string propertyName, LocaleUnit? locale, CancellationToken cancellationToken)
   {
     NumberUnit? departmentNumber = null;
     DepartmentUnit? department = null;
@@ -28,13 +28,19 @@ internal class TsvReceiptParser : IReceiptParser
 
     for (int i = 0; i < lines.Length; i++)
     {
+      string indexedName = $"{propertyName}[{i}]";
+
       string line = lines[i].Trim();
       if (line.StartsWith(DepartmentFlag))
       {
         string[] values = line[1..].Split(DepartmentSeparator);
         if (values.Length != 2)
         {
-          // TODO(fpion): validation?
+          errors.Add(new ValidationFailure(indexedName, $"The department line does not have a valid column count (Expected=2, Actual={values.Length}).", line)
+          {
+            ErrorCode = "InvalidDepartmentLineColumnCount"
+          });
+          continue;
         }
 
         departmentNumber = new(values[0]); // TODO(fpion): validation?
@@ -45,7 +51,11 @@ internal class TsvReceiptParser : IReceiptParser
         string[] values = line.Split(ItemSeparator);
         if (values.Length != 4 && values.Length != 6)
         {
-          // TODO(fpion): validation?
+          errors.Add(new ValidationFailure(indexedName, $"The item line does not have a valid column count (Expected=4 or 6, Actual={values.Length}).", line)
+          {
+            ErrorCode = "InvalidItemLineColumnCount"
+          });
+          continue;
         }
 
         GtinUnit? gtin = null;

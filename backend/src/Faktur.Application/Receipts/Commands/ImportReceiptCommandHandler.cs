@@ -58,7 +58,7 @@ internal class ImportReceiptCommandHandler : IRequestHandler<ImportReceiptComman
     if (!string.IsNullOrWhiteSpace(payload.Lines))
     {
       LocaleUnit? locale = LocaleUnit.TryCreate(payload.Locale);
-      items = await _receiptParser.ExecuteAsync(payload.Lines, locale, cancellationToken);
+      items = await _receiptParser.ExecuteAsync(payload.Lines, nameof(payload.Lines), locale, cancellationToken);
 
       int capacity = items.Count();
       List<ArticleAggregate> createdArticles = new(capacity);
