@@ -13,7 +13,7 @@ internal class TsvReceiptParser : IReceiptParser
   private const char DepartmentSeparator = '-';
   private const char ItemSeparator = '\t';
 
-  public async Task<IEnumerable<ReceiptItemUnit>> ExecuteAsync(string linesRaw, LocaleUnit? locale, CancellationToken cancellationToken)
+  public Task<IEnumerable<ReceiptItemUnit>> ExecuteAsync(string linesRaw, LocaleUnit? locale, CancellationToken cancellationToken)
   {
     NumberUnit? departmentNumber = null;
     DepartmentUnit? department = null;
@@ -72,10 +72,6 @@ internal class TsvReceiptParser : IReceiptParser
       }
     }
 
-    // TODO(fpion): create missing products
-    // TODO(fpion): create missing articles
-    await Task.Delay(millisecondsDelay: 1, cancellationToken); // TODO(fpion): remove
-
-    return items.AsReadOnly();
+    return Task.FromResult<IEnumerable<ReceiptItemUnit>>(items);
   }
 }

@@ -1,5 +1,6 @@
 ﻿using Faktur.Application.Stores;
 using Faktur.Contracts.Receipts;
+using Faktur.Domain.Articles;
 using Faktur.Domain.Products;
 using Faktur.Domain.Stores;
 using Faktur.Domain.Taxes;
@@ -15,6 +16,8 @@ namespace Faktur.Application.Receipts.Commands;
 [Trait(Traits.Category, Categories.Integration)]
 public class ImportReceiptCommandTests : IntegrationTests
 {
+  private readonly IArticleRepository _articleRepository;
+  private readonly IProductRepository _productRepository;
   private readonly IStoreRepository _storeRepository;
   private readonly ITaxRepository _taxRepository;
 
@@ -23,8 +26,15 @@ public class ImportReceiptCommandTests : IntegrationTests
 
   private readonly StoreAggregate _store;
 
+  private readonly ArticleAggregate _ananas;
+  private readonly ArticleAggregate _bananas;
+
+  private readonly ProductAggregate _ananasProduct;
+
   public ImportReceiptCommandTests() : base()
   {
+    _articleRepository = ServiceProvider.GetRequiredService<IArticleRepository>();
+    _productRepository = ServiceProvider.GetRequiredService<IProductRepository>();
     _storeRepository = ServiceProvider.GetRequiredService<IStoreRepository>();
     _taxRepository = ServiceProvider.GetRequiredService<ITaxRepository>();
 
@@ -40,6 +50,26 @@ public class ImportReceiptCommandTests : IntegrationTests
     _qst.Update(ActorId);
 
     _store = new(new DisplayNameUnit("Maxi Drummondville"), ActorId);
+
+    _ananas = new(new DisplayNameUnit("ANANAS"), ActorId)
+    {
+      Gtin = new GtinUnit("4029")
+    };
+    _ananas.Update(ActorId);
+    _bananas = new(new DisplayNameUnit("BANANES"), ActorId)
+    {
+      Gtin = new GtinUnit("4011")
+    };
+    _bananas.Update(ActorId);
+
+    _ananasProduct = new(_store, _ananas, ActorId)
+    {
+      Sku = new SkuUnit("ananas"),
+      DisplayName = _ananas.DisplayName,
+      Flags = new FlagsUnit("MRJ"),
+      UnitPrice = 1.67m
+    };
+    _ananasProduct.Update(ActorId);
   }
 
   public override async Task InitializeAsync()
@@ -48,6 +78,8 @@ public class ImportReceiptCommandTests : IntegrationTests
 
     await _taxRepository.SaveAsync([_gst, _qst]);
     await _storeRepository.SaveAsync(_store);
+    await _articleRepository.SaveAsync([_ananas, _bananas]);
+    await _productRepository.SaveAsync(_ananasProduct);
   }
 
   [Fact(DisplayName = "It should import a new empty receipt.")]
@@ -65,10 +97,10 @@ public class ImportReceiptCommandTests : IntegrationTests
     Receipt receipt = await Mediator.Send(command);
 
     Assert.NotEqual(Guid.Empty, receipt.Id);
-    Assert.Equal(1, receipt.Version);
+    Assert.Equal(2, receipt.Version);
     Assert.Equal(Actor, receipt.CreatedBy);
     Assert.Equal(Actor, receipt.UpdatedBy);
-    Assert.Equal(receipt.CreatedOn, receipt.UpdatedOn);
+    Assert.True(receipt.CreatedOn < receipt.UpdatedOn);
 
     Assert.Equal(payload.IssuedOn?.ToUniversalTime(), receipt.IssuedOn);
     Assert.Null(receipt.Number);
@@ -91,10 +123,10 @@ public class ImportReceiptCommandTests : IntegrationTests
   public async Task It_should_import_a_new_receipt()
   {
     StringBuilder lines = new();
-    lines.AppendLine(string.Join('\t', "06041004754", "LAY'S CHIPS", "FPMRJ", "3.75")); // TODO(fpion): nothing exists
+    lines.AppendLine(string.Join('\t', "lays-salt-vinegar-chips", "LAY'S CHIPS", "FPMRJ", "3.75"));
     lines.AppendLine("*27-FRUITS ET LEGUMES");
-    lines.AppendLine(string.Join('\t', "bananas", "BANANES", "MRJ", "1.150", "1.52", "1.75")); // TODO(fpion): article & product exist
-    lines.AppendLine(string.Join('\t', "4029", "ANANAS", "MRJ", "1.67")); // TODO(fpion): only article exists
+    lines.AppendLine(string.Join('\t', "0000004011", "BANANES", "MRJ", "1.150", "1.52", "1.75"));
+    lines.AppendLine(string.Join('\t', "ananas", "ANANAS", "MRJ", "1.67"));
 
     ImportReceiptPayload payload = new()
     {
@@ -108,23 +140,23 @@ public class ImportReceiptCommandTests : IntegrationTests
     Receipt receipt = await Mediator.Send(command);
 
     Assert.NotEqual(Guid.Empty, receipt.Id);
-    Assert.Equal(1, receipt.Version);
+    Assert.Equal(2, receipt.Version);
     Assert.Equal(Actor, receipt.CreatedBy);
     Assert.Equal(Actor, receipt.UpdatedBy);
-    Assert.Equal(receipt.CreatedOn, receipt.UpdatedOn);
+    Assert.True(receipt.CreatedOn < receipt.UpdatedOn);
 
     Assert.Equal(payload.IssuedOn?.ToUniversalTime(), receipt.IssuedOn);
     Assert.Equal(payload.Number, receipt.Number);
 
     Assert.Equal(3, receipt.ItemCount);
-    Assert.Contains(receipt.Items, i => i.Number == 0 && i.Gtin == "06041004754" && i.Sku == null && i.Label == "LAY'S CHIPS" && i.Flags == "FPMRJ"
+    Assert.Contains(receipt.Items, i => i.Number == 0 && i.Gtin == null && i.Sku == "lays-salt-vinegar-chips" && i.Label == "LAY'S CHIPS" && i.Flags == "FPMRJ"
       && i.Quantity == 1.0d && i.UnitPrice == 3.75m && i.Price == 3.75m && i.Department == null && i.Category == null
       && i.CreatedBy.Equals(Actor) && i.UpdatedBy.Equals(Actor) && i.CreatedOn == i.UpdatedOn);
     DepartmentSummary department = new("27", "FRUITS ET LEGUMES");
-    Assert.Contains(receipt.Items, i => i.Number == 1 && i.Gtin == null && i.Sku == "bananas" && i.Label == "BANANES" && i.Flags == "MRJ"
+    Assert.Contains(receipt.Items, i => i.Number == 1 && i.Gtin == "0000004011" && i.Sku == null && i.Label == "BANANES" && i.Flags == "MRJ"
       && i.Quantity == 1.150d && i.UnitPrice == 1.52m && i.Price == 1.75m && i.Department == department && i.Category == null
       && i.CreatedBy.Equals(Actor) && i.UpdatedBy.Equals(Actor) && i.CreatedOn == i.UpdatedOn);
-    Assert.Contains(receipt.Items, i => i.Number == 2 && i.Gtin == "4029" && i.Sku == null && i.Label == "ANANAS" && i.Flags == "MRJ"
+    Assert.Contains(receipt.Items, i => i.Number == 2 && i.Gtin == null && i.Sku == "ananas" && i.Label == "ANANAS" && i.Flags == "MRJ"
       && i.Quantity == 1.0d && i.UnitPrice == 1.67m && i.Price == 1.67m && i.Department == department && i.Category == null
       && i.CreatedBy.Equals(Actor) && i.UpdatedBy.Equals(Actor) && i.CreatedOn == i.UpdatedOn);
 
@@ -141,11 +173,49 @@ public class ImportReceiptCommandTests : IntegrationTests
     Assert.Equal(_store.Id.ToGuid(), receipt.Store.Id);
 
     ReceiptEntity? entity = await FakturContext.Receipts.AsNoTracking()
+      .Include(x => x.Items)
       .Include(x => x.Store).ThenInclude(x => x!.Departments)
       .SingleOrDefaultAsync(x => x.AggregateId == new AggregateId(receipt.Id).Value);
     Assert.NotNull(entity);
+    Assert.All(entity.Items, i => Assert.NotNull(i.ProductId));
     Assert.NotNull(entity.Store);
     Assert.Contains(entity.Store.Departments, d => d.NumberNormalized == department.Number && d.DisplayName == department.DisplayName);
+
+    ProductEntity? bananasProduct = await FakturContext.Products.AsNoTracking()
+      .Include(x => x.Article)
+      .Include(x => x.Department)
+      .Include(x => x.Store)
+      .SingleOrDefaultAsync(x => x.Store!.AggregateId == _store.Id.Value && x.Article!.GtinNormalized == 4011);
+    Assert.NotNull(bananasProduct);
+    Assert.NotNull(bananasProduct.Article);
+    Assert.Equal(_bananas.Id.Value, bananasProduct.Article.AggregateId);
+    Assert.NotNull(bananasProduct.Department);
+    Assert.Equal(department.Number, bananasProduct.Department.Number);
+    Assert.Null(bananasProduct.Sku);
+    Assert.Null(bananasProduct.SkuNormalized);
+    Assert.Equal("BANANES", bananasProduct.DisplayName);
+    Assert.Null(bananasProduct.Description);
+    Assert.Equal("MRJ", bananasProduct.Flags);
+    Assert.Equal(1.52m, bananasProduct.UnitPrice);
+    Assert.Null(bananasProduct.UnitType);
+
+    ProductEntity? chipsProduct = await FakturContext.Products.AsNoTracking()
+      .Include(x => x.Article)
+      .Include(x => x.Store)
+      .SingleOrDefaultAsync(x => x.Store!.AggregateId == _store.Id.Value && x.SkuNormalized == "LAYS-SALT-VINEGAR-CHIPS");
+    Assert.NotNull(chipsProduct);
+    Assert.NotNull(chipsProduct.Article);
+    Assert.Null(chipsProduct.Article.Gtin);
+    Assert.Null(chipsProduct.Article.GtinNormalized);
+    Assert.Equal("LAY'S CHIPS", chipsProduct.Article.DisplayName);
+    Assert.Null(chipsProduct.Article.Description);
+    Assert.Null(chipsProduct.DepartmentId);
+    Assert.Equal("lays-salt-vinegar-chips", chipsProduct.Sku);
+    Assert.Equal("LAY'S CHIPS", chipsProduct.DisplayName);
+    Assert.Null(chipsProduct.Description);
+    Assert.Equal("FPMRJ", chipsProduct.Flags);
+    Assert.Equal(3.75m, chipsProduct.UnitPrice);
+    Assert.Null(chipsProduct.UnitType);
   }
 
   [Fact(DisplayName = "It should throw StoreNotFoundException when the store could not be found.")]

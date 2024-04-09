@@ -81,6 +81,8 @@ internal class ReceiptEntity : AggregateEntity
 
   public void Calculate(ReceiptCalculatedEvent @event)
   {
+    Update(@event);
+
     SubTotal = @event.SubTotal;
     Total = @event.Total;
 
@@ -109,6 +111,8 @@ internal class ReceiptEntity : AggregateEntity
 
   public void Categorize(ReceiptCategorizedEvent @event)
   {
+    Update(@event);
+
     foreach (ReceiptItemEntity item in Items)
     {
       item.Categorize(@event);
