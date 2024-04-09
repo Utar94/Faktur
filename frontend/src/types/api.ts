@@ -8,6 +8,11 @@ export type ApiResult<T> = {
   status: number;
 };
 
+export type ApiVersion = {
+  title: string;
+  version: string;
+};
+
 export type Error = {
   code: string;
   message: string;

@@ -11,6 +11,7 @@ const router = createRouter({
       name: "Home",
       path: "/",
       component: HomeView,
+      meta: { isPublic: true },
     },
     // Account
     {
