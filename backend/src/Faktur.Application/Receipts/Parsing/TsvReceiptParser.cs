@@ -17,15 +17,14 @@ internal class TsvReceiptParser : IReceiptParser
 
   public Task<IEnumerable<ReceiptItemUnit>> ExecuteAsync(string linesRaw, string propertyName, LocaleUnit? locale, CancellationToken cancellationToken)
   {
-    NumberUnit? departmentNumber = null;
-    DepartmentUnit? department = null;
-
     string[] lines = linesRaw.Trim().Remove("\r").Split('\n');
 
     int capacity = lines.Length;
     List<ReceiptItemUnit> items = new(capacity);
     List<ValidationFailure> errors = new(capacity);
 
+    NumberUnit? departmentNumber = null;
+    DepartmentUnit? department = null;
     for (int i = 0; i < lines.Length; i++)
     {
       string indexedName = $"{propertyName}[{i}]";
@@ -84,11 +83,24 @@ internal class TsvReceiptParser : IReceiptParser
         decimal unitPrice = price;
         if (values.Length == 6)
         {
-          error = TryParseQuantity(values[3], $"{indexedName}.Quantity", locale, out quantity)
-            ?? TryParsePrice(values[4], $"{indexedName}.UnitPrice", locale, out unitPrice);
+          bool hasError = false;
+
+          error = TryParseQuantity(values[3], $"{indexedName}.Quantity", locale, out quantity);
           if (error != null)
           {
             errors.Add(error);
+            hasError = true;
+          }
+
+          error = TryParsePrice(values[4], $"{indexedName}.UnitPrice", locale, out unitPrice);
+          if (error != null)
+          {
+            errors.Add(error);
+            hasError = true;
+          }
+
+          if (hasError)
+          {
             continue;
           }
         }
