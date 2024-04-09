@@ -25,6 +25,7 @@ const router = createRouter({
       name: "SignIn",
       path: "/sign-in",
       component: () => import("./views/account/SignInView.vue"),
+      meta: { isPublic: true },
     },
     {
       name: "SignOut",
