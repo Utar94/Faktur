@@ -19,9 +19,8 @@ internal class TsvReceiptParser : IReceiptParser
   {
     string[] lines = linesRaw.Trim().Remove("\r").Split('\n');
 
-    int capacity = lines.Length;
-    List<ReceiptItemUnit> items = new(capacity);
-    List<ValidationFailure> errors = new(capacity);
+    List<ReceiptItemUnit> items = new(capacity: lines.Length);
+    List<ValidationFailure> errors = [];
 
     NumberUnit? departmentNumber = null;
     DepartmentUnit? department = null;
@@ -30,20 +29,18 @@ internal class TsvReceiptParser : IReceiptParser
       string indexedName = $"{propertyName}[{i}]";
 
       string line = lines[i].Trim();
-      if (line.StartsWith(DepartmentFlag))
+      if (IsDepartmentLine(line))
       {
-        string[] values = line[1..].Split(DepartmentSeparator);
-        if (values.Length != 2)
+        IEnumerable<ValidationFailure> departmentErrors = TryParseDepartment(line, propertyName, out ParsedDepartment? parsedDepartment);
+        if (departmentErrors.Any())
         {
-          errors.Add(new ValidationFailure(indexedName, $"The department line does not have a valid column count (Expected=2, Actual={values.Length}).", line)
-          {
-            ErrorCode = "InvalidDepartmentLineColumnCount"
-          });
-          continue;
+          errors.AddRange(departmentErrors);
         }
-
-        departmentNumber = new(values[0]); // TODO(fpion): validation?
-        department = new(new DisplayNameUnit(values[1])); // TODO(fpion): validation?
+        else if (parsedDepartment != null)
+        {
+          departmentNumber = parsedDepartment.Number;
+          department = parsedDepartment.Department;
+        }
       }
       else if (!string.IsNullOrEmpty(line))
       {
@@ -116,6 +113,57 @@ internal class TsvReceiptParser : IReceiptParser
     }
 
     return Task.FromResult<IEnumerable<ReceiptItemUnit>>(items);
+  }
+  private static bool IsDepartmentLine(string line) => line.StartsWith(DepartmentFlag);
+
+  private static IEnumerable<ValidationFailure> TryParseDepartment(string line, string propertyName, out ParsedDepartment? parsedDepartment)
+  {
+    parsedDepartment = null;
+    List<ValidationFailure> errors = [];
+
+    string[] values = line[1..].Split(DepartmentSeparator);
+    if (values.Length == 2)
+    {
+      NumberUnit? number = null;
+      try
+      {
+        number = new(values[0]);
+      }
+      catch (ValidationException exception)
+      {
+        errors.AddRange(exception.Errors.Select(error => new ValidationFailure($"{propertyName}.DepartmentNumber", error.ErrorMessage, error.AttemptedValue)
+        {
+          ErrorCode = error.ErrorCode
+        }));
+      }
+
+      DisplayNameUnit? displayName = null;
+      try
+      {
+        displayName = new(values[1]);
+      }
+      catch (ValidationException exception)
+      {
+        errors.AddRange(exception.Errors.Select(error => new ValidationFailure($"{propertyName}.DepartmentName", error.ErrorMessage, error.AttemptedValue)
+        {
+          ErrorCode = error.ErrorCode
+        }));
+      }
+
+      if (number != null && displayName != null)
+      {
+        parsedDepartment = new(number, new DepartmentUnit(displayName));
+      }
+    }
+    else
+    {
+      errors.Add(new ValidationFailure(propertyName, $"The department line does not have a valid column count (Expected=2, Actual={values.Length}).", line)
+      {
+        ErrorCode = "InvalidDepartmentLineColumnCount"
+      });
+    }
+
+    return errors;
   }
 
   private static ValidationFailure? TryParseQuantity(string value, string propertyName, LocaleUnit? locale, out double quantity)
