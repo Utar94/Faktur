@@ -39,6 +39,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Faktur.EntityFrameworkCore.PostgreSQL\Faktur.EntityFrameworkCore.PostgreSQL.csproj" />
     <ProjectReference Include="..\Faktur.EntityFrameworkCore.SqlServer\Faktur.EntityFrameworkCore.SqlServer.csproj" />
   </ItemGroup>
 

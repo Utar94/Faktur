@@ -10,6 +10,14 @@ services:
     ports:
       - 1439:1433
 
+  faktur_postgres:
+    image: postgres
+    container_name: Faktur_postgres
+    environment:
+      POSTGRES_PASSWORD: DMLK38Et6GBgJeWZ
+    ports:
+      - 5439:5432
+
   faktur_portal:
     image: fpion/portal:v4.0.1
     container_name: Faktur_portal
@@ -19,6 +27,7 @@ services:
     environment:
       EnableBasicAuthentication: "true"
       EnableMigrations: "true"
+      POSTGRESQLCONNSTR_Portal: "User ID=postgres;Password=DMLK38Et6GBgJeWZ;Host=faktur_postgres;Port=5432;Database=Portal;"
       SQLCONNSTR_Portal: "Server=faktur_mssql;Database=Portal;User Id=SA;Password=vs6J2jUWZTFnacMt;Persist Security Info=False;Encrypt=False;"
     ports:
       - 8889:8080
@@ -35,6 +44,7 @@ services:
     environment:
       ASPNETCORE_Environment: Development
       Portal:BaseUrl: http://faktur_portal:8080
+      POSTGRESQLCONNSTR_Portal: "User ID=postgres;Password=DMLK38Et6GBgJeWZ;Host=faktur_postgres;Port=5432;Database=Faktur;"
       SQLCONNSTR_Faktur: "Server=faktur_mssql;Database=Faktur;User Id=SA;Password=vs6J2jUWZTFnacMt;Persist Security Info=False;Encrypt=False;"
     ports:
       - 8089:8080

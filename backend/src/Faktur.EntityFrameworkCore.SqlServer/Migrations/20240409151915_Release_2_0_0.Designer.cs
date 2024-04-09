@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Faktur.EntityFrameworkCore.SqlServer.Migrations
 {
     [DbContext(typeof(FakturContext))]
-    [Migration("20240326222150_CreateTaxTable")]
-    partial class CreateTaxTable
+    [Migration("20240409151915_Release_2_0_0")]
+    partial class Release_2_0_0
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -371,9 +371,9 @@ namespace Faktur.EntityFrameworkCore.SqlServer.Migrations
                     b.HasIndex("StoreId", "ArticleId")
                         .IsUnique();
 
-                    b.HasIndex("StoreId", "Sku")
+                    b.HasIndex("StoreId", "SkuNormalized")
                         .IsUnique()
-                        .HasFilter("[Sku] IS NOT NULL");
+                        .HasFilter("[SkuNormalized] IS NOT NULL");
 
                     b.ToTable("Products", (string)null);
                 });
@@ -483,6 +483,10 @@ namespace Faktur.EntityFrameworkCore.SqlServer.Migrations
                     b.Property<int>("Number")
                         .HasColumnType("int");
 
+                    b.Property<string>("Category")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
                     b.Property<string>("CreatedBy")
                         .IsRequired()
                         .HasMaxLength(255)
@@ -544,6 +548,8 @@ namespace Faktur.EntityFrameworkCore.SqlServer.Migrations
                         .HasColumnType("datetime2");
 
                     b.HasKey("ReceiptId", "Number");
+
+                    b.HasIndex("Category");
 
                     b.HasIndex("CreatedBy");
 
@@ -621,6 +627,37 @@ namespace Faktur.EntityFrameworkCore.SqlServer.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("StoreId"));
 
+                    b.Property<string>("AddressCountry")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("AddressFormatted")
+                        .HasMaxLength(1279)
+                        .HasColumnType("nvarchar(1279)");
+
+                    b.Property<string>("AddressLocality")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("AddressPostalCode")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("AddressRegion")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("AddressStreet")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("AddressVerifiedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<DateTime?>("AddressVerifiedOn")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("AggregateId")
                         .IsRequired()
                         .HasMaxLength(255)
@@ -648,9 +685,52 @@ namespace Faktur.EntityFrameworkCore.SqlServer.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
+                    b.Property<string>("EmailAddress")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("EmailVerifiedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<DateTime?>("EmailVerifiedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsAddressVerified")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsEmailVerified")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsPhoneVerified")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Number")
                         .HasMaxLength(16)
                         .HasColumnType("nvarchar(16)");
+
+                    b.Property<string>("PhoneCountryCode")
+                        .HasMaxLength(2)
+                        .HasColumnType("nvarchar(2)");
+
+                    b.Property<string>("PhoneE164Formatted")
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)");
+
+                    b.Property<string>("PhoneExtension")
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("PhoneVerifiedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<DateTime?>("PhoneVerifiedOn")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("UpdatedBy")
                         .IsRequired()
