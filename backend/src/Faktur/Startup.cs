@@ -1,5 +1,6 @@
 ﻿using Faktur.Authentication;
 using Faktur.Constants;
+using Faktur.EntityFrameworkCore.PostgreSQL;
 using Faktur.EntityFrameworkCore.Relational;
 using Faktur.EntityFrameworkCore.SqlServer;
 using Faktur.Extensions;
@@ -80,6 +81,11 @@ internal class Startup : StartupBase
     DatabaseProvider databaseProvider = _configuration.GetValue<DatabaseProvider?>("DatabaseProvider") ?? DatabaseProvider.EntityFrameworkCoreSqlServer;
     switch (databaseProvider)
     {
+      case DatabaseProvider.EntityFrameworkCorePostgreSQL:
+        services.AddFakturWithEntityFrameworkCorePostgreSQL(_configuration);
+        healthChecks.AddDbContextCheck<EventContext>();
+        healthChecks.AddDbContextCheck<FakturContext>();
+        break;
       case DatabaseProvider.EntityFrameworkCoreSqlServer:
         services.AddFakturWithEntityFrameworkCoreSqlServer(_configuration);
         healthChecks.AddDbContextCheck<EventContext>();

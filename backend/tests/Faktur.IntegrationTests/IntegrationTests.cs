@@ -1,10 +1,12 @@
 ﻿using Bogus;
+using Faktur.EntityFrameworkCore.PostgreSQL;
 using Faktur.EntityFrameworkCore.Relational;
 using Faktur.EntityFrameworkCore.Relational.Entities;
 using Faktur.EntityFrameworkCore.SqlServer;
 using Faktur.Infrastructure;
 using Faktur.Infrastructure.Commands;
 using Logitar.Data;
+using Logitar.Data.PostgreSQL;
 using Logitar.Data.SqlServer;
 using Logitar.EventSourcing;
 using Logitar.EventSourcing.EntityFrameworkCore.Relational;
@@ -49,6 +51,10 @@ public abstract class IntegrationTests : IAsyncLifetime
     _databaseProvider = configuration.GetValue<DatabaseProvider?>("DatabaseProvider") ?? DatabaseProvider.EntityFrameworkCoreSqlServer;
     switch (_databaseProvider)
     {
+      case DatabaseProvider.EntityFrameworkCorePostgreSQL:
+        connectionString = configuration.GetValue<string>("POSTGRESQLCONNSTR_Portal")?.Replace("{Database}", GetType().Name) ?? string.Empty;
+        services.AddFakturWithEntityFrameworkCorePostgreSQL(connectionString);
+        break;
       case DatabaseProvider.EntityFrameworkCoreSqlServer:
         connectionString = configuration.GetValue<string>("SQLCONNSTR_Faktur")?.Replace("{Database}", GetType().Name) ?? string.Empty;
         services.AddFakturWithEntityFrameworkCoreSqlServer(connectionString);
@@ -85,7 +91,7 @@ public abstract class IntegrationTests : IAsyncLifetime
   }
   private IDeleteBuilder CreateDeleteBuilder(TableId table) => _databaseProvider switch
   {
-    //DatabaseProvider.EntityFrameworkCorePostgreSQL => PostgresDeleteBuilder.From(table), // ISSUE #77 (https://github.com/Utar94/Faktur/issues/77): implement PostgreSQL persistence
+    DatabaseProvider.EntityFrameworkCorePostgreSQL => PostgresDeleteBuilder.From(table),
     DatabaseProvider.EntityFrameworkCoreSqlServer => SqlServerDeleteBuilder.From(table),
     _ => throw new DatabaseProviderNotSupportedException(_databaseProvider),
   };

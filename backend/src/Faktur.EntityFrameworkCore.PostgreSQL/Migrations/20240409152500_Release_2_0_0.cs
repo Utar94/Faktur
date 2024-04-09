@@ -1,8 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace Faktur.EntityFrameworkCore.SqlServer.Migrations
+namespace Faktur.EntityFrameworkCore.PostgreSQL.Migrations
 {
     /// <inheritdoc />
     public partial class Release_2_0_0 : Migration
@@ -14,14 +15,14 @@ namespace Faktur.EntityFrameworkCore.SqlServer.Migrations
                 name: "Actors",
                 columns: table => new
                 {
-                    ActorId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Id = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    Type = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
-                    DisplayName = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    EmailAddress = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
-                    PictureUrl = table.Column<string>(type: "nvarchar(2048)", maxLength: 2048, nullable: true)
+                    ActorId = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Id = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    Type = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
+                    DisplayName = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    EmailAddress = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
+                    PictureUrl = table.Column<string>(type: "character varying(2048)", maxLength: 2048, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -32,18 +33,18 @@ namespace Faktur.EntityFrameworkCore.SqlServer.Migrations
                 name: "Articles",
                 columns: table => new
                 {
-                    ArticleId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Gtin = table.Column<string>(type: "nvarchar(14)", maxLength: 14, nullable: true),
+                    ArticleId = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Gtin = table.Column<string>(type: "character varying(14)", maxLength: 14, nullable: true),
                     GtinNormalized = table.Column<long>(type: "bigint", nullable: true),
-                    DisplayName = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    AggregateId = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    DisplayName = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    AggregateId = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
                     Version = table.Column<long>(type: "bigint", nullable: false),
-                    CreatedBy = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedBy = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    UpdatedOn = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    CreatedBy = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    CreatedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedBy = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    UpdatedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -54,16 +55,16 @@ namespace Faktur.EntityFrameworkCore.SqlServer.Migrations
                 name: "Banners",
                 columns: table => new
                 {
-                    BannerId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    DisplayName = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    AggregateId = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    BannerId = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    DisplayName = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    AggregateId = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
                     Version = table.Column<long>(type: "bigint", nullable: false),
-                    CreatedBy = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedBy = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    UpdatedOn = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    CreatedBy = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    CreatedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedBy = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    UpdatedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -71,22 +72,64 @@ namespace Faktur.EntityFrameworkCore.SqlServer.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Taxes",
+                columns: table => new
+                {
+                    TaxId = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Code = table.Column<string>(type: "character varying(4)", maxLength: 4, nullable: false),
+                    CodeNormalized = table.Column<string>(type: "character varying(4)", maxLength: 4, nullable: false),
+                    Rate = table.Column<double>(type: "double precision", nullable: false),
+                    Flags = table.Column<string>(type: "character varying(10)", maxLength: 10, nullable: true),
+                    AggregateId = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    Version = table.Column<long>(type: "bigint", nullable: false),
+                    CreatedBy = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    CreatedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedBy = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    UpdatedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Taxes", x => x.TaxId);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Stores",
                 columns: table => new
                 {
-                    StoreId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    BannerId = table.Column<int>(type: "int", nullable: true),
-                    Number = table.Column<string>(type: "nvarchar(16)", maxLength: 16, nullable: true),
-                    DisplayName = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    DepartmentCount = table.Column<int>(type: "int", nullable: false),
-                    AggregateId = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    StoreId = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    BannerId = table.Column<int>(type: "integer", nullable: true),
+                    Number = table.Column<string>(type: "character varying(16)", maxLength: 16, nullable: true),
+                    DisplayName = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    AddressStreet = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
+                    AddressLocality = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
+                    AddressPostalCode = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
+                    AddressRegion = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
+                    AddressCountry = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
+                    AddressFormatted = table.Column<string>(type: "character varying(1279)", maxLength: 1279, nullable: true),
+                    AddressVerifiedBy = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
+                    AddressVerifiedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    IsAddressVerified = table.Column<bool>(type: "boolean", nullable: false),
+                    EmailAddress = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
+                    EmailVerifiedBy = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
+                    EmailVerifiedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    IsEmailVerified = table.Column<bool>(type: "boolean", nullable: false),
+                    PhoneCountryCode = table.Column<string>(type: "character varying(2)", maxLength: 2, nullable: true),
+                    PhoneNumber = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: true),
+                    PhoneExtension = table.Column<string>(type: "character varying(10)", maxLength: 10, nullable: true),
+                    PhoneE164Formatted = table.Column<string>(type: "character varying(40)", maxLength: 40, nullable: true),
+                    PhoneVerifiedBy = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
+                    PhoneVerifiedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    IsPhoneVerified = table.Column<bool>(type: "boolean", nullable: false),
+                    DepartmentCount = table.Column<int>(type: "integer", nullable: false),
+                    AggregateId = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
                     Version = table.Column<long>(type: "bigint", nullable: false),
-                    CreatedBy = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedBy = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    UpdatedOn = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    CreatedBy = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    CreatedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedBy = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    UpdatedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -103,17 +146,17 @@ namespace Faktur.EntityFrameworkCore.SqlServer.Migrations
                 name: "Departments",
                 columns: table => new
                 {
-                    DepartmentId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    StoreId = table.Column<int>(type: "int", nullable: false),
-                    Number = table.Column<string>(type: "nvarchar(16)", maxLength: 16, nullable: false),
-                    NumberNormalized = table.Column<string>(type: "nvarchar(16)", maxLength: 16, nullable: false),
-                    DisplayName = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    CreatedBy = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedBy = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    UpdatedOn = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    DepartmentId = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    StoreId = table.Column<int>(type: "integer", nullable: false),
+                    Number = table.Column<string>(type: "character varying(16)", maxLength: 16, nullable: false),
+                    NumberNormalized = table.Column<string>(type: "character varying(16)", maxLength: 16, nullable: false),
+                    DisplayName = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    CreatedBy = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    CreatedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedBy = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    UpdatedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -130,23 +173,23 @@ namespace Faktur.EntityFrameworkCore.SqlServer.Migrations
                 name: "Receipts",
                 columns: table => new
                 {
-                    ReceiptId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    StoreId = table.Column<int>(type: "int", nullable: false),
-                    IssuedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Number = table.Column<string>(type: "nvarchar(16)", maxLength: 16, nullable: true),
-                    ItemCount = table.Column<int>(type: "int", nullable: false),
+                    ReceiptId = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    StoreId = table.Column<int>(type: "integer", nullable: false),
+                    IssuedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    Number = table.Column<string>(type: "character varying(16)", maxLength: 16, nullable: true),
+                    ItemCount = table.Column<int>(type: "integer", nullable: false),
                     SubTotal = table.Column<decimal>(type: "money", nullable: false),
                     Total = table.Column<decimal>(type: "money", nullable: false),
-                    HasBeenProcessed = table.Column<bool>(type: "bit", nullable: false),
-                    ProcessedBy = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
-                    ProcessedOn = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    AggregateId = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    HasBeenProcessed = table.Column<bool>(type: "boolean", nullable: false),
+                    ProcessedBy = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
+                    ProcessedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    AggregateId = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
                     Version = table.Column<long>(type: "bigint", nullable: false),
-                    CreatedBy = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedBy = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    UpdatedOn = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    CreatedBy = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    CreatedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedBy = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    UpdatedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -163,24 +206,24 @@ namespace Faktur.EntityFrameworkCore.SqlServer.Migrations
                 name: "Products",
                 columns: table => new
                 {
-                    ProductId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    StoreId = table.Column<int>(type: "int", nullable: false),
-                    ArticleId = table.Column<int>(type: "int", nullable: false),
-                    DepartmentId = table.Column<int>(type: "int", nullable: true),
-                    Sku = table.Column<string>(type: "nvarchar(32)", maxLength: 32, nullable: true),
-                    SkuNormalized = table.Column<string>(type: "nvarchar(32)", maxLength: 32, nullable: true),
-                    DisplayName = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Flags = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: true),
+                    ProductId = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    StoreId = table.Column<int>(type: "integer", nullable: false),
+                    ArticleId = table.Column<int>(type: "integer", nullable: false),
+                    DepartmentId = table.Column<int>(type: "integer", nullable: true),
+                    Sku = table.Column<string>(type: "character varying(32)", maxLength: 32, nullable: true),
+                    SkuNormalized = table.Column<string>(type: "character varying(32)", maxLength: 32, nullable: true),
+                    DisplayName = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    Flags = table.Column<string>(type: "character varying(10)", maxLength: 10, nullable: true),
                     UnitPrice = table.Column<decimal>(type: "money", nullable: true),
-                    UnitType = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
-                    AggregateId = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    UnitType = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
+                    AggregateId = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
                     Version = table.Column<long>(type: "bigint", nullable: false),
-                    CreatedBy = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedBy = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    UpdatedOn = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    CreatedBy = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    CreatedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedBy = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    UpdatedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -209,9 +252,9 @@ namespace Faktur.EntityFrameworkCore.SqlServer.Migrations
                 name: "ReceiptTaxes",
                 columns: table => new
                 {
-                    ReceiptId = table.Column<int>(type: "int", nullable: false),
-                    Code = table.Column<string>(type: "nvarchar(4)", maxLength: 4, nullable: false),
-                    Rate = table.Column<double>(type: "float", nullable: false),
+                    ReceiptId = table.Column<int>(type: "integer", nullable: false),
+                    Code = table.Column<string>(type: "character varying(4)", maxLength: 4, nullable: false),
+                    Rate = table.Column<double>(type: "double precision", nullable: false),
                     TaxableAmount = table.Column<decimal>(type: "money", nullable: false),
                     Amount = table.Column<decimal>(type: "money", nullable: false)
                 },
@@ -230,24 +273,25 @@ namespace Faktur.EntityFrameworkCore.SqlServer.Migrations
                 name: "ReceiptItems",
                 columns: table => new
                 {
-                    ReceiptId = table.Column<int>(type: "int", nullable: false),
-                    Number = table.Column<int>(type: "int", nullable: false),
-                    ProductId = table.Column<int>(type: "int", nullable: true),
-                    Gtin = table.Column<string>(type: "nvarchar(14)", maxLength: 14, nullable: true),
+                    ReceiptId = table.Column<int>(type: "integer", nullable: false),
+                    Number = table.Column<int>(type: "integer", nullable: false),
+                    ProductId = table.Column<int>(type: "integer", nullable: true),
+                    Gtin = table.Column<string>(type: "character varying(14)", maxLength: 14, nullable: true),
                     GtinNormalized = table.Column<long>(type: "bigint", nullable: true),
-                    Sku = table.Column<string>(type: "nvarchar(32)", maxLength: 32, nullable: true),
-                    SkuNormalized = table.Column<string>(type: "nvarchar(32)", maxLength: 32, nullable: true),
-                    Label = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    Flags = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: true),
-                    Quantity = table.Column<double>(type: "float", nullable: false),
+                    Sku = table.Column<string>(type: "character varying(32)", maxLength: 32, nullable: true),
+                    SkuNormalized = table.Column<string>(type: "character varying(32)", maxLength: 32, nullable: true),
+                    Label = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    Flags = table.Column<string>(type: "character varying(10)", maxLength: 10, nullable: true),
+                    Quantity = table.Column<double>(type: "double precision", nullable: false),
                     UnitPrice = table.Column<decimal>(type: "money", nullable: false),
                     Price = table.Column<decimal>(type: "money", nullable: false),
-                    DepartmentNumber = table.Column<string>(type: "nvarchar(16)", maxLength: 16, nullable: true),
-                    DepartmentName = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
-                    CreatedBy = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedBy = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    UpdatedOn = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    DepartmentNumber = table.Column<string>(type: "character varying(16)", maxLength: 16, nullable: true),
+                    DepartmentName = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
+                    Category = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
+                    CreatedBy = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    CreatedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedBy = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    UpdatedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -322,8 +366,7 @@ namespace Faktur.EntityFrameworkCore.SqlServer.Migrations
                 name: "IX_Articles_GtinNormalized",
                 table: "Articles",
                 column: "GtinNormalized",
-                unique: true,
-                filter: "[GtinNormalized] IS NOT NULL");
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Articles_UpdatedBy",
@@ -460,11 +503,10 @@ namespace Faktur.EntityFrameworkCore.SqlServer.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Products_StoreId_Sku",
+                name: "IX_Products_StoreId_SkuNormalized",
                 table: "Products",
-                columns: new[] { "StoreId", "Sku" },
-                unique: true,
-                filter: "[Sku] IS NOT NULL");
+                columns: new[] { "StoreId", "SkuNormalized" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Products_UnitPrice",
@@ -490,6 +532,11 @@ namespace Faktur.EntityFrameworkCore.SqlServer.Migrations
                 name: "IX_Products_Version",
                 table: "Products",
                 column: "Version");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ReceiptItems_Category",
+                table: "ReceiptItems",
+                column: "Category");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ReceiptItems_CreatedBy",
@@ -722,6 +769,58 @@ namespace Faktur.EntityFrameworkCore.SqlServer.Migrations
                 name: "IX_Stores_Version",
                 table: "Stores",
                 column: "Version");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Taxes_AggregateId",
+                table: "Taxes",
+                column: "AggregateId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Taxes_Code",
+                table: "Taxes",
+                column: "Code");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Taxes_CodeNormalized",
+                table: "Taxes",
+                column: "CodeNormalized",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Taxes_CreatedBy",
+                table: "Taxes",
+                column: "CreatedBy");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Taxes_CreatedOn",
+                table: "Taxes",
+                column: "CreatedOn");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Taxes_Flags",
+                table: "Taxes",
+                column: "Flags");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Taxes_Rate",
+                table: "Taxes",
+                column: "Rate");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Taxes_UpdatedBy",
+                table: "Taxes",
+                column: "UpdatedBy");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Taxes_UpdatedOn",
+                table: "Taxes",
+                column: "UpdatedOn");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Taxes_Version",
+                table: "Taxes",
+                column: "Version");
         }
 
         /// <inheritdoc />
@@ -735,6 +834,9 @@ namespace Faktur.EntityFrameworkCore.SqlServer.Migrations
 
             migrationBuilder.DropTable(
                 name: "ReceiptTaxes");
+
+            migrationBuilder.DropTable(
+                name: "Taxes");
 
             migrationBuilder.DropTable(
                 name: "Products");
