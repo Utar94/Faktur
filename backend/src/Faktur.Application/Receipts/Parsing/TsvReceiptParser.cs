@@ -72,14 +72,25 @@ internal class TsvReceiptParser : IReceiptParser
 
         DisplayNameUnit label = new(values[1]); // TODO(fpion): validation?
         FlagsUnit? flags = FlagsUnit.TryCreate(values[2]); // TODO(fpion): validation?
-        decimal price = decimal.Parse(values[^1]); // TODO(fpion): validation?
+
+        ValidationFailure? error = TryParsePrice(values[^1], $"{indexedName}.Price", locale, out decimal price);
+        if (error != null)
+        {
+          errors.Add(error);
+          continue;
+        }
 
         double quantity = 1.0d;
         decimal unitPrice = price;
         if (values.Length == 6)
         {
-          quantity = double.Parse(values[3]); // TODO(fpion): validation?
-          unitPrice = decimal.Parse(values[4]); // TODO(fpion): validation?
+          error = TryParseQuantity(values[3], $"{indexedName}.Quantity", locale, out quantity)
+            ?? TryParsePrice(values[4], $"{indexedName}.UnitPrice", locale, out unitPrice);
+          if (error != null)
+          {
+            errors.Add(error);
+            continue;
+          }
         }
 
         ReceiptItemUnit item = new(gtin, sku, label, flags, quantity, unitPrice, price, departmentNumber, department);
@@ -93,5 +104,31 @@ internal class TsvReceiptParser : IReceiptParser
     }
 
     return Task.FromResult<IEnumerable<ReceiptItemUnit>>(items);
+  }
+
+  private static ValidationFailure? TryParseQuantity(string value, string propertyName, LocaleUnit? locale, out double quantity)
+  {
+    if (double.TryParse(value, NumberStyles.Any, locale?.Culture, out quantity) && quantity > 0d)
+    {
+      return null;
+    }
+
+    return new ValidationFailure(propertyName, "The specified value is not a valid quantity.", value)
+    {
+      ErrorCode = "InvalidQuantity"
+    };
+  }
+
+  private static ValidationFailure? TryParsePrice(string value, string propertyName, LocaleUnit? locale, out decimal price)
+  {
+    if (decimal.TryParse(value, NumberStyles.Currency, locale?.Culture, out price) && price > 0.00m)
+    {
+      return null;
+    }
+
+    return new ValidationFailure(propertyName, "The specified value is not a valid price.", value)
+    {
+      ErrorCode = "InvalidPrice"
+    };
   }
 }
