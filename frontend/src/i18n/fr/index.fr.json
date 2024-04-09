@@ -1,0 +1,9 @@
+{
+  "brand": "Faktur",
+  "loading": "Chargement...",
+  "notFound": {
+    "help": "La page demandée n’a pu être trouvée.",
+    "lead": "Page introuvable",
+    "link": "Aller à l’accueil"
+  }
+}

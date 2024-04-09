@@ -3,6 +3,8 @@ using Faktur.Contracts.Errors;
 using FluentValidation;
 using FluentValidation.Results;
 using Logitar;
+using Logitar.Identity.Domain.Shared;
+using Logitar.Net.Http;
 using Logitar.Portal.Contracts;
 using Logitar.Portal.Contracts.Errors;
 using Microsoft.AspNetCore.Mvc;
@@ -12,6 +14,12 @@ namespace Faktur.Filters;
 
 internal class ExceptionHandling : ExceptionFilterAttribute
 {
+  private static readonly JsonSerializerOptions _serializerOptions = new();
+  static ExceptionHandling()
+  {
+    _serializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+  }
+
   public override void OnException(ExceptionContext context)
   {
     if (context.Exception is ValidationException validation)
@@ -42,9 +50,45 @@ internal class ExceptionHandling : ExceptionFilterAttribute
       context.Result = new BadRequestObjectResult(error);
       context.ExceptionHandled = true;
     }
-    else
+    else if (context.Exception is HttpFailureException<JsonApiResult> httpFailure)
+    {
+      if (IsInvalidCredentials(httpFailure))
+      {
+        Error error = new("InvalidCredentials", InvalidCredentialsException.ErrorMessage);
+        context.Result = new BadRequestObjectResult(error);
+        context.ExceptionHandled = true;
+      }
+    }
+
+    if (!context.ExceptionHandled)
     {
       base.OnException(context);
     }
+  }
+
+  private static readonly HashSet<string> _invalidCredentialCodes = new(
+  [
+    "ApiKeyIsExpired",
+    "ApiKeyNotFound",
+    "IncorrectApiKeySecret",
+    "IncorrectOneTimePasswordPassword",
+    "IncorrectSessionSecret",
+    "IncorrectUserPassword",
+    "InvalidApiKey",
+    "InvalidRefreshToken",
+    "MaximumAttemptsReached",
+    "OneTimePasswordAlreadyUsed",
+    "OneTimePasswordIsExpired",
+    "SessionIsNotActive",
+    "SessionIsNotPersistent",
+    "SessionNotFound",
+    "UserHasNoPassword",
+    "UserIsDisabled",
+    "UserNotFound"
+  ]);
+  private static bool IsInvalidCredentials(HttpFailureException<JsonApiResult> exception)
+  {
+    Error? error = exception.Result.Deserialize<Error>(_serializerOptions);
+    return error != null && _invalidCredentialCodes.Contains(error.Code);
   }
 }
