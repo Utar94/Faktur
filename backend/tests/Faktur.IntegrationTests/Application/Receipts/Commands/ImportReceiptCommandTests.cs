@@ -244,4 +244,43 @@ public class ImportReceiptCommandTests : IntegrationTests
     Assert.Equal("LocaleValidator", error.ErrorCode);
     Assert.Equal("Locale", error.PropertyName);
   }
+
+  [Fact(DisplayName = "It should throw ValidationException when the receipt lines are not valid.")]
+  public async Task It_should_throw_ValidationException_when_the_receipt_lines_are_not_valid()
+  {
+    string[] lines =
+    [
+      "*27-FRUITS-ET-LEGUMES",
+      "*27 FRUITS ET LEGUMES-",
+      "06038385904\tPC POULET BBQ\tFPMRJ\t9.99\t9.99",
+      "-6038385904\t\tFPMRJFPMRJFPMRJ\t9.99,",
+      "ce28722d-ef39-4085-bc6a-3cff3672c69e\tPOIVRONS VERTS\tMRJ\t0.225 kg\t  -7.69  \t  1,73  "
+    ];
+
+    ImportReceiptPayload payload = new()
+    {
+      StoreId = _store.Id.ToGuid(),
+      Lines = string.Join(Environment.NewLine, lines)
+    };
+    ImportReceiptCommand command = new(payload);
+    var exception = await Assert.ThrowsAsync<FluentValidation.ValidationException>(async () => await Mediator.Send(command));
+    Assert.Equal(11, exception.Errors.Count());
+
+    Assert.Contains(exception.Errors, e => e.ErrorCode == "InvalidDepartmentLineColumnCount" && e.PropertyName == "Lines[0]" && (string?)e.AttemptedValue == lines[0]
+      && e.ErrorMessage == "The department line does not have a valid column count (Expected=2, Actual=4).");
+    Assert.Contains(exception.Errors, e => e.ErrorCode == "MaximumLengthValidator" && e.PropertyName == "Lines[1].DepartmentNumber" && (string?)e.AttemptedValue == "27 FRUITS ET LEGUMES");
+    Assert.Contains(exception.Errors, e => e.ErrorCode == "NotEmptyValidator" && e.PropertyName == "Lines[1].DepartmentName" && (string?)e.AttemptedValue == "");
+    Assert.Contains(exception.Errors, e => e.ErrorCode == "InvalidItemLineColumnCount" && e.PropertyName == "Lines[2]" && (string?)e.AttemptedValue == lines[2]
+      && e.ErrorMessage == "The item line does not have a valid column count (Expected=4 or 6, Actual=5).");
+    Assert.Contains(exception.Errors, e => e.ErrorCode == "AllowedCharactersValidator" && e.PropertyName == "Lines[3].Gtin" && (string?)e.AttemptedValue == "-6038385904");
+    Assert.Contains(exception.Errors, e => e.ErrorCode == "NotEmptyValidator" && e.PropertyName == "Lines[3].Label" && (string?)e.AttemptedValue == "");
+    Assert.Contains(exception.Errors, e => e.ErrorCode == "MaximumLengthValidator" && e.PropertyName == "Lines[3].Flags" && (string?)e.AttemptedValue == "FPMRJFPMRJFPMRJ");
+    Assert.Contains(exception.Errors, e => e.ErrorCode == "InvalidPrice" && e.PropertyName == "Lines[3].Price" && (string?)e.AttemptedValue == "9.99,"
+      && e.ErrorMessage == "The specified value is not a valid price.");
+    Assert.Contains(exception.Errors, e => e.ErrorCode == "MaximumLengthValidator" && e.PropertyName == "Lines[4].Sku" && (string?)e.AttemptedValue == "ce28722d-ef39-4085-bc6a-3cff3672c69e");
+    Assert.Contains(exception.Errors, e => e.ErrorCode == "InvalidQuantity" && e.PropertyName == "Lines[4].Quantity" && (string?)e.AttemptedValue == "0.225 kg"
+      && e.ErrorMessage == "The specified value is not a valid quantity.");
+    Assert.Contains(exception.Errors, e => e.ErrorCode == "InvalidPrice" && e.PropertyName == "Lines[4].UnitPrice" && (string?)e.AttemptedValue == "-7.69"
+      && e.ErrorMessage == "The specified value is not a valid price.");
+  }
 }

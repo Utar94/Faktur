@@ -179,7 +179,7 @@ internal class TsvReceiptParser : IReceiptParser
         }));
       }
 
-      string priceString = values[^1];
+      string priceString = values[^1].Trim();
       if (!decimal.TryParse(priceString, NumberStyles.Currency, locale?.Culture, out decimal price) || price <= 0.00m)
       {
         errors.Add(new ValidationFailure($"{propertyName}.Price", "The specified value is not a valid price.", priceString)
@@ -192,7 +192,7 @@ internal class TsvReceiptParser : IReceiptParser
       decimal unitPrice = price;
       if (values.Length == 6)
       {
-        string quantityString = values[3];
+        string quantityString = values[3].Trim();
         if (!double.TryParse(quantityString, NumberStyles.Any, locale?.Culture, out quantity) || quantity <= 0.0d)
         {
           errors.Add(new ValidationFailure($"{propertyName}.Quantity", "The specified value is not a valid quantity.", quantityString)
@@ -201,7 +201,7 @@ internal class TsvReceiptParser : IReceiptParser
           });
         }
 
-        string unitPriceString = values[4];
+        string unitPriceString = values[4].Trim();
         if (!decimal.TryParse(unitPriceString, NumberStyles.Currency, locale?.Culture, out unitPrice) || unitPrice <= 0.00m)
         {
           errors.Add(new ValidationFailure($"{propertyName}.UnitPrice", "The specified value is not a valid price.", unitPriceString)
