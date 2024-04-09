@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 
-import { combineURL, isAbsoluteURL, isDigit, isLetter, isLetterOrDigit, parseBoolean, shortify, slugify, unaccent } from "../stringUtils";
+import { combineURL, isAbsoluteURL, isDigit, isLetter, isLetterOrDigit, shortify, slugify, unaccent } from "../stringUtils";
 
 describe("stringUtils.combineURL", () => {
   it.concurrent("should combine the segments with a slash (/)", () => {
@@ -90,28 +90,6 @@ describe("stringUtils.isLetterOrDigit", () => {
     expect(isLetterOrDigit("D")).toBe(true);
     expect(isLetterOrDigit("1")).toBe(true);
     expect(isLetterOrDigit("3")).toBe(true);
-  });
-});
-
-describe("stringUtils.parseBoolean", () => {
-  it.concurrent("should return false when the string is a valid false string", () => {
-    expect(parseBoolean("false")).toBe(false);
-    expect(parseBoolean("FALSE")).toBe(false);
-    expect(parseBoolean("  FaLSe  ")).toBe(false);
-  });
-
-  it.concurrent("should return false when the string is not a valid boolean string", () => {
-    expect(parseBoolean(undefined)).toBe(false);
-    expect(parseBoolean("")).toBe(false);
-    expect(parseBoolean("   ")).toBe(false);
-    expect(parseBoolean("123")).toBe(false);
-    expect(parseBoolean("test")).toBe(false);
-  });
-
-  it.concurrent("should return true when the string is a valid true string", () => {
-    expect(parseBoolean("true")).toBe(true);
-    expect(parseBoolean("TRUE")).toBe(true);
-    expect(parseBoolean("  TRue  ")).toBe(true);
   });
 });
 

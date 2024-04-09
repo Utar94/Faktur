@@ -1,4 +1,4 @@
-import type { ApiError, ApiResult, Error as ErrorT, GraphQLRequest, GraphQLResponse } from "@/types/api";
+import type { ApiError, ApiResult, ApiVersion, Error as ErrorT, GraphQLRequest, GraphQLResponse } from "@/types/api";
 import { combineURL } from "@/helpers/stringUtils";
 
 const apiBaseUrl: string = import.meta.env.VITE_APP_API_BASE_URL ?? "";
@@ -41,6 +41,10 @@ export async function _delete<TResult>(url: string): Promise<ApiResult<TResult>>
 
 export async function get<TResult>(url: string): Promise<ApiResult<TResult>> {
   return await execute("GET", url);
+}
+
+export async function getVersion(): Promise<ApiVersion> {
+  return (await get<ApiVersion>("/")).data;
 }
 
 export async function patch<TData, TResult>(url: string, data?: TData): Promise<ApiResult<TResult>> {

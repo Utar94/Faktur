@@ -23,10 +23,6 @@ export function isLetterOrDigit(c: string): boolean {
   return isDigit(c) || isLetter(c);
 }
 
-export function parseBoolean(s?: string): boolean {
-  return s?.trim().toLowerCase() === "true";
-}
-
 export function shortify(s: string, length: number): string {
   return s.length > length ? s.substring(0, length - 1) + "…" : s;
 }

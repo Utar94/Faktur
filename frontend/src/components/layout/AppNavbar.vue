@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { RouterLink } from "vue-router";
-import { TarAvatar } from "logitar-vue3-ui";
+import { TarAvatar, parsingUtils } from "logitar-vue3-ui";
 import { computed, watchEffect } from "vue";
 // import { setLocale } from "@vee-validate/i18n"; // TODO(fpion): validation
 import { useI18n } from "vue-i18n";
@@ -9,7 +9,7 @@ import locales from "@/resources/locales.json";
 import type { CurrentUser } from "@/types/account";
 import type { Hyperlink } from "@/types/components";
 import type { Locale } from "@/types/i18n";
-import { combineURL, parseBoolean } from "@/helpers/stringUtils";
+import { combineURL } from "@/helpers/stringUtils";
 import { orderBy } from "@/helpers/arrayUtils";
 import { useAccountStore } from "@/stores/account";
 import { useI18nStore } from "@/stores/i18n";
@@ -19,8 +19,8 @@ const apiBaseUrl: string = import.meta.env.VITE_APP_API_BASE_URL ?? "";
 const environment = import.meta.env.MODE.toLowerCase();
 const i18n = useI18nStore();
 const { availableLocales, locale, t } = useI18n();
-const isGraphQLEnabled: boolean = parseBoolean(import.meta.env.VITE_APP_ENABLE_GRAPHQL);
-const isOpenApiEnabled: boolean = parseBoolean(import.meta.env.VITE_APP_ENABLE_OPENAPI);
+const isGraphQLEnabled: boolean = parsingUtils.parseBoolean(import.meta.env.VITE_APP_ENABLE_GRAPHQL) ?? false;
+const isOpenApiEnabled: boolean = parsingUtils.parseBoolean(import.meta.env.VITE_APP_ENABLE_OPENAPI) ?? false;
 
 const otherLocales = computed<Locale[]>(() => {
   const otherLocales = new Set<string>(availableLocales.filter((item) => item !== locale.value));

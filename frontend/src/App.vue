@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { RouterView, useRoute, useRouter } from "vue-router";
+import { TarToaster } from "logitar-vue3-ui";
 import { provide } from "vue";
 
+import AppFooter from "./components/layout/AppFooter.vue";
 import AppNavbar from "./components/layout/AppNavbar.vue";
 import type { ApiError, GraphQLError } from "./types/api";
 import { handleErrorKey } from "./inject/App";
@@ -33,6 +35,6 @@ provide(handleErrorKey, handleError);
 <template>
   <AppNavbar />
   <RouterView />
-  <!-- <AppFooter /> -->
-  <!-- <ToastContainer ref="containerRef" /> -->
+  <AppFooter />
+  <TarToaster />
 </template>
