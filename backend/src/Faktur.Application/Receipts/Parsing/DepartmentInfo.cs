@@ -2,4 +2,4 @@
 
 namespace Faktur.Application.Receipts.Parsing;
 
-internal record ParsedDepartment(NumberUnit Number, DepartmentUnit Department);
+internal record DepartmentInfo(NumberUnit Number, DepartmentUnit Department);

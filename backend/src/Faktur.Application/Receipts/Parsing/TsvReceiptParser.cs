@@ -22,8 +22,7 @@ internal class TsvReceiptParser : IReceiptParser
     List<ReceiptItemUnit> items = new(capacity: lines.Length);
     List<ValidationFailure> errors = [];
 
-    NumberUnit? departmentNumber = null;
-    DepartmentUnit? department = null;
+    DepartmentInfo? department = null;
     for (int i = 0; i < lines.Length; i++)
     {
       string indexedName = $"{propertyName}[{i}]";
@@ -31,79 +30,27 @@ internal class TsvReceiptParser : IReceiptParser
       string line = lines[i].Trim();
       if (IsDepartmentLine(line))
       {
-        IEnumerable<ValidationFailure> departmentErrors = TryParseDepartment(line, propertyName, out ParsedDepartment? parsedDepartment);
+        IEnumerable<ValidationFailure> departmentErrors = TryParseDepartment(line, indexedName, out DepartmentInfo? parsedDepartment);
         if (departmentErrors.Any())
         {
           errors.AddRange(departmentErrors);
         }
         else if (parsedDepartment != null)
         {
-          departmentNumber = parsedDepartment.Number;
-          department = parsedDepartment.Department;
+          department = parsedDepartment;
         }
       }
       else if (!string.IsNullOrEmpty(line))
       {
-        string[] values = line.Split(ItemSeparator);
-        if (values.Length != 4 && values.Length != 6)
+        IEnumerable<ValidationFailure> itemErrors = TryParseItem(line, indexedName, locale, department, out ReceiptItemUnit? item);
+        if (itemErrors.Any())
         {
-          errors.Add(new ValidationFailure(indexedName, $"The item line does not have a valid column count (Expected=4 or 6, Actual={values.Length}).", line)
-          {
-            ErrorCode = "InvalidItemLineColumnCount"
-          });
-          continue;
+          errors.AddRange(itemErrors);
         }
-
-        GtinUnit? gtin = null;
-        SkuUnit? sku = null;
-        string gtinOrSku = values[0].Trim();
-        if (long.TryParse(gtinOrSku, out _))
+        else if (item != null)
         {
-          gtin = new(gtinOrSku); // TODO(fpion): validation?
+          items.Add(item);
         }
-        else
-        {
-          sku = new(gtinOrSku); // TODO(fpion): validation?
-        }
-
-        DisplayNameUnit label = new(values[1]); // TODO(fpion): validation?
-        FlagsUnit? flags = FlagsUnit.TryCreate(values[2]); // TODO(fpion): validation?
-
-        ValidationFailure? error = TryParsePrice(values[^1], $"{indexedName}.Price", locale, out decimal price);
-        if (error != null)
-        {
-          errors.Add(error);
-          continue;
-        }
-
-        double quantity = 1.0d;
-        decimal unitPrice = price;
-        if (values.Length == 6)
-        {
-          bool hasError = false;
-
-          error = TryParseQuantity(values[3], $"{indexedName}.Quantity", locale, out quantity);
-          if (error != null)
-          {
-            errors.Add(error);
-            hasError = true;
-          }
-
-          error = TryParsePrice(values[4], $"{indexedName}.UnitPrice", locale, out unitPrice);
-          if (error != null)
-          {
-            errors.Add(error);
-            hasError = true;
-          }
-
-          if (hasError)
-          {
-            continue;
-          }
-        }
-
-        ReceiptItemUnit item = new(gtin, sku, label, flags, quantity, unitPrice, price, departmentNumber, department);
-        items.Add(item);
       }
     }
 
@@ -116,7 +63,7 @@ internal class TsvReceiptParser : IReceiptParser
   }
   private static bool IsDepartmentLine(string line) => line.StartsWith(DepartmentFlag);
 
-  private static IEnumerable<ValidationFailure> TryParseDepartment(string line, string propertyName, out ParsedDepartment? parsedDepartment)
+  private static IEnumerable<ValidationFailure> TryParseDepartment(string line, string propertyName, out DepartmentInfo? parsedDepartment)
   {
     parsedDepartment = null;
     List<ValidationFailure> errors = [];
@@ -166,29 +113,117 @@ internal class TsvReceiptParser : IReceiptParser
     return errors;
   }
 
-  private static ValidationFailure? TryParseQuantity(string value, string propertyName, LocaleUnit? locale, out double quantity)
+  private static IEnumerable<ValidationFailure> TryParseItem(string line, string propertyName, LocaleUnit? locale, DepartmentInfo? department, out ReceiptItemUnit? item)
   {
-    if (double.TryParse(value, NumberStyles.Any, locale?.Culture, out quantity) && quantity > 0d)
+    item = null;
+    List<ValidationFailure> errors = [];
+
+    string[] values = line.Split(ItemSeparator);
+    if (values.Length == 4 || values.Length == 6)
     {
-      return null;
+      GtinUnit? gtin = null;
+      SkuUnit? sku = null;
+      string gtinOrSku = values[0].Trim();
+      if (long.TryParse(gtinOrSku, out _))
+      {
+        try
+        {
+          gtin = new(gtinOrSku);
+        }
+        catch (ValidationException exception)
+        {
+          errors.AddRange(exception.Errors.Select(error => new ValidationFailure($"{propertyName}.Gtin", error.ErrorMessage, error.AttemptedValue)
+          {
+            ErrorCode = error.ErrorCode
+          }));
+        }
+      }
+      else
+      {
+        try
+        {
+          sku = new(gtinOrSku);
+        }
+        catch (ValidationException exception)
+        {
+          errors.AddRange(exception.Errors.Select(error => new ValidationFailure($"{propertyName}.Sku", error.ErrorMessage, error.AttemptedValue)
+          {
+            ErrorCode = error.ErrorCode
+          }));
+        }
+      }
+
+      DisplayNameUnit? label = null;
+      try
+      {
+        label = new(values[1]);
+      }
+      catch (ValidationException exception)
+      {
+        errors.AddRange(exception.Errors.Select(error => new ValidationFailure($"{propertyName}.Label", error.ErrorMessage, error.AttemptedValue)
+        {
+          ErrorCode = error.ErrorCode
+        }));
+      }
+
+      FlagsUnit? flags = null;
+      try
+      {
+        flags = FlagsUnit.TryCreate(values[2]);
+      }
+      catch (ValidationException exception)
+      {
+        errors.AddRange(exception.Errors.Select(error => new ValidationFailure($"{propertyName}.Flags", error.ErrorMessage, error.AttemptedValue)
+        {
+          ErrorCode = error.ErrorCode
+        }));
+      }
+
+      string priceString = values[^1];
+      if (!decimal.TryParse(priceString, NumberStyles.Currency, locale?.Culture, out decimal price) || price <= 0.00m)
+      {
+        errors.Add(new ValidationFailure($"{propertyName}.Price", "The specified value is not a valid price.", priceString)
+        {
+          ErrorCode = "InvalidPrice"
+        });
+      }
+
+      double quantity = 1.0d;
+      decimal unitPrice = price;
+      if (values.Length == 6)
+      {
+        string quantityString = values[3];
+        if (!double.TryParse(quantityString, NumberStyles.Any, locale?.Culture, out quantity) || quantity <= 0.0d)
+        {
+          errors.Add(new ValidationFailure($"{propertyName}.Quantity", "The specified value is not a valid quantity.", quantityString)
+          {
+            ErrorCode = "InvalidQuantity"
+          });
+        }
+
+        string unitPriceString = values[4];
+        if (!decimal.TryParse(unitPriceString, NumberStyles.Currency, locale?.Culture, out unitPrice) || unitPrice <= 0.00m)
+        {
+          errors.Add(new ValidationFailure($"{propertyName}.UnitPrice", "The specified value is not a valid price.", unitPriceString)
+          {
+            ErrorCode = "InvalidPrice"
+          });
+        }
+      }
+
+      if (errors.Count == 0 && (gtin != null || sku != null) && label != null)
+      {
+        item = new(gtin, sku, label, flags, quantity, unitPrice, price, department?.Number, department?.Department);
+      }
+    }
+    else
+    {
+      errors.Add(new ValidationFailure(propertyName, $"The item line does not have a valid column count (Expected=4 or 6, Actual={values.Length}).", line)
+      {
+        ErrorCode = "InvalidItemLineColumnCount"
+      });
     }
 
-    return new ValidationFailure(propertyName, "The specified value is not a valid quantity.", value)
-    {
-      ErrorCode = "InvalidQuantity"
-    };
-  }
-
-  private static ValidationFailure? TryParsePrice(string value, string propertyName, LocaleUnit? locale, out decimal price)
-  {
-    if (decimal.TryParse(value, NumberStyles.Currency, locale?.Culture, out price) && price > 0.00m)
-    {
-      return null;
-    }
-
-    return new ValidationFailure(propertyName, "The specified value is not a valid price.", value)
-    {
-      ErrorCode = "InvalidPrice"
-    };
+    return errors;
   }
 }

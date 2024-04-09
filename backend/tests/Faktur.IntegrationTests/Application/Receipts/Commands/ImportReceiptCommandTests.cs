@@ -133,7 +133,7 @@ public class ImportReceiptCommandTests : IntegrationTests
       StoreId = _store.Id.ToGuid(),
       IssuedOn = DateTime.Now.AddDays(-1),
       Number = "103599",
-      Locale = "fr",
+      Locale = "en",
       Lines = lines.ToString()
     };
     ImportReceiptCommand command = new(payload);
