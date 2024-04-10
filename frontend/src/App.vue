@@ -19,14 +19,14 @@ function handleError(e: unknown): void {
     const errors = data as GraphQLError[];
     if (status === 401 || (typeof errors?.some === "function" && errors.some((error) => error.extensions?.code === "ACCESS_DENIED") === true)) {
       account.signOut();
-      // toasts.warning("toasts.warning.signedOut"); // TODO(fpion): toast
+      // toasts.warning("toasts.warning.signedOut"); // TODO(fpion): toasts
       router.push({ name: "SignIn", query: { redirect: route.fullPath } });
     } else {
       console.error(e);
-      // toasts.error(); // TODO(fpion): toast
+      // toasts.error(); // TODO(fpion): toasts
     }
   } else {
-    // toasts.error(); // TODO(fpion): toast
+    // toasts.error(); // TODO(fpion): toasts
   }
 }
 provide(handleErrorKey, handleError);

@@ -1,4 +1,10 @@
 {
+  "created": "La bannière a été créée.",
+  "delete": {
+    "confirm": "Désirez-vous vraiment supprimer la bannière suivante ?",
+    "success": "La bannière a été supprimée.",
+    "title": "Supprimer la bannière"
+  },
   "empty": "Cette liste est vide.",
   "sort": {
     "options": {
@@ -9,5 +15,6 @@
   "title": {
     "list": "Bannières",
     "new": "Nouvelle bannière"
-  }
+  },
+  "updated": "La bannière a été enregistrée."
 }

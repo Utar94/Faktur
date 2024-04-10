@@ -20,5 +20,15 @@ export async function replaceBanner(id: string, payload: ReplaceBannerPayload, v
 }
 
 export async function searchBanners(payload: SearchBannersPayload): Promise<SearchResults<Banner>> {
-  return (await get<SearchResults<Banner>>("/banners")).data; // TODO(fpion): payload
+  const params: string[] = [];
+  payload.ids.forEach((id) => params.push(`ids=${id}`));
+  if (payload.search.terms.length) {
+    payload.search.terms.forEach((term) => params.push(`search_terms=${term.value}`));
+    params.push(`search_operator=${payload.search.operator}`);
+  }
+  payload.sort.forEach((sort) => params.push(`sort=${sort.isDescending ? `DESC.${sort.field}` : sort.field}`));
+  params.push(`skip=${payload.skip}`);
+  params.push(`limit=${payload.limit}`);
+  const query: string | undefined = params.length ? `?${params.join("&")}` : undefined;
+  return (await get<SearchResults<Banner>>(`/banners${query}`)).data;
 }

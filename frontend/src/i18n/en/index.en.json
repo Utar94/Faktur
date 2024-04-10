@@ -1,6 +1,8 @@
 {
   "actions": {
     "back": "Go back",
+    "cancel": "Cancel",
+    "close": "Close",
     "create": "Create",
     "delete": "Delete",
     "refresh": "Refresh",
@@ -9,7 +11,10 @@
   "brand": "Faktur",
   "by": "By",
   "copyright": "© Logitar {version} {year}.",
-  "count": "Count",
+  "count": {
+    "ariaLabel": "The number of elements to display.",
+    "label": "Count"
+  },
   "description": "Description",
   "displayName": "Display Name",
   "loading": "Loading...",
@@ -18,8 +23,25 @@
     "lead": "Page Not Found",
     "link": "Go to Home"
   },
+  "pagination": {
+    "first": "First",
+    "label": "Pagination",
+    "last": "Last",
+    "next": "Next",
+    "previous": "Previous"
+  },
   "search": "Search",
-  "sort": "Sort",
+  "sort": {
+    "isDescending": {
+      "ariaLabel": "The elements will be sorted in descending order.",
+      "label": "Is descending"
+    },
+    "select": {
+      "ariaLabel": "The property used to sort the elements.",
+      "label": "Sort",
+      "placeholder": "Select a sort"
+    }
+  },
   "status": {
     "createdOn": "Created on {date} by",
     "updatedOn": "Last updated on {date} by"

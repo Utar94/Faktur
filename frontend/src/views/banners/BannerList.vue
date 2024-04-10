@@ -1,9 +1,14 @@
 <script setup lang="ts">
-import { TarButton, TarInput, TarPagination, TarSelect, type SelectOption } from "logitar-vue3-ui";
+import { TarButton, type SelectOption } from "logitar-vue3-ui";
 import { computed, inject, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRoute, useRouter } from "vue-router";
 
+import AppPagination from "@/components/shared/AppPagination.vue";
+import CountSelect from "@/components/shared/CountSelect.vue";
+import DeleteModal from "@/components/shared/DeleteModal.vue";
+import SearchInput from "@/components/shared/SearchInput.vue";
+import SortSelect from "@/components/shared/SortSelect.vue";
 import StatusBlock from "@/components/shared/StatusBlock.vue";
 import type { Banner, BannerSort, SearchBannersPayload } from "@/types/banners";
 import { deleteBanner, searchBanners } from "@/api/banners";
@@ -141,35 +146,16 @@ watch(
       <RouterLink :to="{ name: 'CreateBanner' }" class="btn btn-success ms-1"><font-awesome-icon icon="fas fa-plus" /> {{ t("actions.create") }}</RouterLink>
     </div>
     <div class="row">
-      <TarInput
+      <SearchInput class="col-lg-4" :model-value="search" @update:model-value="setQuery('search', $event ?? '')" />
+      <SortSelect
         class="col-lg-4"
-        floating
-        id="search"
-        :label="t('search')"
-        :model-value="search"
-        :placeholder="t('search')"
-        type="search"
-        @update:model-value="setQuery('search', $event)"
-      />
-      <TarSelect
-        class="col-lg-4"
-        floating
-        id="sort"
-        :label="t('sort')"
+        :descending="isDescending"
         :model-value="sort"
         :options="sortOptions"
-        @update:model-value="setQuery('sort', $event)"
+        @descending="setQuery('isDescending', $event.toString())"
+        @update:model-value="setQuery('sort', $event ?? '')"
       />
-      <!-- :descending="isDescending" :placeholder="t('sort')" @descending="setQuery('isDescending', $event)" -->
-      <TarSelect
-        class="col-lg-4"
-        floating
-        id="count"
-        :label="t('count')"
-        :model-value="count"
-        :options="[{ text: '10' }, { text: '25' }, { text: '50' }, { text: '100' }]"
-        @update:model-value="setQuery('count', $event)"
-      />
+      <CountSelect class="col-lg-4" :model-value="count" @update:model-value="setQuery('count', ($event ?? 10).toString())" />
     </div>
     <template v-if="banners.length">
       <table class="table table-striped">
@@ -197,35 +183,19 @@ watch(
                 data-bs-toggle="modal"
                 :data-bs-target="`#deleteModal_${banner.id}`"
               />
-              <!-- <delete-modal
+              <DeleteModal
                 confirm="banners.delete.confirm"
                 :display-name="banner.displayName"
                 :id="`deleteModal_${banner.id}`"
                 :loading="isLoading"
                 title="banners.delete.title"
                 @ok="onDelete(banner, $event)"
-              /> -->
+              />
             </td>
           </tr>
         </tbody>
       </table>
-      <TarPagination
-        aria-first="<<"
-        aria-label="pagination"
-        aria-last=">>"
-        aria-next=">"
-        aria-previous="<"
-        :count="count"
-        first="<<"
-        last=">>"
-        :model-value="page"
-        next=">"
-        pages="5"
-        position="center"
-        previous="<"
-        :total="total"
-        @update:model-value="setQuery('page', $event)"
-      />
+      <AppPagination :count="count" :model-value="page" :total="total" @update:model-value="setQuery('page', $event.toString())" />
     </template>
     <p v-else>{{ t("banners.empty") }}</p>
   </main>

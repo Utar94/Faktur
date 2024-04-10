@@ -125,7 +125,6 @@ watchEffect(() => {
             </li>
             <li class="nav-item dropdown d-none d-lg-block">
               <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                <!-- TODO(fpion): clicking the avatar won't open the dropdown -->
                 <TarAvatar :display-name="user.displayName" :email-address="user.emailAddress" :size="24" :url="user.pictureUrl" />
               </a>
               <ul class="dropdown-menu dropdown-menu-end">

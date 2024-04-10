@@ -1,6 +1,8 @@
 {
   "actions": {
     "back": "Retour",
+    "cancel": "Annuler",
+    "close": "Fermer",
     "create": "Créer",
     "delete": "Supprimer",
     "refresh": "Rafraîchir",
@@ -9,7 +11,10 @@
   "brand": "Faktur",
   "by": "Par",
   "copyright": "© Logitar {version} {year}.",
-  "count": "Nombre de résultats",
+  "count": {
+    "ariaLabel": "Le nombre de résultats à afficher.",
+    "label": "Nombre de résultats"
+  },
   "description": "Description",
   "displayName": "Nom d’affichage",
   "loading": "Chargement...",
@@ -18,8 +23,25 @@
     "lead": "Page introuvable",
     "link": "Aller à l’accueil"
   },
+  "pagination": {
+    "first": "Première page",
+    "label": "Pagination",
+    "last": "Dernière page",
+    "next": "Prochaine page",
+    "previous": "Page précédente"
+  },
   "search": "Recherche",
-  "sort": "Tri",
+  "sort": {
+    "isDescending": {
+      "ariaLabel": "Les éléments seront trier en ordre descendant.",
+      "label": "Descendant"
+    },
+    "select": {
+      "ariaLabel": "La propriété à utiliser pour trier les éléments.",
+      "label": "Tri",
+      "placeholder": "Sélectionnez un tri"
+    }
+  },
   "status": {
     "createdOn": "Création le {date} par",
     "updatedOn": "Dernière modification le {date} par"
