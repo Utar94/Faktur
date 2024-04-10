@@ -3,7 +3,7 @@ import { TarAvatar } from "logitar-vue3-ui";
 import { computed } from "vue";
 import { useI18n } from "vue-i18n";
 
-import type { Actor } from "@/types/actors";
+import type { Actor } from "@/types/actor";
 
 const { d, t } = useI18n();
 
