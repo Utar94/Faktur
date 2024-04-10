@@ -46,5 +46,18 @@
     "createdOn": "Création le {date} par",
     "updatedOn": "Dernière modification le {date} par"
   },
-  "system": "Système"
+  "system": "Système",
+  "toasts": {
+    "error": {
+      "message": "Une erreur inattendue s’est produite. Veuillez réessayer plus tard ou contacter notre équipe de support.",
+      "title": "Erreur !"
+    },
+    "success": {
+      "title": "Succès !"
+    },
+    "warning": {
+      "signedOut": "Vous avez été déconnecté, veuillez vous reconnecter à votre compte.",
+      "title": "Attention !"
+    }
+  }
 }

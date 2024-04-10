@@ -15,10 +15,12 @@ import { deleteBanner, searchBanners } from "@/api/banners";
 import { handleErrorKey } from "@/inject/App";
 import { isEmpty } from "@/helpers/objectUtils";
 import { orderBy } from "@/helpers/arrayUtils";
+import { useToastStore } from "@/stores/toast";
 
 const handleError = inject(handleErrorKey) as (e: unknown) => void;
 const route = useRoute();
 const router = useRouter();
+const toasts = useToastStore();
 const { rt, t, tm } = useI18n();
 
 const banners = ref<Banner[]>([]);
@@ -77,7 +79,7 @@ async function onDelete(banner: Banner, hideModal: () => void): Promise<void> {
     try {
       await deleteBanner(banner.id);
       hideModal();
-      // toasts.success("banners.delete.success"); // TODO(fpion): toasts
+      toasts.success("banners.delete.success");
     } catch (e: unknown) {
       handleError(e);
       return;
@@ -170,7 +172,7 @@ watch(
           <tr v-for="banner in banners" :key="banner.id">
             <td>
               <RouterLink :to="{ name: 'BannerEdit', params: { id: banner.id } }">
-                <font-awesome-icon icon="fas fa-edit" /> {{ banner.displayName }}
+                <font-awesome-icon icon="fas fa-edit" />{{ banner.displayName }}
               </RouterLink>
             </td>
             <td><StatusBlock :actor="banner.updatedBy" :date="banner.updatedOn" /></td>

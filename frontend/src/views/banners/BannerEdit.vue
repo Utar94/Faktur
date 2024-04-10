@@ -10,10 +10,12 @@ import type { ApiError } from "@/types/api";
 import type { Banner } from "@/types/banners";
 import { createBanner, readBanner, replaceBanner } from "@/api/banners";
 import { handleErrorKey } from "@/inject/App";
+import { useToastStore } from "@/stores/toast";
 
 const handleError = inject(handleErrorKey) as (e: unknown) => void;
 const route = useRoute();
 const router = useRouter();
+const toasts = useToastStore();
 const { t } = useI18n();
 
 const defaults = {
@@ -50,14 +52,14 @@ const onSubmit = handleSubmit(async () => {
         banner.value.version,
       );
       setModel(updatedBanner);
-      // toasts.success("banners.updated"); // TODO(fpion): toasts
+      toasts.success("banners.updated");
     } else {
       const createdBanner = await createBanner({
         displayName: displayName.value,
         description: description.value,
       });
       setModel(createdBanner);
-      // toasts.success("banners.created"); // TODO(fpion): toasts
+      toasts.success("banners.created");
       router.replace({ name: "BannerEdit", params: { id: createdBanner.id } });
     }
   } catch (e: unknown) {

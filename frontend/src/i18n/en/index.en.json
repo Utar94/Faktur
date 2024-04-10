@@ -46,5 +46,18 @@
     "createdOn": "Created on {date} by",
     "updatedOn": "Last updated on {date} by"
   },
-  "system": "System"
+  "system": "System",
+  "toasts": {
+    "error": {
+      "message": "An unexpected error occurred. Please try again later or contact our support team.",
+      "title": "Error!"
+    },
+    "success": {
+      "title": "Success!"
+    },
+    "warning": {
+      "signedOut": "You have been signed-out, please try sign-in to your account again.",
+      "title": "Warning!"
+    }
+  }
 }

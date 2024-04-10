@@ -25,6 +25,7 @@
     "@vee-validate/rules": "~4.9.6",
     "bootstrap": "^5.3.3",
     "logitar-vue3-ui": "^2.0.5",
+    "nanoid": "^5.0.7",
     "pinia": "^2.1.7",
     "pinia-plugin-persistedstate": "^3.2.1",
     "vee-validate": "~4.9.6",

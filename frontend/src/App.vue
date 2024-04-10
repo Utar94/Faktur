@@ -8,10 +8,12 @@ import AppNavbar from "./components/layout/AppNavbar.vue";
 import type { ApiError, GraphQLError } from "./types/api";
 import { handleErrorKey } from "./inject/App";
 import { useAccountStore } from "@/stores/account";
+import { useToastStore } from "./stores/toast";
 
 const account = useAccountStore();
 const route = useRoute();
 const router = useRouter();
+const toasts = useToastStore();
 
 function handleError(e: unknown): void {
   if (e) {
@@ -19,14 +21,14 @@ function handleError(e: unknown): void {
     const errors = data as GraphQLError[];
     if (status === 401 || (typeof errors?.some === "function" && errors.some((error) => error.extensions?.code === "ACCESS_DENIED") === true)) {
       account.signOut();
-      // toasts.warning("toasts.warning.signedOut"); // TODO(fpion): toasts
+      toasts.warning("toasts.warning.signedOut");
       router.push({ name: "SignIn", query: { redirect: route.fullPath } });
     } else {
       console.error(e);
-      // toasts.error(); // TODO(fpion): toasts
+      toasts.error();
     }
   } else {
-    // toasts.error(); // TODO(fpion): toasts
+    toasts.error();
   }
 }
 provide(handleErrorKey, handleError);
@@ -36,5 +38,5 @@ provide(handleErrorKey, handleError);
   <AppNavbar />
   <RouterView />
   <AppFooter />
-  <TarToaster />
+  <TarToaster :toasts="toasts.toasts" @hidden="toasts.remove" />
 </template>

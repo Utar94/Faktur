@@ -1,10 +1,11 @@
 import type { Aggregate } from "./aggregate";
 import type { SearchPayload, SortOption } from "./search";
+import type { Store } from "./stores";
 
 export type Banner = Aggregate & {
   displayName: string;
   description?: string;
-  // stores: Store[]; // TODO(fpion): Store
+  stores: Store[];
 };
 
 export type BannerSort = "DisplayName" | "UpdatedOn";
