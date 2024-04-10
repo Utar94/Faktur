@@ -1,0 +1,13 @@
+{
+  "empty": "This list is empty.",
+  "sort": {
+    "options": {
+      "DisplayName": "Display name",
+      "UpdatedOn": "Updated on"
+    }
+  },
+  "title": {
+    "list": "Banners",
+    "new": "New banner"
+  }
+}

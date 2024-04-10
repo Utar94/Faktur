@@ -91,9 +91,9 @@ watchEffect(() => {
             </ul>
           </li>
           <template v-if="user">
-            <!-- <li class="nav-item">
-              <RouterLink :to="{ name: 'RealmList' }" class="nav-link"><font-awesome-icon icon="fas fa-chess-rook" /> {{ t("realms.title.list") }}</RouterLink>
-            </li> TODO(fpion): menu items -->
+            <li class="nav-item">
+              <RouterLink :to="{ name: 'BannerList' }" class="nav-link"><font-awesome-icon icon="fas fa-flag" /> {{ t("banners.title.list") }}</RouterLink>
+            </li>
           </template>
         </ul>
 

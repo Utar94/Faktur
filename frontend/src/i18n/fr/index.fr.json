@@ -1,10 +1,28 @@
 {
+  "actions": {
+    "back": "Retour",
+    "create": "Créer",
+    "delete": "Supprimer",
+    "refresh": "Rafraîchir",
+    "save": "Enregistrer"
+  },
   "brand": "Faktur",
+  "by": "Par",
   "copyright": "© Logitar {version} {year}.",
+  "count": "Nombre de résultats",
+  "description": "Description",
+  "displayName": "Nom d’affichage",
   "loading": "Chargement...",
   "notFound": {
     "help": "La page demandée n’a pu être trouvée.",
     "lead": "Page introuvable",
     "link": "Aller à l’accueil"
-  }
+  },
+  "search": "Recherche",
+  "sort": "Tri",
+  "status": {
+    "createdOn": "Création le {date} par",
+    "updatedOn": "Dernière modification le {date} par"
+  },
+  "system": "Système"
 }

@@ -1,0 +1,13 @@
+{
+  "empty": "Cette liste est vide.",
+  "sort": {
+    "options": {
+      "DisplayName": "Nom d’affichage",
+      "UpdatedOn": "Dernière modification"
+    }
+  },
+  "title": {
+    "list": "Bannières",
+    "new": "Nouvelle bannière"
+  }
+}

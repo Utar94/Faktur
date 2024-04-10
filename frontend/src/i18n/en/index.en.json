@@ -1,10 +1,28 @@
 {
+  "actions": {
+    "back": "Go back",
+    "create": "Create",
+    "delete": "Delete",
+    "refresh": "Refresh",
+    "save": "Save"
+  },
   "brand": "Faktur",
+  "by": "By",
   "copyright": "© Logitar {version} {year}.",
+  "count": "Count",
+  "description": "Description",
+  "displayName": "Display Name",
   "loading": "Loading...",
   "notFound": {
     "help": "The requested page could not be found.",
     "lead": "Page Not Found",
     "link": "Go to Home"
-  }
+  },
+  "search": "Search",
+  "sort": "Sort",
+  "status": {
+    "createdOn": "Created on {date} by",
+    "updatedOn": "Last updated on {date} by"
+  },
+  "system": "System"
 }
