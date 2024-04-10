@@ -2,7 +2,7 @@
 import { RouterLink } from "vue-router";
 import { TarAvatar, parsingUtils } from "logitar-vue3-ui";
 import { computed, watchEffect } from "vue";
-// import { setLocale } from "@vee-validate/i18n"; // TODO(fpion): validation
+import { setLocale } from "@vee-validate/i18n";
 import { useI18n } from "vue-i18n";
 
 import locales from "@/resources/locales.json";
@@ -45,7 +45,7 @@ const user = computed<CurrentUser | undefined>(() => account.currentUser);
 watchEffect(() => {
   if (i18n.locale) {
     locale.value = i18n.locale.code;
-    // setLocale(i18n.locale.code); // TODO(fpion): validation
+    setLocale(i18n.locale.code);
   } else {
     const currentLocale = locales.find(({ code }) => code === locale.value);
     if (!currentLocale) {

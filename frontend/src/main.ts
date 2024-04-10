@@ -11,7 +11,7 @@ import "bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 import "./assets/styles/main.css";
-// import "./validation"; // TODO(fpion): validation
+import "./validation";
 
 const app = createApp(App);
 
