@@ -2,7 +2,7 @@
 import { RouterLink } from "vue-router";
 import { TarAvatar, parsingUtils } from "logitar-vue3-ui";
 import { computed, watchEffect } from "vue";
-// import { setLocale } from "@vee-validate/i18n"; // TODO(fpion): validation
+import { setLocale } from "@vee-validate/i18n";
 import { useI18n } from "vue-i18n";
 
 import locales from "@/resources/locales.json";
@@ -45,7 +45,7 @@ const user = computed<CurrentUser | undefined>(() => account.currentUser);
 watchEffect(() => {
   if (i18n.locale) {
     locale.value = i18n.locale.code;
-    // setLocale(i18n.locale.code); // TODO(fpion): validation
+    setLocale(i18n.locale.code);
   } else {
     const currentLocale = locales.find(({ code }) => code === locale.value);
     if (!currentLocale) {
@@ -91,9 +91,9 @@ watchEffect(() => {
             </ul>
           </li>
           <template v-if="user">
-            <!-- <li class="nav-item">
-              <RouterLink :to="{ name: 'RealmList' }" class="nav-link"><font-awesome-icon icon="fas fa-chess-rook" /> {{ t("realms.title.list") }}</RouterLink>
-            </li> TODO(fpion): menu items -->
+            <li class="nav-item">
+              <RouterLink :to="{ name: 'BannerList' }" class="nav-link"><font-awesome-icon icon="fas fa-flag" /> {{ t("banners.title.list") }}</RouterLink>
+            </li>
           </template>
         </ul>
 
@@ -125,7 +125,6 @@ watchEffect(() => {
             </li>
             <li class="nav-item dropdown d-none d-lg-block">
               <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                <!-- TODO(fpion): clicking the avatar won't open the dropdown -->
                 <TarAvatar :display-name="user.displayName" :email-address="user.emailAddress" :size="24" :url="user.pictureUrl" />
               </a>
               <ul class="dropdown-menu dropdown-menu-end">

@@ -1,0 +1,20 @@
+{
+  "created": "The banner has been created.",
+  "delete": {
+    "confirm": "Do you really want to delete the following banner?",
+    "success": "The banner has been deleted.",
+    "title": "Delete banner"
+  },
+  "empty": "This list is empty.",
+  "sort": {
+    "options": {
+      "DisplayName": "Display name",
+      "UpdatedOn": "Updated on"
+    }
+  },
+  "title": {
+    "list": "Banners",
+    "new": "New banner"
+  },
+  "updated": "The banner has been updated."
+}

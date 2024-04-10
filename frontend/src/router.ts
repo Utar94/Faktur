@@ -33,6 +33,22 @@ const router = createRouter({
       path: "/sign-out",
       component: () => import("./views/account/SignOutView.vue"),
     },
+    // Banners
+    {
+      name: "BannerList",
+      path: "/banners",
+      component: () => import("./views/banners/BannerList.vue"),
+    },
+    {
+      name: "BannerEdit",
+      path: "/banners/:id",
+      component: () => import("./views/banners/BannerEdit.vue"),
+    },
+    {
+      name: "CreateBanner",
+      path: "/create-banner",
+      component: () => import("./views/banners/BannerEdit.vue"),
+    },
     // NotFound
     {
       name: "NotFound",
