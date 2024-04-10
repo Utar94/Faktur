@@ -1,10 +1,12 @@
 <script setup lang="ts">
-import { TarButton, TarInput, TarTextarea } from "logitar-vue3-ui";
+import { TarButton } from "logitar-vue3-ui";
 import { computed, inject, onMounted, ref } from "vue";
 import { useForm } from "vee-validate";
 import { useI18n } from "vue-i18n";
 import { useRoute, useRouter } from "vue-router";
 
+import DescriptionTextarea from "@/components/shared/DescriptionTextarea.vue";
+import DisplayNameInput from "@/components/shared/DisplayNameInput.vue";
 import StatusDetail from "@/components/shared/StatusDetail.vue";
 import type { ApiError } from "@/types/api";
 import type { Banner } from "@/types/banners";
@@ -105,8 +107,8 @@ onMounted(async () => {
           />
           <TarButton class="ms-1" icon="fas fa-chevron-left" :text="t('actions.back')" :variant="hasChanges ? 'danger' : 'secondary'" @click="router.back()" />
         </div>
-        <TarInput floating id="display-name" :label="t('displayName')" max="255" :placeholder="t('displayName')" required v-model="displayName" />
-        <TarTextarea floating id="description" :label="t('description')" :placeholder="t('description')" rows="15" v-model="description" />
+        <DisplayNameInput required v-model="displayName" />
+        <DescriptionTextarea v-model="description" />
       </form>
     </template>
   </main>
