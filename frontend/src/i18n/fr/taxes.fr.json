@@ -1,0 +1,23 @@
+{
+  "code": "Code",
+  "created": "La taxe a été créée.",
+  "delete": {
+    "confirm": "Désirez-vous vraiment supprimer la taxe suivante ?",
+    "success": "La taxe a été supprimée.",
+    "title": "Supprimer la taxe"
+  },
+  "empty": "Cette liste est vide.",
+  "rate": "Taux",
+  "sort": {
+    "options": {
+      "Code": "Code",
+      "Rate": "Taux",
+      "UpdatedOn": "Dernière modification"
+    }
+  },
+  "title": {
+    "list": "Taxes",
+    "new": "Nouvelle taxe"
+  },
+  "updated": "La taxe a été enregistrée."
+}

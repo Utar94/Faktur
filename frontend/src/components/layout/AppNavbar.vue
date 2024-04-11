@@ -5,6 +5,7 @@ import { computed, watchEffect } from "vue";
 import { setLocale } from "@vee-validate/i18n";
 import { useI18n } from "vue-i18n";
 
+const { parseBoolean } = parsingUtils;
 import locales from "@/resources/locales.json";
 import type { CurrentUser } from "@/types/account";
 import type { Hyperlink } from "@/types/components";
@@ -19,8 +20,8 @@ const apiBaseUrl: string = import.meta.env.VITE_APP_API_BASE_URL ?? "";
 const environment = import.meta.env.MODE.toLowerCase();
 const i18n = useI18nStore();
 const { availableLocales, locale, t } = useI18n();
-const isGraphQLEnabled: boolean = parsingUtils.parseBoolean(import.meta.env.VITE_APP_ENABLE_GRAPHQL) ?? false;
-const isOpenApiEnabled: boolean = parsingUtils.parseBoolean(import.meta.env.VITE_APP_ENABLE_OPENAPI) ?? false;
+const isGraphQLEnabled: boolean = parseBoolean(import.meta.env.VITE_APP_ENABLE_GRAPHQL) ?? false;
+const isOpenApiEnabled: boolean = parseBoolean(import.meta.env.VITE_APP_ENABLE_OPENAPI) ?? false;
 
 const otherLocales = computed<Locale[]>(() => {
   const otherLocales = new Set<string>(availableLocales.filter((item) => item !== locale.value));
@@ -99,6 +100,9 @@ watchEffect(() => {
             </li>
             <li class="nav-item">
               <RouterLink :to="{ name: 'StoreList' }" class="nav-link"><font-awesome-icon icon="fas fa-store" /> {{ t("stores.title.list") }}</RouterLink>
+            </li>
+            <li class="nav-item">
+              <RouterLink :to="{ name: 'TaxList' }" class="nav-link"><font-awesome-icon icon="fas fa-sack-dollar" /> {{ t("taxes.title.list") }}</RouterLink>
             </li>
           </template>
         </ul>

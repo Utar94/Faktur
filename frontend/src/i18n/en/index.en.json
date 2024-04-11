@@ -17,6 +17,8 @@
   },
   "description": "Description",
   "displayName": "Display Name",
+  "flag": "Flag",
+  "flags": "Flags",
   "loading": "Loading...",
   "notFound": {
     "help": "The requested page could not be found.",

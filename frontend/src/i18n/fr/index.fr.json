@@ -17,6 +17,8 @@
   },
   "description": "Description",
   "displayName": "Nom d’affichage",
+  "flag": "Marqueur",
+  "flags": "Marqueurs",
   "loading": "Chargement...",
   "notFound": {
     "help": "La page demandée n’a pu être trouvée.",

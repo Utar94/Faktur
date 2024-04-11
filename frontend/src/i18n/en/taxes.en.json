@@ -1,0 +1,23 @@
+{
+  "code": "Code",
+  "created": "The tax has been created.",
+  "delete": {
+    "confirm": "Do you really want to delete the following tax?",
+    "success": "The tax has been deleted.",
+    "title": "Delete tax"
+  },
+  "empty": "This list is empty.",
+  "rate": "Rate",
+  "sort": {
+    "options": {
+      "Code": "Code",
+      "Rate": "Rate",
+      "UpdatedOn": "Updated on"
+    }
+  },
+  "title": {
+    "list": "Taxes",
+    "new": "New tax"
+  },
+  "updated": "The tax has been updated."
+}
