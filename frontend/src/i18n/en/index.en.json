@@ -23,6 +23,7 @@
     "lead": "Page Not Found",
     "link": "Go to Home"
   },
+  "number": "Number",
   "pagination": {
     "first": "First",
     "label": "Pagination",

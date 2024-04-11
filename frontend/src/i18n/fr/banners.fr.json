@@ -6,6 +6,11 @@
     "title": "Supprimer la bannière"
   },
   "empty": "Cette liste est vide.",
+  "select": {
+    "ariaLabel": "Les bannières sont des regroupements de succursales.",
+    "label": "Bannière",
+    "placeholder": "Sélectionnez une bannière"
+  },
   "sort": {
     "options": {
       "DisplayName": "Nom d’affichage",

@@ -1,0 +1,22 @@
+{
+  "created": "La succursale a été créée.",
+  "delete": {
+    "confirm": "Désirez-vous vraiment supprimer la succursale suivante ?",
+    "success": "La succursale a été supprimée.",
+    "title": "Supprimer la succursale"
+  },
+  "empty": "Cette liste est vide.",
+  "sort": {
+    "options": {
+      "DepartmentCount": "Nombre de départements",
+      "DisplayName": "Nom d’affichage",
+      "Number": "Numéro",
+      "UpdatedOn": "Dernière modification"
+    }
+  },
+  "title": {
+    "list": "Succursales",
+    "new": "Nouvelle succursale"
+  },
+  "updated": "La succursale a été enregistrée."
+}
