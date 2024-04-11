@@ -10,8 +10,8 @@ import DeleteModal from "@/components/shared/DeleteModal.vue";
 import SearchInput from "@/components/shared/SearchInput.vue";
 import SortSelect from "@/components/shared/SortSelect.vue";
 import StatusBlock from "@/components/shared/StatusBlock.vue";
-import type { Banner, BannerSort, SearchBannersPayload } from "@/types/banners";
-import { deleteBanner, searchBanners } from "@/api/banners";
+import type { Article, ArticleSort, SearchArticlesPayload } from "@/types/articles";
+import { deleteArticle, searchArticles } from "@/api/articles";
 import { handleErrorKey } from "@/inject/App";
 import { isEmpty } from "@/helpers/objectUtils";
 import { orderBy } from "@/helpers/arrayUtils";
@@ -23,7 +23,7 @@ const router = useRouter();
 const toasts = useToastStore();
 const { rt, t, tm } = useI18n();
 
-const banners = ref<Banner[]>([]);
+const articles = ref<Article[]>([]);
 const isLoading = ref<boolean>(false);
 const timestamp = ref<number>(0);
 const total = ref<number>(0);
@@ -36,13 +36,13 @@ const sort = computed<string>(() => route.query.sort?.toString() ?? "");
 
 const sortOptions = computed<SelectOption[]>(() =>
   orderBy(
-    Object.entries(tm(rt("banners.sort.options"))).map(([value, text]) => ({ text, value }) as SelectOption),
+    Object.entries(tm(rt("articles.sort.options"))).map(([value, text]) => ({ text, value }) as SelectOption),
     "text",
   ),
 );
 
 async function refresh(): Promise<void> {
-  const payload: SearchBannersPayload = {
+  const payload: SearchArticlesPayload = {
     ids: [],
     search: {
       terms: search.value
@@ -51,7 +51,7 @@ async function refresh(): Promise<void> {
         .map((term) => ({ value: `%${term}%` })),
       operator: "And",
     },
-    sort: sort.value ? [{ field: sort.value as BannerSort, isDescending: isDescending.value }] : [],
+    sort: sort.value ? [{ field: sort.value as ArticleSort, isDescending: isDescending.value }] : [],
     skip: (page.value - 1) * count.value,
     limit: count.value,
   };
@@ -59,9 +59,9 @@ async function refresh(): Promise<void> {
   const now = Date.now();
   timestamp.value = now;
   try {
-    const data = await searchBanners(payload);
+    const data = await searchArticles(payload);
     if (now === timestamp.value) {
-      banners.value = data.items;
+      articles.value = data.items;
       total.value = data.total;
     }
   } catch (e: unknown) {
@@ -73,13 +73,13 @@ async function refresh(): Promise<void> {
   }
 }
 
-async function onDelete(banner: Banner, hideModal: () => void): Promise<void> {
+async function onDelete(article: Article, hideModal: () => void): Promise<void> {
   if (!isLoading.value) {
     isLoading.value = true;
     try {
-      await deleteBanner(banner.id);
+      await deleteArticle(article.id);
       hideModal();
-      toasts.success("banners.delete.success");
+      toasts.success("articles.delete.success");
     } catch (e: unknown) {
       handleError(e);
       return;
@@ -104,7 +104,7 @@ function setQuery(key: string, value: string): void {
 watch(
   () => route,
   (route) => {
-    if (route.name === "BannerList") {
+    if (route.name === "ArticleList") {
       const { query } = route;
       if (!query.page || !query.count) {
         router.replace({
@@ -134,7 +134,7 @@ watch(
 
 <template>
   <main class="container">
-    <h1>{{ t("banners.title.list") }}</h1>
+    <h1>{{ t("articles.title.list") }}</h1>
     <div class="my-2">
       <TarButton
         class="me-1"
@@ -145,7 +145,7 @@ watch(
         :text="t('actions.refresh')"
         @click="refresh()"
       />
-      <RouterLink :to="{ name: 'CreateBanner' }" class="btn btn-success ms-1"><font-awesome-icon icon="fas fa-plus" /> {{ t("actions.create") }}</RouterLink>
+      <RouterLink :to="{ name: 'CreateArticle' }" class="btn btn-success ms-1"><font-awesome-icon icon="fas fa-plus" /> {{ t("actions.create") }}</RouterLink>
     </div>
     <div class="row">
       <SearchInput class="col-lg-4" :model-value="search" @update:model-value="setQuery('search', $event ?? '')" />
@@ -159,23 +159,25 @@ watch(
       />
       <CountSelect class="col-lg-4" :model-value="count.toString()" @update:model-value="setQuery('count', ($event ?? 10).toString())" />
     </div>
-    <template v-if="banners.length">
+    <template v-if="articles.length">
       <table class="table table-striped">
         <thead>
           <tr>
-            <th scope="col">{{ t("banners.sort.options.DisplayName") }}</th>
-            <th scope="col">{{ t("banners.sort.options.UpdatedOn") }}</th>
+            <th scope="col">{{ t("articles.sort.options.DisplayName") }}</th>
+            <th scope="col">{{ t("articles.sort.options.Gtin") }}</th>
+            <th scope="col">{{ t("articles.sort.options.UpdatedOn") }}</th>
             <th scope="col"></th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="banner in banners" :key="banner.id">
+          <tr v-for="article in articles" :key="article.id">
             <td>
-              <RouterLink :to="{ name: 'BannerEdit', params: { id: banner.id } }">
-                <font-awesome-icon icon="fas fa-edit" />{{ banner.displayName }}
+              <RouterLink :to="{ name: 'ArticleEdit', params: { id: article.id } }">
+                <font-awesome-icon icon="fas fa-edit" />{{ article.displayName }}
               </RouterLink>
             </td>
-            <td><StatusBlock :actor="banner.updatedBy" :date="banner.updatedOn" /></td>
+            <td>{{ article.gtin ?? "—" }}</td>
+            <td><StatusBlock :actor="article.updatedBy" :date="article.updatedOn" /></td>
             <td>
               <TarButton
                 :disabled="isLoading"
@@ -183,15 +185,15 @@ watch(
                 :text="t('actions.delete')"
                 variant="danger"
                 data-bs-toggle="modal"
-                :data-bs-target="`#deleteModal_${banner.id}`"
+                :data-bs-target="`#deleteModal_${article.id}`"
               />
               <DeleteModal
-                confirm="banners.delete.confirm"
-                :display-name="banner.displayName"
-                :id="`deleteModal_${banner.id}`"
+                confirm="articles.delete.confirm"
+                :display-name="article.displayName"
+                :id="`deleteModal_${article.id}`"
                 :loading="isLoading"
-                title="banners.delete.title"
-                @ok="onDelete(banner, $event)"
+                title="articles.delete.title"
+                @ok="onDelete(article, $event)"
               />
             </td>
           </tr>
@@ -199,6 +201,6 @@ watch(
       </table>
       <AppPagination :count="count" :model-value="page" :total="total" @update:model-value="setQuery('page', $event.toString())" />
     </template>
-    <p v-else>{{ t("banners.empty") }}</p>
+    <p v-else>{{ t("articles.empty") }}</p>
   </main>
 </template>

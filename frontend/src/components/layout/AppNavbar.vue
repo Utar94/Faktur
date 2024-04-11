@@ -92,6 +92,9 @@ watchEffect(() => {
           </li>
           <template v-if="user">
             <li class="nav-item">
+              <RouterLink :to="{ name: 'ArticleList' }" class="nav-link"><font-awesome-icon icon="fas fa-carrot" /> {{ t("articles.title.list") }}</RouterLink>
+            </li>
+            <li class="nav-item">
               <RouterLink :to="{ name: 'BannerList' }" class="nav-link"><font-awesome-icon icon="fas fa-flag" /> {{ t("banners.title.list") }}</RouterLink>
             </li>
             <li class="nav-item">

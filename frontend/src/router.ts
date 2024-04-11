@@ -33,6 +33,22 @@ const router = createRouter({
       path: "/sign-out",
       component: () => import("./views/account/SignOutView.vue"),
     },
+    // Articles
+    {
+      name: "ArticleList",
+      path: "/articles",
+      component: () => import("./views/articles/ArticleList.vue"),
+    },
+    {
+      name: "ArticleEdit",
+      path: "/articles/:id",
+      component: () => import("./views/articles/ArticleEdit.vue"),
+    },
+    {
+      name: "CreateArticle",
+      path: "/create-article",
+      component: () => import("./views/articles/ArticleEdit.vue"),
+    },
     // Banners
     {
       name: "BannerList",

@@ -1,28 +1,16 @@
 <script setup lang="ts">
-import { TarInput } from "logitar-vue3-ui";
+import { TarInput, type InputOptions } from "logitar-vue3-ui";
 import { useI18n } from "vue-i18n";
 
 const { t } = useI18n();
 
-withDefaults(
-  defineProps<{
-    floating?: boolean;
-    id?: string;
-    label?: string;
-    maxLength?: number;
-    modelValue?: string;
-    placeholder?: string;
-    required?: boolean;
-  }>(),
-  {
-    floating: true,
-    id: "display-name",
-    label: "displayName",
-    maxLength: 255,
-    placeholder: "displayName",
-    required: false,
-  },
-);
+const props = withDefaults(defineProps<InputOptions>(), {
+  floating: true,
+  id: "display-name",
+  label: "displayName",
+  max: 255,
+  placeholder: "displayName",
+});
 
 defineEmits<{
   (e: "update:model-value", value?: string): void;
@@ -30,14 +18,5 @@ defineEmits<{
 </script>
 
 <template>
-  <TarInput
-    :floating="floating"
-    :id="id"
-    :label="t(label)"
-    :max="maxLength"
-    :model-value="modelValue"
-    :placeholder="t(placeholder)"
-    :required="required"
-    @update:model-value="$emit('update:model-value', $event)"
-  />
+  <TarInput v-bind="props" :label="t(label)" :placeholder="t(placeholder)" @update:model-value="$emit('update:model-value', $event)" />
 </template>

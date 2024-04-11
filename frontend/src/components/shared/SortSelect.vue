@@ -1,20 +1,15 @@
 <script setup lang="ts">
-import { TarCheckbox, TarSelect, type SelectOption } from "logitar-vue3-ui";
+import { TarCheckbox, TarSelect, type SelectOptions } from "logitar-vue3-ui";
 import { useI18n } from "vue-i18n";
 
 const { t } = useI18n();
 
-withDefaults(
-  defineProps<{
-    ariaLabel?: string;
-    descending?: boolean;
-    floating?: boolean;
-    id?: string;
-    label?: string;
-    modelValue?: string;
-    options?: SelectOption[];
-    placeholder?: string;
-  }>(),
+const props = withDefaults(
+  defineProps<
+    SelectOptions & {
+      descending?: boolean;
+    }
+  >(),
   {
     ariaLabel: "sort.select.ariaLabel",
     descending: false,
@@ -33,12 +28,9 @@ defineEmits<{
 
 <template>
   <TarSelect
+    v-bind="props"
     :aria-label="t(ariaLabel)"
-    :floating="floating"
-    :id="id"
     :label="t(label)"
-    :model-value="modelValue"
-    :options="options"
     :placeholder="t(placeholder)"
     @update:model-value="$emit('update:model-value', $event)"
   >
