@@ -50,7 +50,7 @@ onMounted(async () => {
       ],
       skip: 0,
       limit: 0,
-    }); // TODO(fpion): refactor
+    });
     banners.value = results.items;
   } catch (e: unknown) {
     handleError(e);

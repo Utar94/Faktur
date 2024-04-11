@@ -7,7 +7,7 @@
   },
   "empty": "Cette liste est vide.",
   "select": {
-    "ariaLabel": "TODO",
+    "ariaLabel": "Les bannières sont des regroupements de succursales.",
     "label": "Bannière",
     "placeholder": "Sélectionnez une bannière"
   },
