@@ -44,7 +44,7 @@ const sortOptions = computed<SelectOption[]>(() =>
 );
 
 async function refresh(): Promise<void> {
-  const parameters: SearchStoresPayload = {
+  const payload: SearchStoresPayload = {
     bannerId: bannerId.value,
     ids: [],
     search: {
@@ -62,7 +62,7 @@ async function refresh(): Promise<void> {
   const now = Date.now();
   timestamp.value = now;
   try {
-    const data = await searchStores(parameters);
+    const data = await searchStores(payload);
     if (now === timestamp.value) {
       stores.value = data.items;
       total.value = data.total;
@@ -171,6 +171,7 @@ watch(
           <tr>
             <th scope="col">{{ t("stores.sort.options.DisplayName") }}</th>
             <th scope="col">{{ t("stores.sort.options.Number") }}</th>
+            <th scope="col">{{ t("stores.sort.options.DepartmentCount") }}</th>
             <th scope="col">{{ t("stores.sort.options.UpdatedOn") }}</th>
             <th scope="col"></th>
           </tr>
@@ -181,6 +182,7 @@ watch(
               <RouterLink :to="{ name: 'StoreEdit', params: { id: store.id } }"> <font-awesome-icon icon="fas fa-edit" />{{ store.displayName }} </RouterLink>
             </td>
             <td>{{ store.number ?? "—" }}</td>
+            <td>{{ store.departmentCount }}</td>
             <td><StatusBlock :actor="store.updatedBy" :date="store.updatedOn" /></td>
             <td>
               <TarButton

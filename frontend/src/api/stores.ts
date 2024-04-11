@@ -15,7 +15,7 @@ export async function readStore(id: string): Promise<Store> {
 }
 
 export async function replaceStore(id: string, payload: ReplaceStorePayload, version?: number): Promise<Store> {
-  const query: string | undefined = version ? `?version=${version}` : undefined;
+  const query: string | undefined = version ? `?version=${version}` : undefined; // TODO(fpion): refactor
   return (await put<CreateStorePayload, Store>(`/stores/${id}${query}`, payload)).data;
 }
 
@@ -32,6 +32,6 @@ export async function searchStores(payload: SearchStoresPayload): Promise<Search
   payload.sort.forEach((sort) => params.push(`sort=${sort.isDescending ? `DESC.${sort.field}` : sort.field}`));
   params.push(`skip=${payload.skip}`);
   params.push(`limit=${payload.limit}`);
-  const query: string | undefined = params.length ? `?${params.join("&")}` : undefined;
+  const query: string | undefined = params.length ? `?${params.join("&")}` : undefined; // TODO(fpion): refactor
   return (await get<SearchResults<Store>>(`/stores${query}`)).data;
 }

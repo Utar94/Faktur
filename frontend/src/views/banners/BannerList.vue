@@ -42,7 +42,7 @@ const sortOptions = computed<SelectOption[]>(() =>
 );
 
 async function refresh(): Promise<void> {
-  const parameters: SearchBannersPayload = {
+  const payload: SearchBannersPayload = {
     ids: [],
     search: {
       terms: search.value
@@ -59,7 +59,7 @@ async function refresh(): Promise<void> {
   const now = Date.now();
   timestamp.value = now;
   try {
-    const data = await searchBanners(parameters);
+    const data = await searchBanners(payload);
     if (now === timestamp.value) {
       banners.value = data.items;
       total.value = data.total;

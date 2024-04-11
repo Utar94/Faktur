@@ -15,7 +15,7 @@ export async function readBanner(id: string): Promise<Banner> {
 }
 
 export async function replaceBanner(id: string, payload: ReplaceBannerPayload, version?: number): Promise<Banner> {
-  const query: string | undefined = version ? `?version=${version}` : undefined;
+  const query: string | undefined = version ? `?version=${version}` : undefined; // TODO(fpion): refactor
   return (await put<CreateBannerPayload, Banner>(`/banners/${id}${query}`, payload)).data;
 }
 
@@ -29,6 +29,6 @@ export async function searchBanners(payload: SearchBannersPayload): Promise<Sear
   payload.sort.forEach((sort) => params.push(`sort=${sort.isDescending ? `DESC.${sort.field}` : sort.field}`));
   params.push(`skip=${payload.skip}`);
   params.push(`limit=${payload.limit}`);
-  const query: string | undefined = params.length ? `?${params.join("&")}` : undefined;
+  const query: string | undefined = params.length ? `?${params.join("&")}` : undefined; // TODO(fpion): refactor
   return (await get<SearchResults<Banner>>(`/banners${query}`)).data;
 }
