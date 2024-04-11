@@ -8,7 +8,7 @@
   "empty": "This list is empty.",
   "gtin": "Global Trade Item Number (GTIN)",
   "select": {
-    "ariaLabel": "TODO",
+    "ariaLabel": "Articles are generic representations of products or services, independent from where they are sold.",
     "label": "Article",
     "placeholder": "Select an article"
   },
