@@ -81,6 +81,22 @@ const router = createRouter({
       path: "/create-store",
       component: () => import("./views/stores/StoreEdit.vue"),
     },
+    // Taxes
+    {
+      name: "TaxList",
+      path: "/taxes",
+      component: () => import("./views/taxes/TaxList.vue"),
+    },
+    {
+      name: "TaxEdit",
+      path: "/taxes/:id",
+      component: () => import("./views/taxes/TaxEdit.vue"),
+    },
+    {
+      name: "CreateTax",
+      path: "/create-tax",
+      component: () => import("./views/taxes/TaxEdit.vue"),
+    },
     // NotFound
     {
       name: "NotFound",
