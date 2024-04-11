@@ -18,7 +18,7 @@ const { t } = useI18n();
 
 const invalidCredentials = ref<boolean>(false);
 const password = ref<string>("");
-const passwordRef = ref<InstanceType<typeof TarButton> | null>(null);
+const passwordRef = ref<InstanceType<typeof TarInput> | null>(null);
 const username = ref<string>("");
 
 const { handleSubmit, isSubmitting } = useForm();
