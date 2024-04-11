@@ -5,6 +5,7 @@ import { useI18n } from "vue-i18n";
 import { useRoute, useRouter } from "vue-router";
 
 import AppPagination from "@/components/shared/AppPagination.vue";
+import BannerSelect from "@/components/banners/BannerSelect.vue";
 import CountSelect from "@/components/shared/CountSelect.vue";
 import DeleteModal from "@/components/shared/DeleteModal.vue";
 import SearchInput from "@/components/shared/SearchInput.vue";
@@ -28,6 +29,7 @@ const stores = ref<Store[]>([]);
 const timestamp = ref<number>(0);
 const total = ref<number>(0);
 
+const bannerId = computed<string>(() => route.query.bannerId?.toString() ?? "");
 const count = computed<number>(() => Number(route.query.count) || 10);
 const isDescending = computed<boolean>(() => route.query.isDescending === "true");
 const page = computed<number>(() => Number(route.query.page) || 1);
@@ -43,6 +45,7 @@ const sortOptions = computed<SelectOption[]>(() =>
 
 async function refresh(): Promise<void> {
   const parameters: SearchStoresPayload = {
+    bannerId: bannerId.value,
     ids: [],
     search: {
       terms: search.value
@@ -93,6 +96,7 @@ async function onDelete(store: Store, hideModal: () => void): Promise<void> {
 function setQuery(key: string, value: string): void {
   const query = { ...route.query, [key]: value };
   switch (key) {
+    case "bannerId":
     case "search":
     case "count":
       query.page = "1";
@@ -111,6 +115,7 @@ watch(
           ...route,
           query: isEmpty(query)
             ? {
+                bannerId: "",
                 search: "",
                 sort: "UpdatedOn",
                 isDescending: "true",
@@ -148,16 +153,17 @@ watch(
       <RouterLink :to="{ name: 'CreateStore' }" class="btn btn-success ms-1"><font-awesome-icon icon="fas fa-plus" /> {{ t("actions.create") }}</RouterLink>
     </div>
     <div class="row">
-      <SearchInput class="col-lg-4" :model-value="search" @update:model-value="setQuery('search', $event ?? '')" />
+      <BannerSelect class="col-lg-3" :model-value="bannerId" @update:model-value="setQuery('bannerId', $event ?? '')" />
+      <SearchInput class="col-lg-3" :model-value="search" @update:model-value="setQuery('search', $event ?? '')" />
       <SortSelect
-        class="col-lg-4"
+        class="col-lg-3"
         :descending="isDescending"
         :model-value="sort"
         :options="sortOptions"
         @descending="setQuery('isDescending', $event.toString())"
         @update:model-value="setQuery('sort', $event ?? '')"
       />
-      <CountSelect class="col-lg-4" :model-value="count" @update:model-value="setQuery('count', ($event ?? 10).toString())" />
+      <CountSelect class="col-lg-3" :model-value="count" @update:model-value="setQuery('count', ($event ?? 10).toString())" />
     </div>
     <template v-if="stores.length">
       <table class="table table-striped">
