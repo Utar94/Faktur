@@ -1,0 +1,27 @@
+{
+  "created": "L’article a été créé.",
+  "delete": {
+    "confirm": "Désirez-vous vraiment supprimer l’article suivant ?",
+    "success": "L’article a été supprimé.",
+    "title": "Supprimer l’article"
+  },
+  "empty": "Cette liste est vide.",
+  "gtin": "Global Trade Item Number (GTIN)",
+  "select": {
+    "ariaLabel": "Les articles sont des représentations génériques de produits ou de services, indépendantes de l’endroit où ils sont vendus.",
+    "label": "Article",
+    "placeholder": "Sélectionnez un article"
+  },
+  "sort": {
+    "options": {
+      "DisplayName": "Nom d’affichage",
+      "Gtin": "GTIN",
+      "UpdatedOn": "Dernière modification"
+    }
+  },
+  "title": {
+    "list": "Articles",
+    "new": "Nouvel article"
+  },
+  "updated": "L’article a été enregistré."
+}

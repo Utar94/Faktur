@@ -163,7 +163,7 @@ watch(
         @descending="setQuery('isDescending', $event.toString())"
         @update:model-value="setQuery('sort', $event ?? '')"
       />
-      <CountSelect class="col-lg-3" :model-value="count" @update:model-value="setQuery('count', ($event ?? 10).toString())" />
+      <CountSelect class="col-lg-3" :model-value="count.toString()" @update:model-value="setQuery('count', ($event ?? 10).toString())" />
     </div>
     <template v-if="stores.length">
       <table class="table table-striped">

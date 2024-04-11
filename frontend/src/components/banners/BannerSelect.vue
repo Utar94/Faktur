@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { TarSelect, type SelectOption } from "logitar-vue3-ui";
+import { TarSelect, type SelectOption, type SelectOptions } from "logitar-vue3-ui";
 import { computed, inject, onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
 
@@ -14,25 +14,13 @@ const banners = ref<Banner[]>([]);
 
 const options = computed<SelectOption[]>(() => banners.value.map(({ id, displayName }) => ({ value: id, text: displayName })));
 
-withDefaults(
-  defineProps<{
-    ariaLabel?: string;
-    floating?: boolean;
-    id?: string;
-    label?: string;
-    modelValue?: string;
-    placeholder?: string;
-    required?: boolean;
-  }>(),
-  {
-    ariaLabel: "banners.select.ariaLabel",
-    floating: true,
-    id: "banner",
-    label: "banners.select.label",
-    placeholder: "banners.select.placeholder",
-    required: false,
-  },
-);
+const props = withDefaults(defineProps<SelectOptions>(), {
+  ariaLabel: "banners.select.ariaLabel",
+  floating: true,
+  id: "banner",
+  label: "banners.select.label",
+  placeholder: "banners.select.placeholder",
+});
 
 onMounted(async () => {
   try {
@@ -64,14 +52,11 @@ defineEmits<{
 
 <template>
   <TarSelect
+    v-bind="props"
     :aria-label="t(ariaLabel)"
-    :floating="floating"
-    :id="id"
     :label="t(label)"
-    :model-value="modelValue"
     :options="options"
     :placeholder="t(placeholder)"
-    :required="required"
     @update:model-value="$emit('update:model-value', $event)"
   />
 </template>

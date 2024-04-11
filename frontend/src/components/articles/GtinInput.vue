@@ -6,10 +6,10 @@ const { t } = useI18n();
 
 const props = withDefaults(defineProps<InputOptions>(), {
   floating: true,
-  id: "search",
-  label: "search",
-  placeholder: "search",
-  type: "search",
+  id: "gtin",
+  label: "articles.gtin",
+  max: 14,
+  placeholder: "articles.gtin",
 });
 
 defineEmits<{

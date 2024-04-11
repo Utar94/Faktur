@@ -1,0 +1,27 @@
+{
+  "created": "The article has been created.",
+  "delete": {
+    "confirm": "Do you really want to delete the following article?",
+    "success": "The article has been deleted.",
+    "title": "Delete article"
+  },
+  "empty": "This list is empty.",
+  "gtin": "Global Trade Item Number (GTIN)",
+  "select": {
+    "ariaLabel": "Articles are generic representations of products or services, independent from where they are sold.",
+    "label": "Article",
+    "placeholder": "Select an article"
+  },
+  "sort": {
+    "options": {
+      "DisplayName": "Display name",
+      "Gtin": "GTIN",
+      "UpdatedOn": "Updated on"
+    }
+  },
+  "title": {
+    "list": "Articles",
+    "new": "New article"
+  },
+  "updated": "The article has been updated."
+}
