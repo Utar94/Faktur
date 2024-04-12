@@ -2,6 +2,7 @@
   "actions": {
     "back": "Retour",
     "cancel": "Annuler",
+    "clear": "Vider",
     "close": "Fermer",
     "create": "Créer",
     "delete": "Supprimer",
@@ -19,6 +20,7 @@
   "displayName": "Nom d’affichage",
   "flag": "Marqueur",
   "flags": "Marqueurs",
+  "general": "Général",
   "loading": "Chargement...",
   "notFound": {
     "help": "La page demandée n’a pu être trouvée.",

@@ -2,6 +2,7 @@
   "actions": {
     "back": "Go back",
     "cancel": "Cancel",
+    "clear": "Clear",
     "close": "Close",
     "create": "Create",
     "delete": "Delete",
@@ -19,6 +20,7 @@
   "displayName": "Display Name",
   "flag": "Flag",
   "flags": "Flags",
+  "general": "General",
   "loading": "Loading...",
   "notFound": {
     "help": "The requested page could not be found.",

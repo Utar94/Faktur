@@ -1,5 +1,28 @@
 {
+  "address": {
+    "country": {
+      "ariaLabel": "Le pays de l’adresse postale.",
+      "label": "Pays",
+      "placeholder": "Sélectionnez un pays"
+    },
+    "locality": "Ville",
+    "postalCode": "Code postal",
+    "region": {
+      "ariaLabel": "La région, province ou état de l’adresse postale.",
+      "label": "Région",
+      "placeholder": "Sélectionnez une région"
+    },
+    "street": "Numéro et nom de rue",
+    "title": "Adresse postale"
+  },
+  "email": {
+    "address": "Adresse courriel"
+  },
   "password": "Mot de passe",
+  "phone": {
+    "extension": "Extension téléphonique",
+    "number": "Numéro de téléphone"
+  },
   "signIn": {
     "failed": "Connexion échouée !",
     "invalidCredentials": "Veuillez vérifier que vous avez entré votre nom d’utilisateur et mot de passe.",
