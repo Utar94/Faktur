@@ -123,15 +123,19 @@ internal class ReceiptItemQuerier : IReceiptItemQuerier
   {
     return (await MapAsync([item], cancellationToken)).Single();
   }
-  private async Task<IEnumerable<ReceiptItem>> MapAsync(IEnumerable<ReceiptItemEntity> items, CancellationToken cancellationToken)
+  private async Task<IEnumerable<ReceiptItem>> MapAsync(IEnumerable<ReceiptItemEntity> entities, CancellationToken cancellationToken)
   {
-    if (!items.Any())
+    if (!entities.Any())
     {
       return [];
     }
 
-    Dictionary<int, ReceiptEntity> receipts = new(capacity: items.Count());
-    foreach (ReceiptItemEntity item in items)
+    IEnumerable<ActorId> actorIds = entities.SelectMany(item => item.GetActorIds(includeReceipt: true));
+    IEnumerable<Actor> actors = await _actorService.FindAsync(actorIds, cancellationToken);
+    Mapper mapper = new(actors);
+
+    Dictionary<int, ReceiptEntity> receipts = new(capacity: entities.Count());
+    foreach (ReceiptItemEntity item in entities)
     {
       if (item.Receipt != null)
       {
@@ -139,12 +143,10 @@ internal class ReceiptItemQuerier : IReceiptItemQuerier
       }
     }
     ReceiptEntity receiptEntity = receipts.Values.Single();
+    Receipt receipt = mapper.ToReceipt(receiptEntity, includeItems: false);
 
-    IEnumerable<ActorId> actorIds = receiptEntity.GetActorIds(includeItems: true);
-    IEnumerable<Actor> actors = await _actorService.FindAsync(actorIds, cancellationToken);
-    Mapper mapper = new(actors);
-
-    Receipt receipt = mapper.ToReceipt(receiptEntity, includeItems: true);
+    IEnumerable<ReceiptItem> items = entities.Select(item => mapper.ToReceiptItem(item, receipt));
+    receipt.Items.AddRange(items);
     return receipt.Items;
   }
 }

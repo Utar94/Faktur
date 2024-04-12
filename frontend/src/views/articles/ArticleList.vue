@@ -59,10 +59,10 @@ async function refresh(): Promise<void> {
   const now = Date.now();
   timestamp.value = now;
   try {
-    const data = await searchArticles(payload);
+    const results = await searchArticles(payload);
     if (now === timestamp.value) {
-      articles.value = data.items;
-      total.value = data.total;
+      articles.value = results.items;
+      total.value = results.total;
     }
   } catch (e: unknown) {
     handleError(e);
@@ -135,7 +135,7 @@ watch(
 <template>
   <main class="container">
     <h1>{{ t("articles.title.list") }}</h1>
-    <div class="my-2">
+    <div class="my-3">
       <TarButton
         class="me-1"
         :disabled="isLoading"

@@ -1,0 +1,22 @@
+{
+  "created": "The department has been created.",
+  "delete": {
+    "confirm": "Do you really want to delete the following department?",
+    "success": "The department has been deleted.",
+    "title": "Delete department"
+  },
+  "empty": "This list is empty.",
+  "sort": {
+    "options": {
+      "DisplayName": "Display name",
+      "Number": "Number",
+      "UpdatedOn": "Updated on"
+    }
+  },
+  "title": {
+    "edit": "Edit department",
+    "list": "Departments",
+    "new": "New department"
+  },
+  "updated": "The department has been updated."
+}

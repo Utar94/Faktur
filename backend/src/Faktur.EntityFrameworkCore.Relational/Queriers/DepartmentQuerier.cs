@@ -98,15 +98,19 @@ internal class DepartmentQuerier : IDepartmentQuerier
   {
     return (await MapAsync([department], cancellationToken)).Single();
   }
-  private async Task<IEnumerable<Department>> MapAsync(IEnumerable<DepartmentEntity> departments, CancellationToken cancellationToken)
+  private async Task<IEnumerable<Department>> MapAsync(IEnumerable<DepartmentEntity> entities, CancellationToken cancellationToken)
   {
-    if (!departments.Any())
+    if (!entities.Any())
     {
       return [];
     }
 
-    Dictionary<int, StoreEntity> stores = new(capacity: departments.Count());
-    foreach (DepartmentEntity department in departments)
+    IEnumerable<ActorId> actorIds = entities.SelectMany(department => department.GetActorIds(includeStore: true));
+    IEnumerable<Actor> actors = await _actorService.FindAsync(actorIds, cancellationToken);
+    Mapper mapper = new(actors);
+
+    Dictionary<int, StoreEntity> stores = new(capacity: entities.Count());
+    foreach (DepartmentEntity department in entities)
     {
       if (department.Store != null)
       {
@@ -114,12 +118,10 @@ internal class DepartmentQuerier : IDepartmentQuerier
       }
     }
     StoreEntity storeEntity = stores.Values.Single();
+    Store store = mapper.ToStore(storeEntity, includeDepartments: false);
 
-    IEnumerable<ActorId> actorIds = storeEntity.GetActorIds(includeDepartments: true);
-    IEnumerable<Actor> actors = await _actorService.FindAsync(actorIds, cancellationToken);
-    Mapper mapper = new(actors);
-
-    Store store = mapper.ToStore(storeEntity, includeDepartments: true);
-    return store.Departments;
+    IEnumerable<Department> departments = entities.Select(department => mapper.ToDepartment(department, store));
+    store.Departments.AddRange(departments);
+    return departments;
   }
 }
