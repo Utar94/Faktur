@@ -20,6 +20,7 @@
   "emailAddress": "Email Address",
   "flag": "Flag",
   "flags": "Flags",
+  "general": "General",
   "loading": "Loading...",
   "notFound": {
     "help": "The requested page could not be found.",

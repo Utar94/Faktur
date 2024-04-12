@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { TarButton } from "logitar-vue3-ui";
+import { TarButton, TarTab, TarTabs } from "logitar-vue3-ui";
 import { computed, inject, onMounted, ref } from "vue";
 import { useForm } from "vee-validate";
 import { useI18n } from "vue-i18n";
@@ -8,10 +8,11 @@ import { useRoute, useRouter } from "vue-router";
 import BannerSelect from "@/components/banners/BannerSelect.vue";
 import DescriptionTextarea from "@/components/shared/DescriptionTextarea.vue";
 import DisplayNameInput from "@/components/shared/DisplayNameInput.vue";
+import EmailInput from "@/components/shared/EmailInput.vue";
 import NumberInput from "@/components/shared/NumberInput.vue";
 import StatusDetail from "@/components/shared/StatusDetail.vue";
 import type { ApiError } from "@/types/api";
-import type { Store } from "@/types/stores";
+import type { EmailPayload, Store } from "@/types/stores";
 import { createStore, readStore, replaceStore } from "@/api/stores";
 import { handleErrorKey } from "@/inject/App";
 import { useToastStore } from "@/stores/toast";
@@ -23,18 +24,20 @@ const toasts = useToastStore();
 const { t } = useI18n();
 
 const bannerId = ref<string>("");
-const store = ref<Store>();
 const description = ref<string>("");
 const displayName = ref<string>("");
+const email = ref<EmailPayload>({ address: "", isVerified: false });
 const hasLoaded = ref<boolean>(false);
 const number = ref<string>("");
+const store = ref<Store>();
 
 const hasChanges = computed<boolean>(() => {
   return (
     displayName.value !== (store.value?.displayName ?? "") ||
     bannerId.value !== (store.value?.banner?.id ?? "") ||
     number.value !== (store.value?.number ?? "") ||
-    description.value !== (store.value?.description ?? "")
+    description.value !== (store.value?.description ?? "") ||
+    email.value.address !== (store.value?.email?.address ?? "")
   );
 });
 
@@ -43,6 +46,7 @@ function setModel(model: Store): void {
   bannerId.value = model.banner?.id ?? "";
   description.value = model.description ?? "";
   displayName.value = model.displayName;
+  email.value = { address: model.email?.address ?? "", isVerified: model.email?.isVerified ?? false };
   number.value = model.number ?? "";
 }
 
@@ -57,6 +61,7 @@ const onSubmit = handleSubmit(async () => {
           number: number.value,
           displayName: displayName.value,
           description: description.value,
+          email: email.value.address ? email.value : undefined,
         },
         store.value.version,
       );
@@ -116,12 +121,19 @@ onMounted(async () => {
           />
           <TarButton class="ms-1" icon="fas fa-chevron-left" :text="t('actions.back')" :variant="hasChanges ? 'danger' : 'secondary'" @click="router.back()" />
         </div>
-        <DisplayNameInput required v-model="displayName" />
-        <div class="row">
-          <BannerSelect class="col-lg-6" v-model="bannerId" />
-          <NumberInput class="col-lg-6" v-model="number" />
-        </div>
-        <DescriptionTextarea v-model="description" />
+        <TarTabs>
+          <TarTab active :title="t('general')">
+            <DisplayNameInput required v-model="displayName" />
+            <div class="row">
+              <BannerSelect class="col-lg-6" v-model="bannerId" />
+              <NumberInput class="col-lg-6" v-model="number" />
+            </div>
+            <DescriptionTextarea v-model="description" />
+          </TarTab>
+          <TarTab :disabled="!store" :title="t('stores.contact')">
+            <EmailInput v-model="email.address" />
+          </TarTab>
+        </TarTabs>
       </form>
     </template>
   </main>

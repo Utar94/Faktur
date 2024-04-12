@@ -20,6 +20,7 @@
   "emailAddress": "Adresse courriel",
   "flag": "Marqueur",
   "flags": "Marqueurs",
+  "general": "Général",
   "loading": "Chargement...",
   "notFound": {
     "help": "La page demandée n’a pu être trouvée.",
