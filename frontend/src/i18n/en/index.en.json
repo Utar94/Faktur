@@ -17,6 +17,7 @@
   },
   "description": "Description",
   "displayName": "Display Name",
+  "emailAddress": "Email Address",
   "flag": "Flag",
   "flags": "Flags",
   "loading": "Loading...",

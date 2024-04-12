@@ -17,6 +17,7 @@
   },
   "description": "Description",
   "displayName": "Nom d’affichage",
+  "emailAddress": "Adresse courriel",
   "flag": "Marqueur",
   "flags": "Marqueurs",
   "loading": "Chargement...",
