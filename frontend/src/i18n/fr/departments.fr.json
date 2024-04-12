@@ -1,0 +1,22 @@
+{
+  "created": "Le département a été créé.",
+  "delete": {
+    "confirm": "Désirez-vous vraiment supprimer le département suivant ?",
+    "success": "Le département a été supprimé.",
+    "title": "Supprimer le département"
+  },
+  "empty": "Cette liste est vide.",
+  "sort": {
+    "options": {
+      "DisplayName": "Nom d’affichage",
+      "Number": "Numéro",
+      "UpdatedOn": "Dernière modification"
+    }
+  },
+  "title": {
+    "edit": "Éditer le département",
+    "list": "Départements",
+    "new": "Nouveau département"
+  },
+  "updated": "Le département a été enregistré."
+}

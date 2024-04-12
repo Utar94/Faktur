@@ -20,19 +20,13 @@ const router = useRouter();
 const toasts = useToastStore();
 const { t } = useI18n();
 
-const defaults = {
-  description: "",
-  displayName: "",
-};
-
 const banner = ref<Banner>();
-const description = ref<string>(defaults.description);
-const displayName = ref<string>(defaults.displayName);
+const description = ref<string>("");
+const displayName = ref<string>("");
 const hasLoaded = ref<boolean>(false);
 
 const hasChanges = computed<boolean>(() => {
-  const model = banner.value ?? defaults;
-  return displayName.value !== (model.displayName ?? "") || description.value !== (model.description ?? "");
+  return displayName.value !== (banner.value?.displayName ?? "") || description.value !== (banner.value?.description ?? "");
 });
 
 function setModel(model: Banner): void {

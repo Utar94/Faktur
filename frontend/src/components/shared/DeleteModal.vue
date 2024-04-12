@@ -32,7 +32,7 @@ defineEmits<{
 </script>
 
 <template>
-  <TarModal :close="t(close)" :id="id" ref="modalRef" :title="t(title)">
+  <TarModal :close="t(close)" fade :id="id" ref="modalRef" :title="t(title)">
     <p>
       {{ t(confirm) }}
       <br />

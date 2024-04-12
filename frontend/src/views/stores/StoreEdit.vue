@@ -11,6 +11,7 @@ import AddressPostalCodeInput from "@/components/users/AddressPostalCodeInput.vu
 import AddressRegionSelect from "@/components/users/AddressRegionSelect.vue";
 import AddressStreetTextarea from "@/components/users/AddressStreetTextarea.vue";
 import BannerSelect from "@/components/banners/BannerSelect.vue";
+import DepartmentList from "@/components/departments/DepartmentList.vue";
 import DescriptionTextarea from "@/components/shared/DescriptionTextarea.vue";
 import DisplayNameInput from "@/components/shared/DisplayNameInput.vue";
 import EmailAddressInput from "@/components/users/EmailAddressInput.vue";
@@ -200,6 +201,9 @@ onMounted(async () => {
               <AddressRegionSelect class="col-lg-6" :country="country" :required="Boolean(country?.regions?.length)" v-model="address.region" />
             </div>
             <TarButton :disabled="!isAddressRequired" icon="fas fa-times" :text="t('actions.clear')" variant="warning" @click="clearAddress" />
+          </TarTab>
+          <TarTab :disabled="!store" :title="t('departments.title.list')">
+            <DepartmentList v-if="store" :store="store" @error="handleError" />
           </TarTab>
         </TarTabs>
       </form>
