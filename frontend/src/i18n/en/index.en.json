@@ -2,6 +2,7 @@
   "actions": {
     "back": "Go back",
     "cancel": "Cancel",
+    "clear": "Clear",
     "close": "Close",
     "create": "Create",
     "delete": "Delete",
@@ -17,7 +18,6 @@
   },
   "description": "Description",
   "displayName": "Display Name",
-  "emailAddress": "Email Address",
   "flag": "Flag",
   "flags": "Flags",
   "general": "General",

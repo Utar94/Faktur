@@ -6,11 +6,10 @@ const { t } = useI18n();
 
 const props = withDefaults(defineProps<InputOptions>(), {
   floating: true,
-  id: "email",
-  label: "emailAddress",
-  max: 255,
-  placeholder: "emailAddress",
-  type: "email",
+  id: "phone-extension",
+  label: "users.phone.extension",
+  max: 10,
+  placeholder: "users.phone.extension",
 });
 
 defineEmits<{

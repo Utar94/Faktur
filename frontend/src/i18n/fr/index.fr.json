@@ -2,6 +2,7 @@
   "actions": {
     "back": "Retour",
     "cancel": "Annuler",
+    "clear": "Vider",
     "close": "Fermer",
     "create": "Créer",
     "delete": "Supprimer",
@@ -17,7 +18,6 @@
   },
   "description": "Description",
   "displayName": "Nom d’affichage",
-  "emailAddress": "Adresse courriel",
   "flag": "Marqueur",
   "flags": "Marqueurs",
   "general": "Général",

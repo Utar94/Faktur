@@ -45,9 +45,20 @@ onMounted(async () => {
   }
 });
 
-defineEmits<{
+const emit = defineEmits<{
+  (e: "selected", value?: Banner): void;
   (e: "update:model-value", value?: string): void;
 }>();
+
+function onModelValueUpdate(id?: string): void {
+  emit("update:model-value", id);
+  if (id) {
+    const banner = banners.value.find((banner) => banner.id === id);
+    emit("selected", banner);
+  } else {
+    emit("selected");
+  }
+}
 </script>
 
 <template>
@@ -57,6 +68,6 @@ defineEmits<{
     :label="t(label)"
     :options="options"
     :placeholder="t(placeholder)"
-    @update:model-value="$emit('update:model-value', $event)"
+    @update:model-value="onModelValueUpdate"
   />
 </template>

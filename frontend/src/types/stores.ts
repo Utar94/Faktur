@@ -31,6 +31,12 @@ export type ContactPayload = {
   isVerified: boolean;
 };
 
+export type CountrySettings = {
+  code: string;
+  postalCode?: string;
+  regions: string[];
+};
+
 export type CreateStorePayload = {
   bannerId?: string;
   number?: string;

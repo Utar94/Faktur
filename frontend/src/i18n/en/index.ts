@@ -1,5 +1,6 @@
 import articles from "./articles.en.json";
 import banners from "./banners.en.json";
+import countries from "./countries.en.json";
 import index from "./index.en.json";
 import stores from "./stores.en.json";
 import taxes from "./taxes.en.json";
@@ -9,6 +10,7 @@ export default {
   ...index,
   articles,
   banners,
+  countries,
   stores,
   taxes,
   users,
