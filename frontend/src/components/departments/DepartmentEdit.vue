@@ -43,10 +43,15 @@ const emit = defineEmits<{
 const { handleSubmit, isSubmitting } = useForm();
 const onSubmit = handleSubmit(async () => {
   try {
-    const department = await createOrReplaceDepartment(props.store.id, props.department?.number ?? number.value, {
-      displayName: displayName.value,
-      description: description.value,
-    });
+    const department = await createOrReplaceDepartment(
+      props.store.id,
+      props.department?.number ?? number.value,
+      {
+        displayName: displayName.value,
+        description: description.value,
+      },
+      props.store.version,
+    );
     emit("saved", department);
     hide();
   } catch (e: unknown) {

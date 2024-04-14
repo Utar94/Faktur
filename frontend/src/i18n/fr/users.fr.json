@@ -1,14 +1,12 @@
 {
   "address": {
     "country": {
-      "ariaLabel": "Le pays de l’adresse postale.",
       "label": "Pays",
       "placeholder": "Sélectionnez un pays"
     },
     "locality": "Ville",
     "postalCode": "Code postal",
     "region": {
-      "ariaLabel": "La région, province ou état de l’adresse postale.",
       "label": "Région",
       "placeholder": "Sélectionnez une région"
     },

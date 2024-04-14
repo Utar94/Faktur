@@ -8,15 +8,13 @@
     "delete": "Delete",
     "edit": "Edit",
     "refresh": "Refresh",
-    "save": "Save"
+    "save": "Save",
+    "title": "Actions"
   },
   "brand": "Faktur",
   "by": "By",
   "copyright": "© Logitar {version} {year}.",
-  "count": {
-    "ariaLabel": "The number of elements to display.",
-    "label": "Count"
-  },
+  "count": "Count",
   "description": "Description",
   "displayName": "Display Name",
   "flag": "Flag",
@@ -38,12 +36,8 @@
   },
   "search": "Search",
   "sort": {
-    "isDescending": {
-      "ariaLabel": "The elements will be sorted in descending order.",
-      "label": "Is descending"
-    },
+    "isDescending": "Is descending",
     "select": {
-      "ariaLabel": "The property used to sort the elements.",
       "label": "Sort",
       "placeholder": "Select a sort"
     }

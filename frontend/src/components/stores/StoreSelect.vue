@@ -3,27 +3,27 @@ import { TarSelect, type SelectOption, type SelectOptions } from "logitar-vue3-u
 import { computed, inject, onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
 
-import type { Banner } from "@/types/banners";
+import type { Store } from "@/types/stores";
 import { handleErrorKey } from "@/inject/App";
-import { searchBanners } from "@/api/banners";
+import { searchStores } from "@/api/stores";
 
 const handleError = inject(handleErrorKey) as (e: unknown) => void;
 const { t } = useI18n();
 
-const banners = ref<Banner[]>([]);
+const stores = ref<Store[]>([]);
 
-const options = computed<SelectOption[]>(() => banners.value.map(({ id, displayName }) => ({ value: id, text: displayName })));
+const options = computed<SelectOption[]>(() => stores.value.map(({ id, displayName }) => ({ value: id, text: displayName })));
 
 const props = withDefaults(defineProps<SelectOptions>(), {
   floating: true,
-  id: "banner",
-  label: "banners.select.label",
-  placeholder: "banners.select.placeholder",
+  id: "store",
+  label: "stores.select.label",
+  placeholder: "stores.select.placeholder",
 });
 
 onMounted(async () => {
   try {
-    const results = await searchBanners({
+    const results = await searchStores({
       ids: [],
       search: {
         terms: [],
@@ -38,22 +38,22 @@ onMounted(async () => {
       skip: 0,
       limit: 0,
     });
-    banners.value = results.items;
+    stores.value = results.items;
   } catch (e: unknown) {
     handleError(e);
   }
 });
 
 const emit = defineEmits<{
-  (e: "selected", value?: Banner): void;
+  (e: "selected", value?: Store): void;
   (e: "update:model-value", value?: string): void;
 }>();
 
 function onModelValueUpdate(id?: string): void {
   emit("update:model-value", id);
   if (id) {
-    const banner = banners.value.find((banner) => banner.id === id);
-    emit("selected", banner);
+    const store = stores.value.find((store) => store.id === id);
+    emit("selected", store);
   } else {
     emit("selected");
   }

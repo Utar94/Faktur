@@ -3,27 +3,27 @@ import { TarSelect, type SelectOption, type SelectOptions } from "logitar-vue3-u
 import { computed, inject, onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
 
-import type { Banner } from "@/types/banners";
+import type { Article } from "@/types/articles";
 import { handleErrorKey } from "@/inject/App";
-import { searchBanners } from "@/api/banners";
+import { searchArticles } from "@/api/articles";
 
 const handleError = inject(handleErrorKey) as (e: unknown) => void;
 const { t } = useI18n();
 
-const banners = ref<Banner[]>([]);
+const articles = ref<Article[]>([]);
 
-const options = computed<SelectOption[]>(() => banners.value.map(({ id, displayName }) => ({ value: id, text: displayName })));
+const options = computed<SelectOption[]>(() => articles.value.map(({ id, displayName }) => ({ value: id, text: displayName })));
 
 const props = withDefaults(defineProps<SelectOptions>(), {
   floating: true,
-  id: "banner",
-  label: "banners.select.label",
-  placeholder: "banners.select.placeholder",
+  id: "article",
+  label: "articles.select.label",
+  placeholder: "articles.select.placeholder",
 });
 
 onMounted(async () => {
   try {
-    const results = await searchBanners({
+    const results = await searchArticles({
       ids: [],
       search: {
         terms: [],
@@ -38,22 +38,22 @@ onMounted(async () => {
       skip: 0,
       limit: 0,
     });
-    banners.value = results.items;
+    articles.value = results.items;
   } catch (e: unknown) {
     handleError(e);
   }
 });
 
 const emit = defineEmits<{
-  (e: "selected", value?: Banner): void;
+  (e: "selected", value?: Article): void;
   (e: "update:model-value", value?: string): void;
 }>();
 
 function onModelValueUpdate(id?: string): void {
   emit("update:model-value", id);
   if (id) {
-    const banner = banners.value.find((banner) => banner.id === id);
-    emit("selected", banner);
+    const article = articles.value.find((article) => article.id === id);
+    emit("selected", article);
   } else {
     emit("selected");
   }

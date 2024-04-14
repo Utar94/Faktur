@@ -58,7 +58,7 @@ public class DeleteProductCommandTests : IntegrationTests
     };
     await _productRepository.SaveAsync(aggregate);
 
-    DeleteProductCommand command = new(_store.Id.ToGuid(), _article.Id.ToGuid());
+    DeleteProductCommand command = new(aggregate.Id.ToGuid());
     Product? product = await Mediator.Send(command);
     Assert.NotNull(product);
     Assert.Equal(aggregate.Id.ToGuid(), product.Id);
@@ -71,7 +71,7 @@ public class DeleteProductCommandTests : IntegrationTests
   [Fact(DisplayName = "It should return null when the product cannot be found.")]
   public async Task It_should_return_null_when_the_product_cannot_be_found()
   {
-    DeleteProductCommand command = new(StoreId: Guid.NewGuid(), ArticleId: Guid.NewGuid());
+    DeleteProductCommand command = new(Id: Guid.NewGuid());
     Assert.Null(await Mediator.Send(command));
   }
 }

@@ -6,21 +6,18 @@ import { useRoute, useRouter } from "vue-router";
 
 import AppPagination from "@/components/shared/AppPagination.vue";
 import CountSelect from "@/components/shared/CountSelect.vue";
-import DeleteModal from "@/components/shared/DeleteModal.vue";
 import SearchInput from "@/components/shared/SearchInput.vue";
 import SortSelect from "@/components/shared/SortSelect.vue";
 import StatusBlock from "@/components/shared/StatusBlock.vue";
 import type { Banner, BannerSort, SearchBannersPayload } from "@/types/banners";
-import { deleteBanner, searchBanners } from "@/api/banners";
 import { handleErrorKey } from "@/inject/App";
 import { isEmpty } from "@/helpers/objectUtils";
 import { orderBy } from "@/helpers/arrayUtils";
-import { useToastStore } from "@/stores/toast";
+import { searchBanners } from "@/api/banners";
 
 const handleError = inject(handleErrorKey) as (e: unknown) => void;
 const route = useRoute();
 const router = useRouter();
-const toasts = useToastStore();
 const { rt, t, tm } = useI18n();
 
 const banners = ref<Banner[]>([]);
@@ -70,23 +67,6 @@ async function refresh(): Promise<void> {
     if (now === timestamp.value) {
       isLoading.value = false;
     }
-  }
-}
-
-async function onDelete(banner: Banner, hideModal: () => void): Promise<void> {
-  if (!isLoading.value) {
-    isLoading.value = true;
-    try {
-      await deleteBanner(banner.id);
-      hideModal();
-      toasts.success("banners.delete.success");
-    } catch (e: unknown) {
-      handleError(e);
-      return;
-    } finally {
-      isLoading.value = false;
-    }
-    await refresh();
   }
 }
 
@@ -165,7 +145,6 @@ watch(
           <tr>
             <th scope="col">{{ t("banners.sort.options.DisplayName") }}</th>
             <th scope="col">{{ t("banners.sort.options.UpdatedOn") }}</th>
-            <th scope="col"></th>
           </tr>
         </thead>
         <tbody>
@@ -176,24 +155,6 @@ watch(
               </RouterLink>
             </td>
             <td><StatusBlock :actor="banner.updatedBy" :date="banner.updatedOn" /></td>
-            <td>
-              <TarButton
-                :disabled="isLoading"
-                icon="fas fa-trash"
-                :text="t('actions.delete')"
-                variant="danger"
-                data-bs-toggle="modal"
-                :data-bs-target="`#deleteModal_${banner.id}`"
-              />
-              <DeleteModal
-                confirm="banners.delete.confirm"
-                :display-name="banner.displayName"
-                :id="`deleteModal_${banner.id}`"
-                :loading="isLoading"
-                title="banners.delete.title"
-                @ok="onDelete(banner, $event)"
-              />
-            </td>
           </tr>
         </tbody>
       </table>

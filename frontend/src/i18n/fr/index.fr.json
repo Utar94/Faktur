@@ -8,15 +8,13 @@
     "delete": "Supprimer",
     "edit": "Éditer",
     "refresh": "Rafraîchir",
-    "save": "Enregistrer"
+    "save": "Enregistrer",
+    "title": "Actions"
   },
   "brand": "Faktur",
   "by": "Par",
   "copyright": "© Logitar {version} {year}.",
-  "count": {
-    "ariaLabel": "Le nombre de résultats à afficher.",
-    "label": "Nombre de résultats"
-  },
+  "count": "Nombre de résultats",
   "description": "Description",
   "displayName": "Nom d’affichage",
   "flag": "Marqueur",
@@ -38,12 +36,8 @@
   },
   "search": "Recherche",
   "sort": {
-    "isDescending": {
-      "ariaLabel": "Les éléments seront trier en ordre descendant.",
-      "label": "Descendant"
-    },
+    "isDescending": "Descendant",
     "select": {
-      "ariaLabel": "La propriété à utiliser pour trier les éléments.",
       "label": "Tri",
       "placeholder": "Sélectionnez un tri"
     }

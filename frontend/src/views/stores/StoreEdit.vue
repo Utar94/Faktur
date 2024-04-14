@@ -10,6 +10,9 @@ import AddressLocalityInput from "@/components/users/AddressLocalityInput.vue";
 import AddressPostalCodeInput from "@/components/users/AddressPostalCodeInput.vue";
 import AddressRegionSelect from "@/components/users/AddressRegionSelect.vue";
 import AddressStreetTextarea from "@/components/users/AddressStreetTextarea.vue";
+import AppBackButton from "@/components/shared/AppBackButton.vue";
+import AppDelete from "@/components/shared/AppDelete.vue";
+import AppSaveButton from "@/components/shared/AppSaveButton.vue";
 import BannerSelect from "@/components/banners/BannerSelect.vue";
 import DepartmentList from "@/components/departments/DepartmentList.vue";
 import DescriptionTextarea from "@/components/shared/DescriptionTextarea.vue";
@@ -22,7 +25,7 @@ import StatusDetail from "@/components/shared/StatusDetail.vue";
 import countries from "@/resources/countries.json";
 import type { AddressPayload, CountrySettings, EmailPayload, PhonePayload, Store } from "@/types/stores";
 import type { ApiError } from "@/types/api";
-import { createStore, readStore, replaceStore } from "@/api/stores";
+import { createStore, deleteStore, readStore, replaceStore } from "@/api/stores";
 import { handleErrorKey } from "@/inject/App";
 import { useToastStore } from "@/stores/toast";
 
@@ -39,12 +42,13 @@ const description = ref<string>("");
 const displayName = ref<string>("");
 const email = ref<EmailPayload>({ address: "", isVerified: false });
 const hasLoaded = ref<boolean>(false);
+const isDeleting = ref<boolean>(false);
 const number = ref<string>("");
 const phone = ref<PhonePayload>({ number: "", isVerified: false });
 const store = ref<Store>();
 
-const hasChanges = computed<boolean>(() => {
-  return (
+const hasChanges = computed<boolean>(
+  () =>
     displayName.value !== (store.value?.displayName ?? "") ||
     bannerId.value !== (store.value?.banner?.id ?? "") ||
     number.value !== (store.value?.number ?? "") ||
@@ -57,12 +61,27 @@ const hasChanges = computed<boolean>(() => {
     email.value.address !== (store.value?.email?.address ?? "") ||
     (phone.value.countryCode ?? "") !== (store.value?.phone?.countryCode ?? "") ||
     phone.value.number !== (store.value?.phone?.number ?? "") ||
-    (phone.value.extension ?? "") !== (store.value?.phone?.extension ?? "")
-  );
-});
+    (phone.value.extension ?? "") !== (store.value?.phone?.extension ?? ""),
+);
 const isAddressRequired = computed<boolean>(() =>
   Boolean(address.value.street || address.value.locality || address.value.postalCode || address.value.region || address.value.country),
 );
+
+async function onDelete(hideModal: () => void): Promise<void> {
+  if (store.value && !isDeleting.value) {
+    isDeleting.value = true;
+    try {
+      await deleteStore(store.value.id);
+      hideModal();
+      toasts.success("stores.delete.success");
+      router.push({ name: "StoreList" });
+    } catch (e: unknown) {
+      handleError(e);
+    } finally {
+      isDeleting.value = false;
+    }
+  }
+}
 
 function setModel(model: Store): void {
   store.value = model;
@@ -136,6 +155,7 @@ function clearAddress(): void {
 
 onMounted(async () => {
   try {
+    bannerId.value = route.query.bannerId?.toString() ?? "";
     const id = route.params.id?.toString();
     if (id) {
       const store = await readStore(id);
@@ -163,17 +183,17 @@ onMounted(async () => {
       <StatusDetail v-if="store" :aggregate="store" />
       <form @submit.prevent="onSubmit">
         <div class="mb-3">
-          <TarButton
-            class="me-1"
-            :disabled="isSubmitting || !hasChanges"
-            :icon="store ? 'fas fa-save' : 'fas fa-plus'"
-            :loading="isSubmitting"
-            :status="t('loading')"
-            :text="t(store ? 'actions.save' : 'actions.create')"
-            type="submit"
-            :variant="store ? 'primary' : 'success'"
+          <AppSaveButton class="me-1" :disabled="isSubmitting || !hasChanges" :exists="Boolean(store)" :loading="isSubmitting" />
+          <AppBackButton class="mx-1" :has-changes="hasChanges" />
+          <AppDelete
+            v-if="store"
+            class="ms-1"
+            confirm="stores.delete.confirm"
+            :displayName="store.displayName"
+            :loading="isDeleting"
+            title="stores.delete.title"
+            @confirmed="onDelete"
           />
-          <TarButton class="ms-1" icon="fas fa-chevron-left" :text="t('actions.back')" :variant="hasChanges ? 'danger' : 'secondary'" @click="router.back()" />
         </div>
         <TarTabs>
           <TarTab active :title="t('general')">

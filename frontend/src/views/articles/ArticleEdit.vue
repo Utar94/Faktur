@@ -1,17 +1,19 @@
 <script setup lang="ts">
-import { TarButton } from "logitar-vue3-ui";
 import { computed, inject, onMounted, ref } from "vue";
 import { useForm } from "vee-validate";
 import { useI18n } from "vue-i18n";
 import { useRoute, useRouter } from "vue-router";
 
+import AppBackButton from "@/components/shared/AppBackButton.vue";
+import AppDelete from "@/components/shared/AppDelete.vue";
+import AppSaveButton from "@/components/shared/AppSaveButton.vue";
 import DescriptionTextarea from "@/components/shared/DescriptionTextarea.vue";
 import DisplayNameInput from "@/components/shared/DisplayNameInput.vue";
 import GtinInput from "@/components/articles/GtinInput.vue";
 import StatusDetail from "@/components/shared/StatusDetail.vue";
 import type { ApiError } from "@/types/api";
 import type { Article } from "@/types/articles";
-import { createArticle, readArticle, replaceArticle } from "@/api/articles";
+import { createArticle, deleteArticle, readArticle, replaceArticle } from "@/api/articles";
 import { handleErrorKey } from "@/inject/App";
 import { useToastStore } from "@/stores/toast";
 
@@ -26,14 +28,30 @@ const description = ref<string>("");
 const displayName = ref<string>("");
 const gtin = ref<string>("");
 const hasLoaded = ref<boolean>(false);
+const isDeleting = ref<boolean>(false);
 
-const hasChanges = computed<boolean>(() => {
-  return (
+const hasChanges = computed<boolean>(
+  () =>
     displayName.value !== (article.value?.displayName ?? "") ||
     gtin.value !== (article.value?.gtin ?? "") ||
-    description.value !== (article.value?.description ?? "")
-  );
-});
+    description.value !== (article.value?.description ?? ""),
+);
+
+async function onDelete(hideModal: () => void): Promise<void> {
+  if (article.value && !isDeleting.value) {
+    isDeleting.value = true;
+    try {
+      await deleteArticle(article.value.id);
+      hideModal();
+      toasts.success("articles.delete.success");
+      router.push({ name: "ArticleList" });
+    } catch (e: unknown) {
+      handleError(e);
+    } finally {
+      isDeleting.value = false;
+    }
+  }
+}
 
 function setModel(model: Article): void {
   article.value = model;
@@ -98,20 +116,22 @@ onMounted(async () => {
       <StatusDetail v-if="article" :aggregate="article" />
       <form @submit.prevent="onSubmit">
         <div class="mb-3">
-          <TarButton
-            class="me-1"
-            :disabled="isSubmitting || !hasChanges"
-            :icon="article ? 'fas fa-save' : 'fas fa-plus'"
-            :loading="isSubmitting"
-            :status="t('loading')"
-            :text="t(article ? 'actions.save' : 'actions.create')"
-            type="submit"
-            :variant="article ? 'primary' : 'success'"
+          <AppSaveButton class="me-1" :disabled="isSubmitting || !hasChanges" :exists="Boolean(article)" :loading="isSubmitting" />
+          <AppBackButton class="mx-1" :has-changes="hasChanges" />
+          <AppDelete
+            v-if="article"
+            class="ms-1"
+            confirm="articles.delete.confirm"
+            :displayName="article.displayName"
+            :loading="isDeleting"
+            title="articles.delete.title"
+            @confirmed="onDelete"
           />
-          <TarButton class="ms-1" icon="fas fa-chevron-left" :text="t('actions.back')" :variant="hasChanges ? 'danger' : 'secondary'" @click="router.back()" />
         </div>
-        <DisplayNameInput required v-model="displayName" />
-        <GtinInput v-model="gtin" />
+        <div class="row">
+          <DisplayNameInput class="col-lg-6" required v-model="displayName" />
+          <GtinInput class="col-lg-6" v-model="gtin" />
+        </div>
         <DescriptionTextarea v-model="description" />
       </form>
     </template>

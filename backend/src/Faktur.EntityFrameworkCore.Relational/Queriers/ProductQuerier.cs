@@ -115,6 +115,16 @@ internal class ProductQuerier : IProductQuerier
             ? (sort.IsDescending ? query.OrderByDescending(x => x.DisplayName) : query.OrderBy(x => x.DisplayName))
             : (sort.IsDescending ? ordered.ThenByDescending(x => x.DisplayName) : ordered.ThenBy(x => x.DisplayName));
           break;
+        case ProductSort.Sku:
+          ordered = (ordered == null)
+            ? (sort.IsDescending ? query.OrderByDescending(x => x.Sku) : query.OrderBy(x => x.Sku))
+            : (sort.IsDescending ? ordered.ThenByDescending(x => x.Sku) : ordered.ThenBy(x => x.Sku));
+          break;
+        case ProductSort.UnitPrice:
+          ordered = (ordered == null)
+            ? (sort.IsDescending ? query.OrderByDescending(x => x.UnitPrice) : query.OrderBy(x => x.UnitPrice))
+            : (sort.IsDescending ? ordered.ThenByDescending(x => x.UnitPrice) : ordered.ThenBy(x => x.UnitPrice));
+          break;
         case ProductSort.UpdatedOn:
           ordered = (ordered == null)
             ? (sort.IsDescending ? query.OrderByDescending(x => x.UpdatedOn) : query.OrderBy(x => x.UpdatedOn))

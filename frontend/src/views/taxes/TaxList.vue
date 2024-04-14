@@ -6,22 +6,19 @@ import { useRoute, useRouter } from "vue-router";
 
 import AppPagination from "@/components/shared/AppPagination.vue";
 import CountSelect from "@/components/shared/CountSelect.vue";
-import DeleteModal from "@/components/shared/DeleteModal.vue";
 import FlagInput from "@/components/shared/FlagInput.vue";
 import SearchInput from "@/components/shared/SearchInput.vue";
 import SortSelect from "@/components/shared/SortSelect.vue";
 import StatusBlock from "@/components/shared/StatusBlock.vue";
 import type { SearchTaxesPayload, Tax, TaxSort } from "@/types/taxes";
-import { deleteTax, searchTaxes } from "@/api/taxes";
 import { handleErrorKey } from "@/inject/App";
 import { isEmpty } from "@/helpers/objectUtils";
 import { orderBy } from "@/helpers/arrayUtils";
-import { useToastStore } from "@/stores/toast";
+import { searchTaxes } from "@/api/taxes";
 
 const handleError = inject(handleErrorKey) as (e: unknown) => void;
 const route = useRoute();
 const router = useRouter();
-const toasts = useToastStore();
 const { n, rt, t, tm } = useI18n();
 
 const isLoading = ref<boolean>(false);
@@ -73,23 +70,6 @@ async function refresh(): Promise<void> {
     if (now === timestamp.value) {
       isLoading.value = false;
     }
-  }
-}
-
-async function onDelete(tax: Tax, hideModal: () => void): Promise<void> {
-  if (!isLoading.value) {
-    isLoading.value = true;
-    try {
-      await deleteTax(tax.id);
-      hideModal();
-      toasts.success("taxes.delete.success");
-    } catch (e: unknown) {
-      handleError(e);
-      return;
-    } finally {
-      isLoading.value = false;
-    }
-    await refresh();
   }
 }
 
@@ -173,7 +153,6 @@ watch(
             <th scope="col">{{ t("taxes.sort.options.Rate") }}</th>
             <th scope="col">{{ t("flags") }}</th>
             <th scope="col">{{ t("taxes.sort.options.UpdatedOn") }}</th>
-            <th scope="col"></th>
           </tr>
         </thead>
         <tbody>
@@ -184,24 +163,6 @@ watch(
             <td>{{ n(tax.rate, "percent") }}</td>
             <td>{{ tax.flags ?? "—" }}</td>
             <td><StatusBlock :actor="tax.updatedBy" :date="tax.updatedOn" /></td>
-            <td>
-              <TarButton
-                :disabled="isLoading"
-                icon="fas fa-trash"
-                :text="t('actions.delete')"
-                variant="danger"
-                data-bs-toggle="modal"
-                :data-bs-target="`#deleteModal_${tax.id}`"
-              />
-              <DeleteModal
-                confirm="taxes.delete.confirm"
-                :display-name="tax.code"
-                :id="`deleteModal_${tax.id}`"
-                :loading="isLoading"
-                title="taxes.delete.title"
-                @ok="onDelete(tax, $event)"
-              />
-            </td>
           </tr>
         </tbody>
       </table>

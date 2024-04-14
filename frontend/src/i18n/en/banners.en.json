@@ -7,7 +7,6 @@
   },
   "empty": "This list is empty.",
   "select": {
-    "ariaLabel": "Banners are groupings of stores.",
     "label": "Banner",
     "placeholder": "Select a banner"
   },

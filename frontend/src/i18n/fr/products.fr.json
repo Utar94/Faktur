@@ -1,0 +1,32 @@
+{
+  "created": "Le produit a été créé.",
+  "delete": {
+    "confirm": "Désirez-vous vraiment supprimer le produit suivant ?",
+    "success": "Le produit a été supprimé.",
+    "title": "Supprimer le produit"
+  },
+  "empty": "Cette liste est vide.",
+  "sku": "Stock-Keeping Unit (SKU)",
+  "sort": {
+    "options": {
+      "DisplayName": "Nom d’affichage",
+      "Sku": "Stock-Keeping Unit (SKU)",
+      "UnitPrice": "Prix unitaire",
+      "UpdatedOn": "Dernière modification"
+    }
+  },
+  "title": {
+    "list": "Produits",
+    "new": "Nouveau produit"
+  },
+  "unitPrice": "Prix unitaire",
+  "unitType": {
+    "label": "Type d’unité",
+    "options": {
+      "Kg": "Kilogrammes (kg)",
+      "Lbs": "Livres (lbs)"
+    },
+    "placeholder": "Sélectionnez un type d’unité"
+  },
+  "updated": "Le produit a été enregistré."
+}

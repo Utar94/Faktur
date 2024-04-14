@@ -6,6 +6,10 @@
     "title": "Supprimer le département"
   },
   "empty": "Cette liste est vide.",
+  "select": {
+    "label": "Département",
+    "placeholder": "Sélectionnez un département"
+  },
   "sort": {
     "options": {
       "DisplayName": "Nom d’affichage",

@@ -7,21 +7,18 @@ import { useRoute, useRouter } from "vue-router";
 import AppPagination from "@/components/shared/AppPagination.vue";
 import BannerSelect from "@/components/banners/BannerSelect.vue";
 import CountSelect from "@/components/shared/CountSelect.vue";
-import DeleteModal from "@/components/shared/DeleteModal.vue";
 import SearchInput from "@/components/shared/SearchInput.vue";
 import SortSelect from "@/components/shared/SortSelect.vue";
 import StatusBlock from "@/components/shared/StatusBlock.vue";
 import type { Store, StoreSort, SearchStoresPayload } from "@/types/stores";
-import { deleteStore, searchStores } from "@/api/stores";
 import { handleErrorKey } from "@/inject/App";
 import { isEmpty } from "@/helpers/objectUtils";
 import { orderBy } from "@/helpers/arrayUtils";
-import { useToastStore } from "@/stores/toast";
+import { searchStores } from "@/api/stores";
 
 const handleError = inject(handleErrorKey) as (e: unknown) => void;
 const route = useRoute();
 const router = useRouter();
-const toasts = useToastStore();
 const { rt, t, tm } = useI18n();
 
 const isLoading = ref<boolean>(false);
@@ -73,23 +70,6 @@ async function refresh(): Promise<void> {
     if (now === timestamp.value) {
       isLoading.value = false;
     }
-  }
-}
-
-async function onDelete(store: Store, hideModal: () => void): Promise<void> {
-  if (!isLoading.value) {
-    isLoading.value = true;
-    try {
-      await deleteStore(store.id);
-      hideModal();
-      toasts.success("stores.delete.success");
-    } catch (e: unknown) {
-      handleError(e);
-      return;
-    } finally {
-      isLoading.value = false;
-    }
-    await refresh();
   }
 }
 
@@ -150,7 +130,9 @@ watch(
         :text="t('actions.refresh')"
         @click="refresh()"
       />
-      <RouterLink :to="{ name: 'CreateStore' }" class="btn btn-success ms-1"><font-awesome-icon icon="fas fa-plus" /> {{ t("actions.create") }}</RouterLink>
+      <RouterLink :to="{ name: 'CreateStore', query: { bannerId: bannerId || undefined } }" class="btn btn-success ms-1">
+        <font-awesome-icon icon="fas fa-plus" /> {{ t("actions.create") }}
+      </RouterLink>
     </div>
     <div class="row">
       <BannerSelect class="col-lg-3" :model-value="bannerId" @update:model-value="setQuery('bannerId', $event ?? '')" />
@@ -170,10 +152,9 @@ watch(
         <thead>
           <tr>
             <th scope="col">{{ t("stores.sort.options.DisplayName") }}</th>
+            <th scope="col">{{ t("banners.select.label") }}</th>
             <th scope="col">{{ t("stores.sort.options.Number") }}</th>
             <th scope="col">{{ t("stores.sort.options.DepartmentCount") }}</th>
-            <th scope="col">{{ t("stores.sort.options.UpdatedOn") }}</th>
-            <th scope="col"></th>
           </tr>
         </thead>
         <tbody>
@@ -181,27 +162,15 @@ watch(
             <td>
               <RouterLink :to="{ name: 'StoreEdit', params: { id: store.id } }"> <font-awesome-icon icon="fas fa-edit" />{{ store.displayName }} </RouterLink>
             </td>
+            <td scope="col">
+              <RouterLink v-if="store.banner" :to="{ name: 'BannerEdit', params: { id: store.banner.id } }">
+                <font-awesome-icon icon="fas fa-eye" />{{ store.banner.displayName }}
+              </RouterLink>
+              <template v-else>{{ "—" }}</template>
+            </td>
             <td>{{ store.number ?? "—" }}</td>
             <td>{{ store.departmentCount }}</td>
             <td><StatusBlock :actor="store.updatedBy" :date="store.updatedOn" /></td>
-            <td>
-              <TarButton
-                :disabled="isLoading"
-                icon="fas fa-trash"
-                :text="t('actions.delete')"
-                variant="danger"
-                data-bs-toggle="modal"
-                :data-bs-target="`#deleteModal_${store.id}`"
-              />
-              <DeleteModal
-                confirm="stores.delete.confirm"
-                :display-name="store.displayName"
-                :id="`deleteModal_${store.id}`"
-                :loading="isLoading"
-                title="stores.delete.title"
-                @ok="onDelete(store, $event)"
-              />
-            </td>
           </tr>
         </tbody>
       </table>

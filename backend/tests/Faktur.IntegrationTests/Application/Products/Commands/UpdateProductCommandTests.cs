@@ -51,7 +51,7 @@ public class UpdateProductCommandTests : IntegrationTests
   public async Task It_should_return_null_when_the_product_cannot_be_found()
   {
     UpdateProductPayload payload = new();
-    UpdateProductCommand command = new(StoreId: Guid.NewGuid(), ArticleId: Guid.NewGuid(), payload);
+    UpdateProductCommand command = new(Id: Guid.NewGuid(), payload);
     Assert.Null(await Mediator.Send(command));
   }
 
@@ -62,7 +62,7 @@ public class UpdateProductCommandTests : IntegrationTests
     {
       Flags = new Modification<string>(RandomStringGenerator.GetString("ABCDEFGHIJKLMNOPQRSTUVWXYZ", FlagsUnit.MaximumLength + 1))
     };
-    UpdateProductCommand command = new(_store.Id.ToGuid(), _article.Id.ToGuid(), payload);
+    UpdateProductCommand command = new(Id: Guid.NewGuid(), payload);
     var exception = await Assert.ThrowsAsync<FluentValidation.ValidationException>(async () => await Mediator.Send(command));
     ValidationFailure error = Assert.Single(exception.Errors);
     Assert.Equal("MaximumLengthValidator", error.ErrorCode);
@@ -84,7 +84,7 @@ public class UpdateProductCommandTests : IntegrationTests
     {
       Description = new Modification<string>("Un succulent poulet rôti.")
     };
-    UpdateProductCommand command = new(_store.Id.ToGuid(), _article.Id.ToGuid(), payload);
+    UpdateProductCommand command = new(aggregate.Id.ToGuid(), payload);
     Product? product = await Mediator.Send(command);
     Assert.NotNull(product);
     Assert.Equal(aggregate.Id.ToGuid(), product.Id);
