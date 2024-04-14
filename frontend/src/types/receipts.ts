@@ -7,6 +7,11 @@ export type CategorizeReceiptPayload = {
   itemCategories: ReceiptItemCategory[];
 };
 
+export type CategorySavedEvent = {
+  newCategory: string;
+  oldCategory?: string;
+};
+
 export type DepartmentSummary = {
   number: string;
   displayName: string;

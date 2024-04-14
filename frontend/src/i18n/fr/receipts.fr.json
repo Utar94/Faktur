@@ -1,4 +1,15 @@
 {
+  "categories": {
+    "delete": {
+      "confirm": "Désirez-vous vraiment supprimer la catégorie suivante ?",
+      "title": "Supprimer la catégorie"
+    },
+    "title": {
+      "edit": "Éditer la catégorie",
+      "list": "Catégories",
+      "new": "Nouvelle catégorie"
+    }
+  },
   "delete": {
     "confirm": "Désirez-vous vraiment supprimer le reçu suivant ?",
     "success": "Le reçu a été supprimé.",

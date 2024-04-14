@@ -1,4 +1,15 @@
 {
+  "categories": {
+    "delete": {
+      "confirm": "Do you really want to delete the following category?",
+      "title": "Delete category"
+    },
+    "title": {
+      "edit": "Edit category",
+      "list": "Categories",
+      "new": "New category"
+    }
+  },
   "delete": {
     "confirm": "Do you really want to delete the following receipt?",
     "success": "The receipt has been deleted.",
