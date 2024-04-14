@@ -50,3 +50,14 @@ export type GraphQLResponse<T> = {
   data?: T;
   errors?: GraphQLError[];
 };
+
+export type PropertyError = Error & {
+  attemptedValue?: unknown;
+  propertyName?: string;
+};
+
+export type ValidationError = {
+  code: string;
+  message: string;
+  errors: PropertyError[];
+};

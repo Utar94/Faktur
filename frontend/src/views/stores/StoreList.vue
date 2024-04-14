@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { TarButton, type SelectOption } from "logitar-vue3-ui";
+import { TarButton, parsingUtils, type SelectOption } from "logitar-vue3-ui";
 import { computed, inject, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRoute, useRouter } from "vue-router";
@@ -19,6 +19,7 @@ import { searchStores } from "@/api/stores";
 const handleError = inject(handleErrorKey) as (e: unknown) => void;
 const route = useRoute();
 const router = useRouter();
+const { parseBoolean, parseNumber } = parsingUtils;
 const { rt, t, tm } = useI18n();
 
 const isLoading = ref<boolean>(false);
@@ -27,9 +28,9 @@ const timestamp = ref<number>(0);
 const total = ref<number>(0);
 
 const bannerId = computed<string>(() => route.query.bannerId?.toString() ?? "");
-const count = computed<number>(() => Number(route.query.count) || 10);
-const isDescending = computed<boolean>(() => route.query.isDescending === "true");
-const page = computed<number>(() => Number(route.query.page) || 1);
+const count = computed<number>(() => parseNumber(route.query.count?.toString()) || 10);
+const isDescending = computed<boolean>(() => parseBoolean(route.query.isDescending?.toString()) ?? false);
+const page = computed<number>(() => parseNumber(route.query.page?.toString()) || 1);
 const search = computed<string>(() => route.query.search?.toString() ?? "");
 const sort = computed<string>(() => route.query.sort?.toString() ?? "");
 

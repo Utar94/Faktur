@@ -107,6 +107,11 @@ watchEffect(() => {
               </RouterLink>
             </li>
             <li class="nav-item">
+              <RouterLink :to="{ name: 'ReceiptList' }" class="nav-link">
+                <font-awesome-icon icon="fas fa-file-invoice-dollar" /> {{ t("receipts.title.list") }}
+              </RouterLink>
+            </li>
+            <li class="nav-item">
               <RouterLink :to="{ name: 'TaxList' }" class="nav-link"><font-awesome-icon icon="fas fa-sack-dollar" /> {{ t("taxes.title.list") }}</RouterLink>
             </li>
           </template>

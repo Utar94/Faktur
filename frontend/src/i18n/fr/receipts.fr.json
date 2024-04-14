@@ -1,0 +1,57 @@
+{
+  "delete": {
+    "confirm": "Désirez-vous vraiment supprimer le reçu suivant ?",
+    "success": "Le reçu a été supprimé.",
+    "title": "Supprimer le reçu"
+  },
+  "empty": "Cette liste est vide.",
+  "error": {
+    "attemptedValue": "Valeur tentée",
+    "code": "Code",
+    "lineNumber": "Numéro de ligne",
+    "message": "Message",
+    "propertyName": "Nom de la propriété",
+    "propertyNames": {
+      "DepartmentName": "Nom du département",
+      "DepartmentNumber": "Numéro du département"
+    },
+    "title": "Erreurs",
+    "validation": "Une ou plusieurs erreurs de validation se sont produites. Regardez la section d’erreurs pour plus de détails."
+  },
+  "imported": "Le reçu a été importé.",
+  "isEmpty": {
+    "label": "Vide",
+    "placeholder": "Sélectionnez une option"
+  },
+  "issuedOn": "Date d’émission",
+  "itemCount": "Nombre d’articles",
+  "label": "Étiquette",
+  "lines": "Lignes",
+  "processedOn": "Traitement le {date} par",
+  "quantity": "Quantité",
+  "sort": {
+    "options": {
+      "IssuedOn": "Date d’émission",
+      "Number": "Numéro",
+      "ProcessedOn": "Date de traitement",
+      "Total": "Total",
+      "UpdatedOn": "Dernière modification"
+    }
+  },
+  "status": {
+    "label": "Statut",
+    "options": {
+      "new": "Nouveau",
+      "processed": "Traité"
+    },
+    "placeholder": "Sélectionnez un statut"
+  },
+  "title": {
+    "edit": "Reçu du {receipt}",
+    "import": "Importation de reçus",
+    "imported": "Reçus importés",
+    "importing": "Importation",
+    "list": "Reçus"
+  },
+  "updated": "Le reçu a été enregistré."
+}

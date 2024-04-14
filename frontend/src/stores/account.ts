@@ -19,4 +19,4 @@ export const useAccountStore = defineStore(
   {
     persist: true,
   },
-);
+); // TODO(fpion): tests

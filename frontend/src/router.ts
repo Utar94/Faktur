@@ -81,6 +81,22 @@ const router = createRouter({
       path: "/create-product",
       component: () => import("./views/products/ProductEdit.vue"),
     },
+    // Receipts
+    {
+      name: "ReceiptList",
+      path: "/receipts",
+      component: () => import("./views/receipts/ReceiptListView.vue"),
+    },
+    {
+      name: "ReceiptEdit",
+      path: "/receipts/:id",
+      component: () => import("./views/receipts/ReceiptEdit.vue"),
+    },
+    {
+      name: "ImportReceipt",
+      path: "/import-receipt",
+      component: () => import("./views/receipts/ImportReceipt.vue"),
+    },
     // Stores
     {
       name: "StoreList",
