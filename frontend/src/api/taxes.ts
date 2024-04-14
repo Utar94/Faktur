@@ -15,7 +15,7 @@ export async function readTax(id: string): Promise<Tax> {
 }
 
 export async function replaceTax(id: string, payload: ReplaceTaxPayload, version?: number): Promise<Tax> {
-  const query: string | undefined = version ? `?version=${version}` : undefined;
+  const query: string | undefined = version ? `?version=${version}` : "";
   return (await put<CreateTaxPayload, Tax>(`/taxes/${id}${query}`, payload)).data;
 }
 
@@ -32,6 +32,6 @@ export async function searchTaxes(payload: SearchTaxesPayload): Promise<SearchRe
   payload.sort.forEach((sort) => params.push(`sort=${sort.isDescending ? `DESC.${sort.field}` : sort.field}`));
   params.push(`skip=${payload.skip}`);
   params.push(`limit=${payload.limit}`);
-  const query: string | undefined = params.length ? `?${params.join("&")}` : undefined;
+  const query: string | undefined = params.length ? `?${params.join("&")}` : "";
   return (await get<SearchResults<Tax>>(`/taxes${query}`)).data;
 }

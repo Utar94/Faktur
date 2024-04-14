@@ -8,8 +8,8 @@ export async function createOrReplaceDepartment(
   payload: CreateOrReplaceDepartmentPayload,
   version?: number,
 ): Promise<Department> {
-  // TODO(fpion): version
-  return (await put<CreateOrReplaceDepartmentPayload, Department>(`/stores/${storeId}/departments/${number}`, payload)).data;
+  const query: string | undefined = version ? `?version=${version}` : "";
+  return (await put<CreateOrReplaceDepartmentPayload, Department>(`/stores/${storeId}/departments/${number}${query}`, payload)).data;
 }
 
 export async function deleteDepartment(storeId: string, number: string): Promise<Department> {
@@ -26,6 +26,6 @@ export async function searchDepartments(payload: SearchDepartmentsPayload): Prom
   payload.sort.forEach((sort) => params.push(`sort=${sort.isDescending ? `DESC.${sort.field}` : sort.field}`));
   params.push(`skip=${payload.skip}`);
   params.push(`limit=${payload.limit}`);
-  const query: string | undefined = params.length ? `?${params.join("&")}` : undefined;
+  const query: string | undefined = params.length ? `?${params.join("&")}` : "";
   return (await get<SearchResults<Department>>(`/stores/${payload.storeId}/departments${query}`)).data;
 }

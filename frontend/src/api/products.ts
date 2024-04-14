@@ -3,8 +3,8 @@ import type { SearchResults } from "@/types/search";
 import { _delete, get, put } from ".";
 
 export async function createOrReplaceProduct(storeId: string, articleId: string, payload: CreateOrReplaceProductPayload, version?: number): Promise<Product> {
-  // TODO(fpion): version
-  return (await put<CreateOrReplaceProductPayload, Product>(`/stores/${storeId}/products/${articleId}`, payload)).data;
+  const query: string | undefined = version ? `?version=${version}` : "";
+  return (await put<CreateOrReplaceProductPayload, Product>(`/stores/${storeId}/products/${articleId}${query}`, payload)).data;
 }
 
 export async function deleteProduct(id: string): Promise<Product> {
@@ -31,6 +31,6 @@ export async function searchProducts(payload: SearchProductsPayload): Promise<Se
   payload.sort.forEach((sort) => params.push(`sort=${sort.isDescending ? `DESC.${sort.field}` : sort.field}`));
   params.push(`skip=${payload.skip}`);
   params.push(`limit=${payload.limit}`);
-  const query: string | undefined = params.length ? `?${params.join("&")}` : undefined;
+  const query: string | undefined = params.length ? `?${params.join("&")}` : "";
   return (await get<SearchResults<Product>>(`/stores/${payload.storeId}/products${query}`)).data;
 }

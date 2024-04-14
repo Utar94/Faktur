@@ -15,7 +15,7 @@ export async function readArticle(id: string): Promise<Article> {
 }
 
 export async function replaceArticle(id: string, payload: ReplaceArticlePayload, version?: number): Promise<Article> {
-  const query: string | undefined = version ? `?version=${version}` : undefined;
+  const query: string | undefined = version ? `?version=${version}` : "";
   return (await put<CreateArticlePayload, Article>(`/articles/${id}${query}`, payload)).data;
 }
 
@@ -29,6 +29,6 @@ export async function searchArticles(payload: SearchArticlesPayload): Promise<Se
   payload.sort.forEach((sort) => params.push(`sort=${sort.isDescending ? `DESC.${sort.field}` : sort.field}`));
   params.push(`skip=${payload.skip}`);
   params.push(`limit=${payload.limit}`);
-  const query: string | undefined = params.length ? `?${params.join("&")}` : undefined;
+  const query: string | undefined = params.length ? `?${params.join("&")}` : "";
   return (await get<SearchResults<Article>>(`/articles${query}`)).data;
 }

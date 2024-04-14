@@ -95,9 +95,12 @@ async function refresh(): Promise<void> {
 function setQuery(key: string, value: string): void {
   const query = { ...route.query, [key]: value };
   switch (key) {
+    case "storeId":
+      query.departmentNumber = "";
+      query.page = "1";
+      break;
     case "departmentNumber":
     case "search":
-    case "storeId":
     case "unitType":
     case "count":
       query.page = "1";
@@ -153,7 +156,13 @@ watch(
         :text="t('actions.refresh')"
         @click="refresh()"
       />
-      <RouterLink :to="{ name: 'CreateProduct', query: { storeId: storeId || undefined } }" class="btn btn-success ms-1">
+      <RouterLink
+        :to="{
+          name: 'CreateProduct',
+          query: { storeId: storeId || undefined, departmentNumber: departmentNumber || undefined, unitType: unitType || undefined },
+        }"
+        class="btn btn-success ms-1"
+      >
         <font-awesome-icon icon="fas fa-plus" /> {{ t("actions.create") }}
       </RouterLink>
     </div>

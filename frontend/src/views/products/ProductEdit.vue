@@ -134,9 +134,15 @@ onMounted(async () => {
       const product = await readProduct(id);
       storeId = product.store.id;
       setModel(product);
+    } else {
+      unitType.value = route.query.unitType?.toString() ?? "";
     }
     if (storeId) {
       store.value = await readStore(storeId);
+      const departmentNumber = route.query.departmentNumber?.toString();
+      if (!id) {
+        department.value = store.value.departments.find((department) => department.number === departmentNumber);
+      }
     }
   } catch (e: unknown) {
     const { status } = e as ApiError;
