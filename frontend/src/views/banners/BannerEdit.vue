@@ -1,16 +1,18 @@
 <script setup lang="ts">
-import { TarButton } from "logitar-vue3-ui";
 import { computed, inject, onMounted, ref } from "vue";
 import { useForm } from "vee-validate";
 import { useI18n } from "vue-i18n";
 import { useRoute, useRouter } from "vue-router";
 
+import AppBackButton from "@/components/shared/AppBackButton.vue";
+import AppDelete from "@/components/shared/AppDelete.vue";
+import AppSaveButton from "@/components/shared/AppSaveButton.vue";
 import DescriptionTextarea from "@/components/shared/DescriptionTextarea.vue";
 import DisplayNameInput from "@/components/shared/DisplayNameInput.vue";
 import StatusDetail from "@/components/shared/StatusDetail.vue";
 import type { ApiError } from "@/types/api";
 import type { Banner } from "@/types/banners";
-import { createBanner, readBanner, replaceBanner } from "@/api/banners";
+import { createBanner, deleteBanner, readBanner, replaceBanner } from "@/api/banners";
 import { handleErrorKey } from "@/inject/App";
 import { useToastStore } from "@/stores/toast";
 
@@ -24,10 +26,25 @@ const banner = ref<Banner>();
 const description = ref<string>("");
 const displayName = ref<string>("");
 const hasLoaded = ref<boolean>(false);
+const isDeleting = ref<boolean>(false);
 
-const hasChanges = computed<boolean>(() => {
-  return displayName.value !== (banner.value?.displayName ?? "") || description.value !== (banner.value?.description ?? "");
-});
+const hasChanges = computed<boolean>(() => displayName.value !== (banner.value?.displayName ?? "") || description.value !== (banner.value?.description ?? ""));
+
+async function onDelete(hideModal: () => void): Promise<void> {
+  if (banner.value && !isDeleting.value) {
+    isDeleting.value = true;
+    try {
+      await deleteBanner(banner.value.id);
+      hideModal();
+      toasts.success("banners.delete.success");
+      router.push({ name: "BannerList" });
+    } catch (e: unknown) {
+      handleError(e);
+    } finally {
+      isDeleting.value = false;
+    }
+  }
+}
 
 function setModel(model: Banner): void {
   banner.value = model;
@@ -89,17 +106,17 @@ onMounted(async () => {
       <StatusDetail v-if="banner" :aggregate="banner" />
       <form @submit.prevent="onSubmit">
         <div class="mb-3">
-          <TarButton
-            class="me-1"
-            :disabled="isSubmitting || !hasChanges"
-            :icon="banner ? 'fas fa-save' : 'fas fa-plus'"
-            :loading="isSubmitting"
-            :status="t('loading')"
-            :text="t(banner ? 'actions.save' : 'actions.create')"
-            type="submit"
-            :variant="banner ? 'primary' : 'success'"
+          <AppSaveButton class="me-1" :disabled="isSubmitting || !hasChanges" :exists="Boolean(banner)" :loading="isSubmitting" />
+          <AppBackButton class="mx-1" :has-changes="hasChanges" />
+          <AppDelete
+            v-if="banner"
+            class="ms-1"
+            confirm="banners.delete.confirm"
+            :displayName="banner.displayName"
+            :loading="isDeleting"
+            title="banners.delete.title"
+            @confirmed="onDelete"
           />
-          <TarButton class="ms-1" icon="fas fa-chevron-left" :text="t('actions.back')" :variant="hasChanges ? 'danger' : 'secondary'" @click="router.back()" />
         </div>
         <DisplayNameInput required v-model="displayName" />
         <DescriptionTextarea v-model="description" />

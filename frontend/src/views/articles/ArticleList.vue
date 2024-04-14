@@ -6,21 +6,18 @@ import { useRoute, useRouter } from "vue-router";
 
 import AppPagination from "@/components/shared/AppPagination.vue";
 import CountSelect from "@/components/shared/CountSelect.vue";
-import DeleteModal from "@/components/shared/DeleteModal.vue";
 import SearchInput from "@/components/shared/SearchInput.vue";
 import SortSelect from "@/components/shared/SortSelect.vue";
 import StatusBlock from "@/components/shared/StatusBlock.vue";
 import type { Article, ArticleSort, SearchArticlesPayload } from "@/types/articles";
-import { deleteArticle, searchArticles } from "@/api/articles";
+import { searchArticles } from "@/api/articles";
 import { handleErrorKey } from "@/inject/App";
 import { isEmpty } from "@/helpers/objectUtils";
 import { orderBy } from "@/helpers/arrayUtils";
-import { useToastStore } from "@/stores/toast";
 
 const handleError = inject(handleErrorKey) as (e: unknown) => void;
 const route = useRoute();
 const router = useRouter();
-const toasts = useToastStore();
 const { rt, t, tm } = useI18n();
 
 const articles = ref<Article[]>([]);
@@ -70,23 +67,6 @@ async function refresh(): Promise<void> {
     if (now === timestamp.value) {
       isLoading.value = false;
     }
-  }
-}
-
-async function onDelete(article: Article, hideModal: () => void): Promise<void> {
-  if (!isLoading.value) {
-    isLoading.value = true;
-    try {
-      await deleteArticle(article.id);
-      hideModal();
-      toasts.success("articles.delete.success");
-    } catch (e: unknown) {
-      handleError(e);
-      return;
-    } finally {
-      isLoading.value = false;
-    }
-    await refresh();
   }
 }
 
@@ -166,7 +146,6 @@ watch(
             <th scope="col">{{ t("articles.sort.options.DisplayName") }}</th>
             <th scope="col">{{ t("articles.sort.options.Gtin") }}</th>
             <th scope="col">{{ t("articles.sort.options.UpdatedOn") }}</th>
-            <th scope="col"></th>
           </tr>
         </thead>
         <tbody>
@@ -178,24 +157,6 @@ watch(
             </td>
             <td>{{ article.gtin ?? "—" }}</td>
             <td><StatusBlock :actor="article.updatedBy" :date="article.updatedOn" /></td>
-            <td>
-              <TarButton
-                :disabled="isLoading"
-                icon="fas fa-trash"
-                :text="t('actions.delete')"
-                variant="danger"
-                data-bs-toggle="modal"
-                :data-bs-target="`#deleteModal_${article.id}`"
-              />
-              <DeleteModal
-                confirm="articles.delete.confirm"
-                :display-name="article.displayName"
-                :id="`deleteModal_${article.id}`"
-                :loading="isLoading"
-                title="articles.delete.title"
-                @ok="onDelete(article, $event)"
-              />
-            </td>
           </tr>
         </tbody>
       </table>

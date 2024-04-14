@@ -4,4 +4,4 @@ using MediatR;
 
 namespace Faktur.Application.Products.Commands;
 
-public record UpdateProductCommand(Guid StoreId, Guid ArticleId, UpdateProductPayload Payload) : Activity, IRequest<Product?>;
+public record UpdateProductCommand(Guid Id, UpdateProductPayload Payload) : Activity, IRequest<Product?>;

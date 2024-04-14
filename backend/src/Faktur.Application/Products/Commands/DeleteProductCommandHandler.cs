@@ -17,7 +17,7 @@ internal class DeleteProductCommandHandler : IRequestHandler<DeleteProductComman
 
   public async Task<Product?> Handle(DeleteProductCommand command, CancellationToken cancellationToken)
   {
-    ProductAggregate? product = await _productRepository.LoadAsync(command.StoreId, command.ArticleId, cancellationToken);
+    ProductAggregate? product = await _productRepository.LoadAsync(command.Id, cancellationToken);
     if (product == null)
     {
       return null;

@@ -1,17 +1,19 @@
 <script setup lang="ts">
-import { TarButton } from "logitar-vue3-ui";
 import { computed, inject, onMounted, ref } from "vue";
 import { useForm } from "vee-validate";
 import { useI18n } from "vue-i18n";
 import { useRoute, useRouter } from "vue-router";
 
+import AppBackButton from "@/components/shared/AppBackButton.vue";
+import AppDelete from "@/components/shared/AppDelete.vue";
+import AppSaveButton from "@/components/shared/AppSaveButton.vue";
 import FlagsInput from "@/components/shared/FlagsInput.vue";
 import StatusDetail from "@/components/shared/StatusDetail.vue";
 import TaxCodeInput from "@/components/taxes/TaxCodeInput.vue";
 import TaxRateInput from "@/components/taxes/TaxRateInput.vue";
 import type { ApiError } from "@/types/api";
 import type { Tax } from "@/types/taxes";
-import { createTax, readTax, replaceTax } from "@/api/taxes";
+import { createTax, deleteTax, readTax, replaceTax } from "@/api/taxes";
 import { handleErrorKey } from "@/inject/App";
 import { useToastStore } from "@/stores/toast";
 
@@ -24,12 +26,29 @@ const { t } = useI18n();
 const code = ref<string>("");
 const flags = ref<string>("");
 const hasLoaded = ref<boolean>(false);
+const isDeleting = ref<boolean>(false);
 const rate = ref<number>(0);
 const tax = ref<Tax>();
 
-const hasChanges = computed<boolean>(() => {
-  return code.value !== (tax.value?.code ?? "") || rate.value !== (tax.value?.rate ?? 0) || flags.value !== (tax.value?.flags ?? "");
-});
+const hasChanges = computed<boolean>(
+  () => code.value !== (tax.value?.code ?? "") || rate.value !== (tax.value?.rate ?? 0) || flags.value !== (tax.value?.flags ?? ""),
+);
+
+async function onDelete(hideModal: () => void): Promise<void> {
+  if (tax.value && !isDeleting.value) {
+    isDeleting.value = true;
+    try {
+      await deleteTax(tax.value.id);
+      hideModal();
+      toasts.success("taxes.delete.success");
+      router.push({ name: "TaxList" });
+    } catch (e: unknown) {
+      handleError(e);
+    } finally {
+      isDeleting.value = false;
+    }
+  }
+}
 
 function setModel(model: Tax): void {
   tax.value = model;
@@ -94,17 +113,17 @@ onMounted(async () => {
       <StatusDetail v-if="tax" :aggregate="tax" />
       <form @submit.prevent="onSubmit">
         <div class="mb-3">
-          <TarButton
-            class="me-1"
-            :disabled="isSubmitting || !hasChanges"
-            :icon="tax ? 'fas fa-save' : 'fas fa-plus'"
-            :loading="isSubmitting"
-            :status="t('loading')"
-            :text="t(tax ? 'actions.save' : 'actions.create')"
-            type="submit"
-            :variant="tax ? 'primary' : 'success'"
+          <AppSaveButton class="me-1" :disabled="isSubmitting || !hasChanges" :exists="Boolean(tax)" :loading="isSubmitting" />
+          <AppBackButton class="mx-1" :has-changes="hasChanges" />
+          <AppDelete
+            v-if="tax"
+            class="ms-1"
+            confirm="taxes.delete.confirm"
+            :displayName="tax.code"
+            :loading="isDeleting"
+            title="taxes.delete.title"
+            @confirmed="onDelete"
           />
-          <TarButton class="ms-1" icon="fas fa-chevron-left" :text="t('actions.back')" :variant="hasChanges ? 'danger' : 'secondary'" @click="router.back()" />
         </div>
         <TaxCodeInput required v-model="code" />
         <TaxRateInput required :model-value="rate.toString()" @update:model-value="rate = $event ?? 0" />

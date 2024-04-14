@@ -7,6 +7,11 @@
     "title": "Supprimer la succursale"
   },
   "empty": "Cette liste est vide.",
+  "select": {
+    "ariaLabel": "TODO.",
+    "label": "Succursale",
+    "placeholder": "Sélectionnez une succursale"
+  },
   "sort": {
     "options": {
       "DepartmentCount": "Nombre de départements",

@@ -2,7 +2,13 @@ import type { CreateOrReplaceDepartmentPayload, Department, SearchDepartmentsPay
 import type { SearchResults } from "@/types/search";
 import { _delete, get, put } from ".";
 
-export async function createOrReplaceDepartment(storeId: string, number: string, payload: CreateOrReplaceDepartmentPayload): Promise<Department> {
+export async function createOrReplaceDepartment(
+  storeId: string,
+  number: string,
+  payload: CreateOrReplaceDepartmentPayload,
+  version?: number,
+): Promise<Department> {
+  // TODO(fpion): version
   return (await put<CreateOrReplaceDepartmentPayload, Department>(`/stores/${storeId}/departments/${number}`, payload)).data;
 }
 

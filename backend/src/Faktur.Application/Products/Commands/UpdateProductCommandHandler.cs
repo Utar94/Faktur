@@ -29,7 +29,7 @@ internal class UpdateProductCommandHandler : IRequestHandler<UpdateProductComman
     UpdateProductPayload payload = command.Payload;
     new UpdateProductValidator().ValidateAndThrow(payload);
 
-    ProductAggregate? product = await _productRepository.LoadAsync(command.StoreId, command.ArticleId, cancellationToken);
+    ProductAggregate? product = await _productRepository.LoadAsync(command.Id, cancellationToken);
     if (product == null)
     {
       return null;

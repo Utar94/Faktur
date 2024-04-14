@@ -3,9 +3,9 @@ import { TarButton, type SelectOption } from "logitar-vue3-ui";
 import { computed, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 
+import AppDelete from "@/components/shared/AppDelete.vue";
 import AppPagination from "@/components/shared/AppPagination.vue";
 import CountSelect from "@/components/shared/CountSelect.vue";
-import DeleteModal from "@/components/shared/DeleteModal.vue";
 import DepartmentEdit from "./DepartmentEdit.vue";
 import SearchInput from "@/components/shared/SearchInput.vue";
 import SortSelect from "@/components/shared/SortSelect.vue";
@@ -13,6 +13,7 @@ import StatusBlock from "@/components/shared/StatusBlock.vue";
 import type { Department, DepartmentSort, SearchDepartmentsPayload } from "@/types/departments";
 import type { Store } from "@/types/stores";
 import { deleteDepartment, searchDepartments } from "@/api/departments";
+import { formatDepartment } from "@/helpers/displayUtils";
 import { orderBy } from "@/helpers/arrayUtils";
 import { useToastStore } from "@/stores/toast";
 
@@ -25,6 +26,7 @@ const props = defineProps<{
 
 const count = ref<number>(10);
 const departments = ref<Department[]>([]);
+const isDeleting = ref<string>();
 const isDescending = ref<boolean>(true);
 const isLoading = ref<boolean>(false);
 const page = ref<number>(1);
@@ -78,23 +80,22 @@ async function refresh(search?: SearchDepartmentsPayload): Promise<void> {
 }
 
 async function onDelete(department: Department, hideModal: () => void): Promise<void> {
-  if (!isLoading.value) {
-    isLoading.value = true;
+  if (department && !isDeleting.value) {
+    isDeleting.value = department.number;
     try {
       await deleteDepartment(props.store.id, department.number);
       hideModal();
       toasts.success("departments.delete.success");
     } catch (e: unknown) {
       emit("error", e);
-      return;
     } finally {
-      isLoading.value = false;
+      isDeleting.value = undefined;
     }
     await refresh();
   }
 }
 
-function onSaved(department?: Department) {
+function onSaved(department?: Department): void {
   toasts.success(department ? "departments.updated" : "departments.created");
   refresh();
 }
@@ -128,7 +129,7 @@ watch(payload, (payload) => refresh(payload), { deep: true, immediate: true });
             <th scope="col">{{ t("departments.sort.options.Number") }}</th>
             <th scope="col">{{ t("departments.sort.options.DisplayName") }}</th>
             <th scope="col">{{ t("departments.sort.options.UpdatedOn") }}</th>
-            <th scope="col"></th>
+            <th scope="col">{{ t("actions.title") }}</th>
           </tr>
         </thead>
         <tbody>
@@ -138,22 +139,14 @@ watch(payload, (payload) => refresh(payload), { deep: true, immediate: true });
             <td><StatusBlock :actor="department.updatedBy" :date="department.updatedOn" /></td>
             <td>
               <DepartmentEdit class="me-1" :department="department" :store="store" @error="$emit('error', $event)" @saved="onSaved" />
-              <TarButton
+              <AppDelete
                 class="ms-1"
-                :disabled="isLoading"
-                icon="fas fa-trash"
-                :text="t('actions.delete')"
-                variant="danger"
-                data-bs-toggle="modal"
-                :data-bs-target="`#deleteModal_${department.number}`"
-              />
-              <DeleteModal
                 confirm="departments.delete.confirm"
-                :display-name="`${department.displayName} (#${department.number})`"
-                :id="`deleteModal_${department.number}`"
-                :loading="isLoading"
+                :displayName="formatDepartment(department)"
+                :id="department.number"
+                :loading="isDeleting === department.number"
                 title="departments.delete.title"
-                @ok="onDelete(department, $event)"
+                @confirmed="onDelete(department, $event)"
               />
             </td>
           </tr>
