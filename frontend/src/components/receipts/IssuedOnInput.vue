@@ -7,13 +7,13 @@ const { t } = useI18n();
 const props = withDefaults(defineProps<InputOptions>(), {
   floating: true,
   id: "issued-on",
-  label: "receipts.issuedOn",
+  label: "receipts.issuedOn.label",
   max: () => {
     const date = new Date().toISOString();
     const index = date.lastIndexOf(":");
     return date.substring(0, index);
   },
-  placeholder: "receipts.issuedOn",
+  placeholder: "receipts.issuedOn.label",
   type: "datetime-local",
 });
 

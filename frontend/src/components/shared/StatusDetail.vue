@@ -12,6 +12,5 @@ defineProps<{
     <StatusInfo :actor="aggregate.createdBy" :date="aggregate.createdOn" format="status.createdOn" />
     <br />
     <StatusInfo :actor="aggregate.updatedBy" :date="aggregate.updatedOn" format="status.updatedOn" />
-    <slot></slot>
   </p>
 </template>

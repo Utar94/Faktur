@@ -23,8 +23,14 @@
     "label": "Vide",
     "placeholder": "Sélectionnez une option"
   },
-  "issuedOn": "Date d’émission",
+  "issuedOn": {
+    "format": "Émis le {date} par",
+    "label": "Date d’émission"
+  },
   "itemCount": "Nombre d’articles",
+  "items": {
+    "title": "Articles"
+  },
   "label": "Étiquette",
   "lines": "Lignes",
   "processedOn": "Traitement le {date} par",

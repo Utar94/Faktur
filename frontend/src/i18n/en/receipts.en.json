@@ -23,8 +23,14 @@
     "label": "Empty",
     "placeholder": "Select an option"
   },
-  "issuedOn": "Issued On",
+  "issuedOn": {
+    "format": "Issued on {date} by",
+    "label": "Issued On"
+  },
   "itemCount": "Item Count",
+  "items": {
+    "title": "Items"
+  },
   "label": "Label",
   "lines": "Lines",
   "processedOn": "Processed on {date} by",
