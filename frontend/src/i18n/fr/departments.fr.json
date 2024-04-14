@@ -7,7 +7,6 @@
   },
   "empty": "Cette liste est vide.",
   "select": {
-    "ariaLabel": "TODO",
     "label": "Département",
     "placeholder": "Sélectionnez un département"
   },

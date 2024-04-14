@@ -6,6 +6,10 @@
     "title": "Delete department"
   },
   "empty": "This list is empty.",
+  "select": {
+    "label": "Department",
+    "placeholder": "Select a department"
+  },
   "sort": {
     "options": {
       "DisplayName": "Display name",

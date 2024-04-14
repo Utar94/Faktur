@@ -10,7 +10,6 @@ import { orderBy } from "@/helpers/arrayUtils";
 const { t } = useI18n();
 
 const props = withDefaults(defineProps<SelectOptions>(), {
-  ariaLabel: "users.address.country.ariaLabel",
   floating: true,
   id: "address-country",
   label: "users.address.country.label",
@@ -41,12 +40,5 @@ function onModelValueUpdate(code?: string): void {
 </script>
 
 <template>
-  <TarSelect
-    v-bind="props"
-    :aria-label="t(ariaLabel)"
-    :label="t(label)"
-    :options="options"
-    :placeholder="t(placeholder)"
-    @update:model-value="onModelValueUpdate"
-  />
+  <TarSelect v-bind="props" :label="t(label)" :options="options" :placeholder="t(placeholder)" @update:model-value="onModelValueUpdate" />
 </template>

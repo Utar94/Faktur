@@ -7,7 +7,6 @@ import { useI18n } from "vue-i18n";
 const { rt, t, tm } = useI18n();
 
 const props = withDefaults(defineProps<SelectOptions>(), {
-  ariaLabel: "products.unitType.ariaLabel",
   floating: true,
   id: "unit-type",
   label: "products.unitType.label",
@@ -27,12 +26,5 @@ defineEmits<{
 </script>
 
 <template>
-  <TarSelect
-    v-bind="props"
-    :aria-label="t(ariaLabel)"
-    :label="t(label)"
-    :options="options"
-    :placeholder="t(placeholder)"
-    @update:model-value="$emit('update:model-value', $event)"
-  />
+  <TarSelect v-bind="props" :label="t(label)" :options="options" :placeholder="t(placeholder)" @update:model-value="$emit('update:model-value', $event)" />
 </template>

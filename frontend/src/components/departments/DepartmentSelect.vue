@@ -16,7 +16,6 @@ const props = withDefaults(
     }
   >(),
   {
-    ariaLabel: "departments.select.ariaLabel",
     floating: true,
     id: "department",
     label: "departments.select.label",
@@ -48,12 +47,5 @@ function onModelValueUpdate(number?: string): void {
 </script>
 
 <template>
-  <TarSelect
-    v-bind="props"
-    :aria-label="t(ariaLabel)"
-    :label="t(label)"
-    :options="options"
-    :placeholder="t(placeholder)"
-    @update:model-value="onModelValueUpdate"
-  />
+  <TarSelect v-bind="props" :label="t(label)" :options="options" :placeholder="t(placeholder)" @update:model-value="onModelValueUpdate" />
 </template>

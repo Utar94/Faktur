@@ -15,7 +15,6 @@ const banners = ref<Banner[]>([]);
 const options = computed<SelectOption[]>(() => banners.value.map(({ id, displayName }) => ({ value: id, text: displayName })));
 
 const props = withDefaults(defineProps<SelectOptions>(), {
-  ariaLabel: "banners.select.ariaLabel",
   floating: true,
   id: "banner",
   label: "banners.select.label",
@@ -62,12 +61,5 @@ function onModelValueUpdate(id?: string): void {
 </script>
 
 <template>
-  <TarSelect
-    v-bind="props"
-    :aria-label="t(ariaLabel)"
-    :label="t(label)"
-    :options="options"
-    :placeholder="t(placeholder)"
-    @update:model-value="onModelValueUpdate"
-  />
+  <TarSelect v-bind="props" :label="t(label)" :options="options" :placeholder="t(placeholder)" @update:model-value="onModelValueUpdate" />
 </template>

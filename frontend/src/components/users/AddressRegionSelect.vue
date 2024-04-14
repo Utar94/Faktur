@@ -15,7 +15,6 @@ const props = withDefaults(
     }
   >(),
   {
-    ariaLabel: "users.address.region.ariaLabel",
     floating: true,
     id: "address-region",
     label: "users.address.region.label",
@@ -33,12 +32,5 @@ defineEmits<{
 </script>
 
 <template>
-  <TarSelect
-    v-bind="props"
-    :aria-label="t(ariaLabel)"
-    :label="t(label)"
-    :options="options"
-    :placeholder="t(placeholder)"
-    @update:model-value="$emit('update:model-value', $event)"
-  />
+  <TarSelect v-bind="props" :label="t(label)" :options="options" :placeholder="t(placeholder)" @update:model-value="$emit('update:model-value', $event)" />
 </template>

@@ -21,7 +21,6 @@
   },
   "unitPrice": "Prix unitaire",
   "unitType": {
-    "ariaLabel": "TODO",
     "label": "Type d’unité",
     "options": {
       "Kg": "Kilogrammes (kg)",

@@ -6,10 +6,9 @@ const { parseNumber } = parsingUtils;
 const { t } = useI18n();
 
 const props = withDefaults(defineProps<SelectOptions>(), {
-  ariaLabel: "count.ariaLabel",
   floating: true,
   id: "count",
-  label: "count.label",
+  label: "count",
   options: () => [{ text: "10" }, { text: "25" }, { text: "50" }, { text: "100" }],
 });
 
@@ -19,11 +18,5 @@ defineEmits<{
 </script>
 
 <template>
-  <TarSelect
-    v-bind="props"
-    :aria-label="t(ariaLabel)"
-    :label="t(label)"
-    :options="options"
-    @update:model-value="$emit('update:model-value', parseNumber($event))"
-  />
+  <TarSelect v-bind="props" :label="t(label)" :options="options" @update:model-value="$emit('update:model-value', parseNumber($event))" />
 </template>

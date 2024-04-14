@@ -7,6 +7,10 @@
     "title": "Delete store"
   },
   "empty": "This list is empty.",
+  "select": {
+    "label": "Store",
+    "placeholder": "Select a store"
+  },
   "sort": {
     "options": {
       "DepartmentCount": "Department count",

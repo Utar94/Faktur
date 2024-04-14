@@ -11,7 +11,6 @@ const props = withDefaults(
     }
   >(),
   {
-    ariaLabel: "sort.select.ariaLabel",
     descending: false,
     floating: true,
     id: "sort",
@@ -27,21 +26,9 @@ defineEmits<{
 </script>
 
 <template>
-  <TarSelect
-    v-bind="props"
-    :aria-label="t(ariaLabel)"
-    :label="t(label)"
-    :placeholder="t(placeholder)"
-    @update:model-value="$emit('update:model-value', $event)"
-  >
+  <TarSelect v-bind="props" :label="t(label)" :placeholder="t(placeholder)" @update:model-value="$emit('update:model-value', $event)">
     <template #after>
-      <TarCheckbox
-        :ariaLabel="t('sort.isDescending.ariaLabel')"
-        :id="`${id}_desc`"
-        :label="t('sort.isDescending.label')"
-        :model-value="descending"
-        @update:model-value="$emit('descending', $event)"
-      />
+      <TarCheckbox :id="`${id}_desc`" :label="t('sort.isDescending')" :model-value="descending" @update:model-value="$emit('descending', $event)" />
     </template>
   </TarSelect>
 </template>
