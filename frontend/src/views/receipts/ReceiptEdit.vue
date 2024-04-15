@@ -11,12 +11,12 @@ import AppSaveButton from "@/components/shared/AppSaveButton.vue";
 import CategoryList from "@/components/receipts/CategoryList.vue";
 import IssuedOnInput from "@/components/receipts/IssuedOnInput.vue";
 import NumberInput from "@/components/shared/NumberInput.vue";
-import ReceiptItemList from "@/components/receipts/ReceiptItemList.vue";
+import ReceiptCategorization from "@/components/receipts/ReceiptCategorization.vue";
 import StatusDetail from "@/components/shared/StatusDetail.vue";
 import StatusInfo from "@/components/shared/StatusInfo.vue";
 import type { ApiError } from "@/types/api";
 import type { Receipt } from "@/types/receipts";
-import { deleteReceipt, readReceipt, replaceReceipt } from "@/api/receipts";
+import { categorizeReceipt, deleteReceipt, readReceipt, replaceReceipt } from "@/api/receipts";
 import { formatReceipt } from "@/helpers/displayUtils";
 import { handleErrorKey } from "@/inject/App";
 import { toDateTimeLocal } from "@/helpers/dateUtils";
@@ -31,6 +31,7 @@ const toasts = useToastStore();
 const { d, t } = useI18n();
 
 const isDeleting = ref<boolean>(false);
+const isProcessing = ref<boolean>(false);
 const issuedOn = ref<string>("");
 const number = ref<string>("");
 const receipt = ref<Receipt>();
@@ -40,6 +41,23 @@ const hasChanges = computed<boolean>(() =>
   receipt.value ? issuedOn.value !== toDateTimeLocal(new Date(receipt.value.issuedOn)) || number.value !== (receipt.value.number ?? "") : false,
 );
 const title = computed<string>(() => t("receipts.title.edit", { receipt: displayName.value }));
+
+async function onCategorized(categorizedItems: Map<number, string>): Promise<void> {
+  if (receipt.value && !isProcessing.value) {
+    isProcessing.value = true;
+    try {
+      const categorizedReceipt = await categorizeReceipt(receipt.value.id, {
+        itemCategories: receipt.value.items.map(({ number }) => ({ number, category: categorizedItems.get(number) })),
+      });
+      setModel(categorizedReceipt);
+      toasts.success("receipts.processed");
+    } catch (e: unknown) {
+      handleError(e);
+    } finally {
+      isProcessing.value = false;
+    }
+  }
+}
 
 async function onDelete(hideModal: () => void): Promise<void> {
   if (receipt.value && !isDeleting.value) {
@@ -133,7 +151,7 @@ onMounted(async () => {
       </div>
       <TarTabs>
         <TarTab active id="items" :title="`${t('receipts.items.title')} (${receipt.itemCount})`">
-          <ReceiptItemList :receipt="receipt" />
+          <ReceiptCategorization :processing="isProcessing" :receipt="receipt" @categorized="onCategorized" />
         </TarTab>
         <TarTab id="categories" :title="t('receipts.categories.title.list')">
           <CategoryList />

@@ -35,7 +35,7 @@ defineProps<{
         <td>{{ receipt.itemCount }}</td>
         <td>{{ n(receipt.total, "currency") }}</td>
         <td>
-          <template v-if="receipt.processedOn">{{ d(receipt.processedOn) }}</template>
+          <template v-if="receipt.processedOn">{{ d(receipt.processedOn, "medium") }}</template>
           <TarBadge v-else variant="warning">{{ t("receipts.status.options.new") }}</TarBadge>
         </td>
         <td><StatusBlock :actor="receipt.updatedBy" :date="receipt.updatedOn" /></td>

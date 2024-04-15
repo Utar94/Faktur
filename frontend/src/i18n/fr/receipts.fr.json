@@ -4,6 +4,7 @@
       "confirm": "Désirez-vous vraiment supprimer la catégorie suivante ?",
       "title": "Supprimer la catégorie"
     },
+    "none": "Non catégorisé",
     "title": {
       "edit": "Éditer la catégorie",
       "list": "Catégories",
@@ -44,6 +45,7 @@
   },
   "label": "Étiquette",
   "lines": "Lignes",
+  "processed": "Le reçu a été traité.",
   "processedOn": "Traitement le {date} par",
   "quantity": "Quantité",
   "sort": {

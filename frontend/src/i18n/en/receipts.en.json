@@ -4,6 +4,7 @@
       "confirm": "Do you really want to delete the following category?",
       "title": "Delete category"
     },
+    "none": "Uncategorized",
     "title": {
       "edit": "Edit category",
       "list": "Categories",
@@ -44,6 +45,7 @@
   },
   "label": "Label",
   "lines": "Lines",
+  "processed": "The receipt has been processed.",
   "processedOn": "Processed on {date} by",
   "quantity": "Quantity",
   "sort": {
