@@ -2,17 +2,15 @@
 import { TarInput, type InputOptions } from "logitar-vue3-ui";
 import { useI18n } from "vue-i18n";
 
+import { toDateTimeLocal } from "@/helpers/dateUtils";
+
 const { t } = useI18n();
 
 const props = withDefaults(defineProps<InputOptions>(), {
   floating: true,
   id: "issued-on",
   label: "receipts.issuedOn.label",
-  max: () => {
-    const date = new Date().toISOString();
-    const index = date.lastIndexOf(":");
-    return date.substring(0, index);
-  },
+  max: () => toDateTimeLocal(new Date()),
   placeholder: "receipts.issuedOn.label",
   type: "datetime-local",
 });

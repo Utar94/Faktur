@@ -1,19 +1,24 @@
 <script setup lang="ts">
 import { TarTab, TarTabs } from "logitar-vue3-ui";
 import { computed, inject, onMounted, ref } from "vue";
+import { useForm } from "vee-validate";
 import { useI18n } from "vue-i18n";
 import { useRoute, useRouter } from "vue-router";
 
 import AppBackButton from "@/components/shared/AppBackButton.vue";
 import AppDelete from "@/components/shared/AppDelete.vue";
+import AppSaveButton from "@/components/shared/AppSaveButton.vue";
 import CategoryList from "@/components/receipts/CategoryList.vue";
+import IssuedOnInput from "@/components/receipts/IssuedOnInput.vue";
+import NumberInput from "@/components/shared/NumberInput.vue";
 import StatusDetail from "@/components/shared/StatusDetail.vue";
 import StatusInfo from "@/components/shared/StatusInfo.vue";
 import type { ApiError } from "@/types/api";
 import type { Receipt } from "@/types/receipts";
-import { deleteReceipt, readReceipt } from "@/api/receipts";
+import { deleteReceipt, readReceipt, replaceReceipt } from "@/api/receipts";
 import { formatReceipt } from "@/helpers/displayUtils";
 import { handleErrorKey } from "@/inject/App";
+import { toDateTimeLocal } from "@/helpers/dateUtils";
 import { useToastStore } from "@/stores/toast";
 
 const handleError = inject(handleErrorKey) as (e: unknown) => void;
@@ -23,9 +28,14 @@ const toasts = useToastStore();
 const { d, t } = useI18n();
 
 const isDeleting = ref<boolean>(false);
+const issuedOn = ref<string>("");
+const number = ref<string>("");
 const receipt = ref<Receipt>();
 
 const displayName = computed<string>(() => (receipt.value ? formatReceipt(receipt.value) : ""));
+const hasChanges = computed<boolean>(() =>
+  receipt.value ? issuedOn.value !== toDateTimeLocal(new Date(receipt.value.issuedOn)) || number.value !== (receipt.value.number ?? "") : false,
+);
 const title = computed<string>(() => t("receipts.title.edit", { receipt: displayName.value }));
 
 async function onDelete(hideModal: () => void): Promise<void> {
@@ -44,11 +54,38 @@ async function onDelete(hideModal: () => void): Promise<void> {
   }
 }
 
+function setModel(model: Receipt): void {
+  receipt.value = model;
+  issuedOn.value = toDateTimeLocal(new Date(model.issuedOn));
+  number.value = model.number ?? "";
+}
+
+const { handleSubmit, isSubmitting } = useForm();
+const onSubmit = handleSubmit(async () => {
+  if (receipt.value) {
+    try {
+      const updatedReceipt = await replaceReceipt(
+        receipt.value.id,
+        {
+          issuedOn: new Date(issuedOn.value),
+          number: number.value,
+        },
+        receipt.value.version,
+      );
+      setModel(updatedReceipt);
+      toasts.success("receipts.updated");
+    } catch (e: unknown) {
+      handleError(e);
+    }
+  }
+});
+
 onMounted(async () => {
   try {
     const id = route.params.id?.toString();
     if (id) {
-      receipt.value = await readReceipt(id);
+      const receipt = await readReceipt(id);
+      setModel(receipt);
     }
   } catch (e: unknown) {
     const { status } = e as ApiError;
@@ -96,6 +133,15 @@ onMounted(async () => {
         </TarTab>
         <TarTab id="categories" :title="t('receipts.categories.title.list')">
           <CategoryList />
+        </TarTab>
+        <TarTab id="edit" :title="t('actions.edit')">
+          <form @submit.prevent="onSubmit">
+            <div class="mb-3">
+              <AppSaveButton :disabled="isSubmitting || !hasChanges" exists :loading="isSubmitting" />
+            </div>
+            <IssuedOnInput v-model="issuedOn" />
+            <NumberInput v-model="number" />
+          </form>
         </TarTab>
       </TarTabs>
     </template>
