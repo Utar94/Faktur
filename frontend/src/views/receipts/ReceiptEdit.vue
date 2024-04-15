@@ -11,6 +11,7 @@ import AppSaveButton from "@/components/shared/AppSaveButton.vue";
 import CategoryList from "@/components/receipts/CategoryList.vue";
 import IssuedOnInput from "@/components/receipts/IssuedOnInput.vue";
 import NumberInput from "@/components/shared/NumberInput.vue";
+import ReceiptItemList from "@/components/receipts/ReceiptItemList.vue";
 import StatusDetail from "@/components/shared/StatusDetail.vue";
 import StatusInfo from "@/components/shared/StatusInfo.vue";
 import type { ApiError } from "@/types/api";
@@ -19,8 +20,10 @@ import { deleteReceipt, readReceipt, replaceReceipt } from "@/api/receipts";
 import { formatReceipt } from "@/helpers/displayUtils";
 import { handleErrorKey } from "@/inject/App";
 import { toDateTimeLocal } from "@/helpers/dateUtils";
+import { useCategoryStore } from "@/stores/categories";
 import { useToastStore } from "@/stores/toast";
 
+const categories = useCategoryStore();
 const handleError = inject(handleErrorKey) as (e: unknown) => void;
 const route = useRoute();
 const router = useRouter();
@@ -56,6 +59,7 @@ async function onDelete(hideModal: () => void): Promise<void> {
 
 function setModel(model: Receipt): void {
   receipt.value = model;
+  categories.load(model);
   issuedOn.value = toDateTimeLocal(new Date(model.issuedOn));
   number.value = model.number ?? "";
 }
@@ -129,7 +133,7 @@ onMounted(async () => {
       </div>
       <TarTabs>
         <TarTab active id="items" :title="`${t('receipts.items.title')} (${receipt.itemCount})`">
-          <!-- <ReceiptItemList :categories="categories" :receipt="receipt" /> -->
+          <ReceiptItemList :receipt="receipt" />
         </TarTab>
         <TarTab id="categories" :title="t('receipts.categories.title.list')">
           <CategoryList />
