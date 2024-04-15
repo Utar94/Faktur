@@ -6,4 +6,4 @@ export function toDateTimeLocal(date: Date): string {
   ].join("-");
   const t = [date.getHours().toString().padStart(2, "0"), date.getMinutes().toString().padStart(2, "0")].join(":");
   return [d, t].join("T");
-} // TODO(fpion): tests
+}

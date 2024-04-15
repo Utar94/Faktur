@@ -1,5 +1,6 @@
 {
   "categories": {
+    "alreadyExists": "The specified category already exists.",
     "delete": {
       "confirm": "Do you really want to delete the following category?",
       "title": "Delete category"

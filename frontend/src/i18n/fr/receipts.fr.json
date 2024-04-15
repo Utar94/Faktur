@@ -1,5 +1,6 @@
 {
   "categories": {
+    "alreadyExists": "La catégorie spécifiée existe déjà.",
     "delete": {
       "confirm": "Désirez-vous vraiment supprimer la catégorie suivante ?",
       "title": "Supprimer la catégorie"

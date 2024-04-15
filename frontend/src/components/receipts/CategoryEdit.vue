@@ -23,6 +23,7 @@ const displayName = ref<string>("");
 const modalRef = ref<InstanceType<typeof TarModal> | null>(null);
 
 const hasChanges = computed<boolean>(() => displayName.value.trim() !== (props.category?.trim() ?? ""));
+const modalId = computed<string>(() => `edit-category_${props.id}`);
 
 function hide(): void {
   modalRef.value?.hide();
@@ -48,12 +49,12 @@ watchEffect(() => (displayName.value = props.category ?? ""));
       :text="t(category ? 'actions.edit' : 'actions.create')"
       :variant="category ? 'primary' : 'success'"
       data-bs-toggle="modal"
-      :data-bs-target="`#${id}`"
+      :data-bs-target="`#${modalId}`"
     />
     <TarModal
       :close="t('actions.close')"
       fade
-      :id="id"
+      :id="modalId"
       ref="modalRef"
       :title="t(category ? 'receipts.categories.title.edit' : 'receipts.categories.title.new')"
     >

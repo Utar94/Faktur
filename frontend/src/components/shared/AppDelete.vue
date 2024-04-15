@@ -23,7 +23,7 @@ const props = withDefaults(
 
 const modalRef = ref<InstanceType<typeof TarModal> | null>(null);
 
-const modalId = computed<string>(() => `deleteModal_${props.id}`);
+const modalId = computed<string>(() => `delete-modal_${props.id}`);
 
 function hide(): void {
   modalRef.value?.hide();

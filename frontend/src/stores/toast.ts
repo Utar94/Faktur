@@ -32,9 +32,9 @@ export const useToastStore = defineStore("toast", () => {
     };
     add(toast);
   } // TODO(fpion): tests
-  function error(): void {
+  function error(text?: string): void {
     toast({
-      text: "toasts.error.message",
+      text: text ?? "toasts.error.message",
       title: "toasts.error.title",
       variant: "danger",
     });

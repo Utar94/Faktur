@@ -5,8 +5,10 @@ import AppDelete from "@/components/shared/AppDelete.vue";
 import CategoryEdit from "./CategoryEdit.vue";
 import type { CategorySavedEvent } from "@/types/receipts";
 import { useCategoryStore } from "@/stores/categories";
+import { useToastStore } from "@/stores/toast";
 
 const categories = useCategoryStore();
+const toasts = useToastStore();
 const { t } = useI18n();
 
 const emit = defineEmits<{
@@ -23,7 +25,7 @@ function onSaved(newCategory: string, oldCategory?: string): void {
   if (categories.save(newCategory, oldCategory)) {
     emit("saved", { newCategory, oldCategory });
   } else {
-    // TODO(fpion): new name is already used
+    toasts.warning("receipts.categories.alreadyExists");
   }
 }
 </script>
