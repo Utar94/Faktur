@@ -76,7 +76,7 @@ watchEffect(() => {
       data-bs-toggle="modal"
       :data-bs-target="`#${id}`"
     />
-    <TarModal :close="t('actions.close')" fade :id="id" ref="modalRef" size="large" :title="t(department ? 'departments.title.edit' : 'departments.title.new')">
+    <TarModal :close="t('actions.close')" :id="id" ref="modalRef" size="large" :title="t(department ? 'departments.title.edit' : 'departments.title.new')">
       <form @submit.prevent="onSubmit">
         <NumberInput required v-model="number" />
         <DisplayNameInput required v-model="displayName" />

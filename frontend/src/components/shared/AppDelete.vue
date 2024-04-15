@@ -45,7 +45,7 @@ defineEmits<{
       data-bs-toggle="modal"
       :data-bs-target="`#${modalId}`"
     />
-    <TarModal :close="t(close)" fade :id="modalId" ref="modalRef" :title="t(title)">
+    <TarModal :close="t(close)" :id="modalId" ref="modalRef" :title="t(title)">
       <p>
         {{ t(confirm) }}
         <br />
