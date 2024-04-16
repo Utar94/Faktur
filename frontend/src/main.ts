@@ -7,7 +7,6 @@ import fontAwesome from "./fontAwesome";
 import i18n from "./i18n";
 import router from "./router";
 
-import "bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 import "./assets/styles/main.css";
