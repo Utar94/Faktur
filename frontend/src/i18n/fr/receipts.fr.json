@@ -73,5 +73,11 @@
     "importing": "Importation",
     "list": "Reçus"
   },
+  "totals": {
+    "subTotal": "Sous-total : {subTotal}",
+    "tax": "{code} : {taxableAmount} × {rate} = {amount}",
+    "title": "Totaux",
+    "total": "Total : {total}"
+  },
   "updated": "Le reçu a été enregistré."
 }

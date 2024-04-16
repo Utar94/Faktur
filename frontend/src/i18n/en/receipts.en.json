@@ -73,5 +73,11 @@
     "importing": "Importation",
     "list": "Receipts"
   },
+  "totals": {
+    "subTotal": "Sub-total: {subTotal}",
+    "tax": "{code}: {taxableAmount} × {rate} = {amount}",
+    "title": "Totals",
+    "total": "Total: {total}"
+  },
   "updated": "The receipt has been updated."
 }

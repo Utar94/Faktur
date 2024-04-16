@@ -76,6 +76,12 @@ export type ReceiptTax = {
   amount: number;
 };
 
+export type ReceiptTotal = {
+  subTotal: number;
+  taxes: ReceiptTax[];
+  total: number;
+};
+
 export type ReplaceReceiptPayload = {
   issuedOn: Date;
   number?: string;

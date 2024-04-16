@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { TarTab, TarTabs } from "logitar-vue3-ui";
+import { TarButton, TarTab, TarTabs } from "logitar-vue3-ui";
 import { computed, inject, onMounted, ref } from "vue";
 import { useForm } from "vee-validate";
 import { useI18n } from "vue-i18n";
@@ -12,13 +12,15 @@ import CategoryList from "@/components/receipts/CategoryList.vue";
 import IssuedOnInput from "@/components/receipts/IssuedOnInput.vue";
 import NumberInput from "@/components/shared/NumberInput.vue";
 import ReceiptCategorization from "@/components/receipts/ReceiptCategorization.vue";
+import ReceiptStatus from "@/components/receipts/ReceiptStatus.vue";
 import StatusDetail from "@/components/shared/StatusDetail.vue";
-import StatusInfo from "@/components/shared/StatusInfo.vue";
 import type { ApiError } from "@/types/api";
 import type { CategorySavedEvent, Receipt } from "@/types/receipts";
+import type { Tax } from "@/types/taxes";
 import { categorizeReceipt, deleteReceipt, readReceipt, replaceReceipt } from "@/api/receipts";
 import { formatReceipt } from "@/helpers/displayUtils";
 import { handleErrorKey } from "@/inject/App";
+import { searchTaxes } from "@/api/taxes";
 import { toDateTimeLocal } from "@/helpers/dateUtils";
 import { useCategoryStore } from "@/stores/categories";
 import { useToastStore } from "@/stores/toast";
@@ -28,7 +30,7 @@ const handleError = inject(handleErrorKey) as (e: unknown) => void;
 const route = useRoute();
 const router = useRouter();
 const toasts = useToastStore();
-const { d, t } = useI18n();
+const { t } = useI18n();
 
 const categorization = ref<InstanceType<typeof ReceiptCategorization> | null>(null);
 const isDeleting = ref<boolean>(false);
@@ -36,6 +38,7 @@ const isProcessing = ref<boolean>(false);
 const issuedOn = ref<string>("");
 const number = ref<string>("");
 const receipt = ref<Receipt>();
+const taxes = ref<Tax[]>([]);
 
 const displayName = computed<string>(() => (receipt.value ? formatReceipt(receipt.value) : ""));
 const hasChanges = computed<boolean>(() =>
@@ -85,6 +88,10 @@ async function onDelete(hideModal: () => void): Promise<void> {
   }
 }
 
+function scrollToBottom(): void {
+  window.scrollTo(0, document.body.scrollHeight);
+}
+
 function setModel(model: Receipt): void {
   receipt.value = model;
   categories.load(model);
@@ -119,6 +126,18 @@ onMounted(async () => {
       const receipt = await readReceipt(id);
       setModel(receipt);
     }
+    taxes.value = (
+      await searchTaxes({
+        ids: [],
+        search: {
+          terms: [],
+          operator: "And",
+        },
+        sort: [],
+        skip: 0,
+        limit: 0,
+      })
+    ).items;
   } catch (e: unknown) {
     const { status } = e as ApiError;
     if (status === 404) {
@@ -135,18 +154,7 @@ onMounted(async () => {
     <template v-if="receipt">
       <h1>{{ title }}</h1>
       <StatusDetail :aggregate="receipt" />
-      <p>
-        <span>
-          {{ t("receipts.issuedOn.format", { date: d(receipt.issuedOn, "medium") }) }}
-          <RouterLink :to="{ name: 'StoreEdit', params: { id: receipt.store.id } }">
-            <font-awesome-icon icon="fas fa-store" />{{ receipt.store.displayName }}
-          </RouterLink>
-        </span>
-        <template v-if="receipt.processedBy && receipt.processedOn">
-          <br />
-          <StatusInfo :actor="receipt.processedBy" :date="receipt.processedOn" format="receipts.processedOn" />
-        </template>
-      </p>
+      <ReceiptStatus :receipt="receipt" />
       <div class="mb-3">
         <AppBackButton class="me-1" />
         <AppDelete
@@ -158,10 +166,12 @@ onMounted(async () => {
           title="receipts.delete.title"
           @confirmed="onDelete"
         />
+        <TarButton class="float-end" icon="fas fa-arrow-down" :text="t('actions.comeDown')" variant="info" @click="scrollToBottom" />
       </div>
       <TarTabs>
         <TarTab active id="items" :title="`${t('receipts.items.title')} (${receipt.itemCount})`">
-          <ReceiptCategorization :processing="isProcessing" :receipt="receipt" ref="categorization" @categorized="onCategorized" />
+          <ReceiptCategorization :processing="isProcessing" :receipt="receipt" ref="categorization" :taxes="taxes" @categorized="onCategorized" />
+          <ReceiptStatus :receipt="receipt" />
         </TarTab>
         <TarTab id="categories" :title="t('receipts.categories.title.list')">
           <CategoryList @deleted="onCategoryDeleted" @saved="onCategorySaved" />

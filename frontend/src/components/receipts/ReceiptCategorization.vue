@@ -3,8 +3,12 @@ import { TarButton } from "logitar-vue3-ui";
 import { computed, ref, watchEffect } from "vue";
 import { useI18n } from "vue-i18n";
 
+import AppBackButton from "@/components/shared/AppBackButton.vue";
 import ReceiptItemCard from "./ReceiptItemCard.vue";
-import type { Receipt, ReceiptItem } from "@/types/receipts";
+import ReceiptTotal from "./ReceiptTotal.vue";
+import type { Receipt, ReceiptItem, ReceiptTotal as TReceiptTotal } from "@/types/receipts";
+import type { Tax } from "@/types/taxes";
+import { isTaxable } from "@/helpers/taxUtils";
 import { orderBy } from "@/helpers/arrayUtils";
 import { useCategoryStore } from "@/stores/categories";
 
@@ -20,6 +24,7 @@ const props = withDefaults(
   defineProps<{
     processing?: boolean;
     receipt: Receipt;
+    taxes: Tax[]; // TODO(fpion): should be included in receipt.taxes
   }>(),
   {
     processing: false,
@@ -40,6 +45,15 @@ const groupedItems = computed<ItemGroup[]>(() => {
   itemsByDepartment.forEach((items, department) => groupedItems.push({ department, items: orderBy(items, "number") }));
   return orderBy(groupedItems, "department");
 });
+const taxFlags = computed<Map<string, string>>(() => {
+  const taxFlags = new Map<string, string>();
+  props.taxes.forEach((tax) => {
+    if (tax.flags) {
+      taxFlags.set(tax.code, tax.flags);
+    }
+  });
+  return taxFlags;
+});
 
 const categoryClass = computed<string>(() => {
   const width = Math.trunc(12 / (1 + categories.categories.length));
@@ -51,12 +65,44 @@ const noCategoryClass = computed<string>(() => {
   return `col-${width}`;
 });
 
+function calculateTotal(category?: string): TReceiptTotal {
+  const total: TReceiptTotal = {
+    subTotal: 0,
+    taxes: props.receipt.taxes.map(({ code, rate }) => ({ code, taxableAmount: 0, rate, amount: 0 })),
+    total: 0,
+  };
+  props.receipt.items.forEach((item) => {
+    const value: string | undefined = categorizedItems.value.get(item.number);
+    if (value === category) {
+      total.subTotal += item.price;
+      if (item.flags) {
+        total.taxes.forEach((tax) => {
+          const flags: string | undefined = taxFlags.value.get(tax.code);
+          if (flags && isTaxable(flags, item.flags ?? "")) {
+            tax.taxableAmount += item.price;
+          }
+        });
+      }
+    }
+  });
+  total.total = total.subTotal;
+  total.taxes.forEach((tax) => {
+    tax.amount = tax.taxableAmount * tax.rate;
+    total.total += tax.amount;
+  });
+  return total;
+}
+
 function categorize(item: ReceiptItem, category?: string): void {
   if (category) {
     categorizedItems.value.set(item.number, category);
   } else {
     categorizedItems.value.delete(item.number);
   }
+}
+
+function scrollToTop(): void {
+  window.scrollTo(0, 0);
 }
 
 function deleteCategory(category: string): void {
@@ -92,11 +138,6 @@ watchEffect(() => {
     }
   });
 });
-
-// TODO(fpion): Sub-totals, taxes and totals
-// TODO(fpion): processed at bottom
-// TODO(fpion): Back Button
-// TODO(fpion): Up Button
 </script>
 
 <template>
@@ -124,8 +165,17 @@ watchEffect(() => {
         </template>
       </div>
     </div>
+    <div>
+      <h2>{{ t("receipts.totals.title") }}</h2>
+      <ReceiptTotal v-bind="receipt" />
+      <div class="row">
+        <ReceiptTotal :class="noCategoryClass" v-bind="calculateTotal()" />
+        <ReceiptTotal :class="categoryClass" v-for="category in categories.categories" :key="category" v-bind="calculateTotal(category)" />
+      </div>
+    </div>
     <div class="mb-3">
       <TarButton
+        class="me-1"
         :disabled="processing"
         icon="fas fa-dollar-sign"
         :loading="processing"
@@ -133,6 +183,8 @@ watchEffect(() => {
         :text="t('actions.process')"
         @click="onProcess"
       />
+      <AppBackButton class="ms-1" />
+      <TarButton class="float-end" icon="fas fa-arrow-up" :text="t('actions.back')" variant="info" @click="scrollToTop" />
     </div>
   </div>
 </template>
