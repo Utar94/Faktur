@@ -28,6 +28,8 @@ function onSaved(newCategory: string, oldCategory?: string): void {
     toasts.warning("receipts.categories.alreadyExists");
   }
 }
+
+// TODO(fpion): items disappear when renaming/deleting a category
 </script>
 
 <template>
