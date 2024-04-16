@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { TarTab, TarTabs } from "logitar-vue3-ui";
+import { TarButton, TarTab, TarTabs } from "logitar-vue3-ui";
 import { computed, inject, onMounted, ref } from "vue";
 import { useForm } from "vee-validate";
 import { useI18n } from "vue-i18n";
@@ -85,6 +85,10 @@ async function onDelete(hideModal: () => void): Promise<void> {
   }
 }
 
+function scrollToBottom(): void {
+  window.scrollTo(0, document.body.scrollHeight);
+}
+
 function setModel(model: Receipt): void {
   receipt.value = model;
   categories.load(model);
@@ -147,6 +151,7 @@ onMounted(async () => {
           title="receipts.delete.title"
           @confirmed="onDelete"
         />
+        <TarButton class="float-end" icon="fas fa-arrow-down" :text="t('actions.comeDown')" variant="info" @click="scrollToBottom" />
       </div>
       <TarTabs>
         <TarTab active id="items" :title="`${t('receipts.items.title')} (${receipt.itemCount})`">

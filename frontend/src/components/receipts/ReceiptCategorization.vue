@@ -5,7 +5,8 @@ import { useI18n } from "vue-i18n";
 
 import AppBackButton from "@/components/shared/AppBackButton.vue";
 import ReceiptItemCard from "./ReceiptItemCard.vue";
-import type { Receipt, ReceiptItem } from "@/types/receipts";
+import ReceiptTotal from "./ReceiptTotal.vue";
+import type { Receipt, ReceiptItem, ReceiptTotal as TReceiptTotal } from "@/types/receipts";
 import { orderBy } from "@/helpers/arrayUtils";
 import { useCategoryStore } from "@/stores/categories";
 
@@ -51,6 +52,24 @@ const noCategoryClass = computed<string>(() => {
   width += 12 % (1 + categories.categories.length);
   return `col-${width}`;
 });
+
+function calculateTotal(category?: string): TReceiptTotal {
+  const total: TReceiptTotal = {
+    subTotal: 0,
+    taxes: props.receipt.taxes.map(({ code, rate }) => ({ code, taxableAmount: 0, rate, amount: 0 })),
+    total: 0,
+  };
+  props.receipt.items.forEach((item) => {
+    const value: string | undefined = categorizedItems.value.get(item.number);
+    if (value === category) {
+      total.subTotal += item.price;
+      // TODO(fpion): taxes
+    }
+  });
+  total.total = total.subTotal;
+  // TODO(fpion): taxes
+  return total;
+}
 
 function categorize(item: ReceiptItem, category?: string): void {
   if (category) {
@@ -122,6 +141,14 @@ watchEffect(() => {
           </div>
           <div v-else :class="`clickable ${categoryClass}`" @click="categorize(item, category)"></div>
         </template>
+      </div>
+    </div>
+    <div>
+      <h2>{{ t("receipts.totals.title") }}</h2>
+      <ReceiptTotal v-bind="receipt" />
+      <div class="row">
+        <ReceiptTotal :class="noCategoryClass" v-bind="calculateTotal()" />
+        <ReceiptTotal :class="categoryClass" v-for="category in categories.categories" :key="category" v-bind="calculateTotal(category)" />
       </div>
     </div>
     <div class="mb-3">
