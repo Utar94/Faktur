@@ -53,7 +53,6 @@ watchEffect(() => (displayName.value = props.category ?? ""));
     />
     <TarModal
       :close="t('actions.close')"
-      fade
       :id="modalId"
       ref="modalRef"
       :title="t(category ? 'receipts.categories.title.edit' : 'receipts.categories.title.new')"
