@@ -7,6 +7,8 @@ import AppBackButton from "@/components/shared/AppBackButton.vue";
 import ReceiptItemCard from "./ReceiptItemCard.vue";
 import ReceiptTotal from "./ReceiptTotal.vue";
 import type { Receipt, ReceiptItem, ReceiptTotal as TReceiptTotal } from "@/types/receipts";
+import type { Tax } from "@/types/taxes";
+import { isTaxable } from "@/helpers/taxUtils";
 import { orderBy } from "@/helpers/arrayUtils";
 import { useCategoryStore } from "@/stores/categories";
 
@@ -22,6 +24,7 @@ const props = withDefaults(
   defineProps<{
     processing?: boolean;
     receipt: Receipt;
+    taxes: Tax[]; // TODO(fpion): should be included in receipt.taxes
   }>(),
   {
     processing: false,
@@ -41,6 +44,15 @@ const groupedItems = computed<ItemGroup[]>(() => {
   const groupedItems: ItemGroup[] = [];
   itemsByDepartment.forEach((items, department) => groupedItems.push({ department, items: orderBy(items, "number") }));
   return orderBy(groupedItems, "department");
+});
+const taxFlags = computed<Map<string, string>>(() => {
+  const taxFlags = new Map<string, string>();
+  props.taxes.forEach((tax) => {
+    if (tax.flags) {
+      taxFlags.set(tax.code, tax.flags);
+    }
+  });
+  return taxFlags;
 });
 
 const categoryClass = computed<string>(() => {
@@ -63,11 +75,21 @@ function calculateTotal(category?: string): TReceiptTotal {
     const value: string | undefined = categorizedItems.value.get(item.number);
     if (value === category) {
       total.subTotal += item.price;
-      // TODO(fpion): taxes
+      if (item.flags) {
+        total.taxes.forEach((tax) => {
+          const flags: string | undefined = taxFlags.value.get(tax.code);
+          if (flags && isTaxable(flags, item.flags ?? "")) {
+            tax.taxableAmount += item.price;
+          }
+        });
+      }
     }
   });
   total.total = total.subTotal;
-  // TODO(fpion): taxes
+  total.taxes.forEach((tax) => {
+    tax.amount = tax.taxableAmount * tax.rate;
+    total.total += tax.amount;
+  });
   return total;
 }
 
