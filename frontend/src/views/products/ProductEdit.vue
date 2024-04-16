@@ -24,7 +24,7 @@ import type { Article } from "@/types/articles";
 import type { Department } from "@/types/departments";
 import type { Product, UnitType } from "@/types/products";
 import type { Store } from "@/types/stores";
-import { createOrReplaceProduct, deleteProduct, readProduct } from "@/api/products";
+import { createOrReplaceProduct, deleteProduct, readProduct, readProductByArticle } from "@/api/products";
 import { handleErrorKey } from "@/inject/App";
 import { readStore } from "@/api/stores";
 import { useToastStore } from "@/stores/toast";
@@ -44,6 +44,7 @@ const flags = ref<string>("");
 const hasLoaded = ref<boolean>(false);
 const isDeleting = ref<boolean>(false);
 const product = ref<Product>();
+const productAlreadyExists = ref<boolean>(false);
 const sku = ref<string>("");
 const skuAlreadyUsed = ref<boolean>(false);
 const store = ref<Store>();
@@ -79,9 +80,31 @@ async function onDelete(hideModal: () => void): Promise<void> {
   }
 }
 
+async function checkAlreadyExists(): Promise<void> {
+  if (store.value && article.value) {
+    try {
+      await readProductByArticle(store.value.id, article.value.id);
+      productAlreadyExists.value = true;
+    } catch (e: unknown) {
+      const { status } = e as ApiError;
+      if (status === 404) {
+        productAlreadyExists.value = false;
+      } else {
+        handleError(e);
+      }
+    }
+  } else {
+    productAlreadyExists.value = false;
+  }
+}
+function onArticleSelected(selected?: Article): void {
+  article.value = selected;
+  checkAlreadyExists();
+}
 function onStoreSelected(selected?: Store): void {
   store.value = selected;
   department.value = undefined;
+  checkAlreadyExists();
 }
 
 function setModel(model: Product): void {
@@ -168,13 +191,16 @@ onMounted(async () => {
   <main class="container">
     <template v-if="hasLoaded">
       <h1>{{ product?.displayName ?? product?.article.displayName ?? t("products.title.new") }}</h1>
+      <TarAlert :close="t('actions.close')" dismissible variant="warning" v-model="productAlreadyExists">
+        <strong>{{ t("products.alreadyExists.lead") }}</strong> {{ t("products.alreadyExists.help") }}
+      </TarAlert>
       <TarAlert :close="t('actions.close')" dismissible variant="warning" v-model="skuAlreadyUsed">
         <strong>{{ t("products.sku.alreadyUsed.lead") }}</strong> {{ t("products.sku.alreadyUsed.help") }}
       </TarAlert>
       <StatusDetail v-if="product" :aggregate="product" />
       <form @submit.prevent="onSubmit">
         <div class="mb-3">
-          <AppSaveButton class="me-1" :disabled="isSubmitting || !hasChanges" :exists="Boolean(product)" :loading="isSubmitting" />
+          <AppSaveButton class="me-1" :disabled="isSubmitting || !hasChanges || productAlreadyExists" :exists="Boolean(product)" :loading="isSubmitting" />
           <AppBackButton class="mx-1" :has-changes="hasChanges" />
           <AppDelete
             v-if="product"
@@ -188,7 +214,7 @@ onMounted(async () => {
         </div>
         <div class="row">
           <StoreSelect class="col-lg-6" :disabled="Boolean(product)" :model-value="store?.id" required @selected="onStoreSelected" />
-          <ArticleSelect class="col-lg-6" :disabled="Boolean(product)" :model-value="article?.id" required @selected="article = $event" />
+          <ArticleSelect class="col-lg-6" :disabled="Boolean(product)" :model-value="article?.id" required @selected="onArticleSelected" />
         </div>
         <template v-if="store">
           <div class="row">

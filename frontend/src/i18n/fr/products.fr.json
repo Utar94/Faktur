@@ -1,4 +1,8 @@
 {
+  "alreadyExists": {
+    "help": "Veuillez sélectionner un autre article.",
+    "lead": "L’article est déjà utilisé !"
+  },
   "created": "Le produit a été créé.",
   "delete": {
     "confirm": "Désirez-vous vraiment supprimer le produit suivant ?",
