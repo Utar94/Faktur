@@ -15,7 +15,7 @@ import ReceiptCategorization from "@/components/receipts/ReceiptCategorization.v
 import StatusDetail from "@/components/shared/StatusDetail.vue";
 import StatusInfo from "@/components/shared/StatusInfo.vue";
 import type { ApiError } from "@/types/api";
-import type { Receipt } from "@/types/receipts";
+import type { CategorySavedEvent, Receipt } from "@/types/receipts";
 import { categorizeReceipt, deleteReceipt, readReceipt, replaceReceipt } from "@/api/receipts";
 import { formatReceipt } from "@/helpers/displayUtils";
 import { handleErrorKey } from "@/inject/App";
@@ -30,6 +30,7 @@ const router = useRouter();
 const toasts = useToastStore();
 const { d, t } = useI18n();
 
+const categorization = ref<InstanceType<typeof ReceiptCategorization> | null>(null);
 const isDeleting = ref<boolean>(false);
 const isProcessing = ref<boolean>(false);
 const issuedOn = ref<string>("");
@@ -56,6 +57,15 @@ async function onCategorized(categorizedItems: Map<number, string>): Promise<voi
     } finally {
       isProcessing.value = false;
     }
+  }
+}
+
+function onCategoryDeleted(category: string): void {
+  categorization.value?.deleteCategory(category);
+}
+function onCategorySaved(event: CategorySavedEvent): void {
+  if (event.oldCategory) {
+    categorization.value?.renameCategory(event.oldCategory, event.newCategory);
   }
 }
 
@@ -151,10 +161,10 @@ onMounted(async () => {
       </div>
       <TarTabs>
         <TarTab active id="items" :title="`${t('receipts.items.title')} (${receipt.itemCount})`">
-          <ReceiptCategorization :processing="isProcessing" :receipt="receipt" @categorized="onCategorized" />
+          <ReceiptCategorization :processing="isProcessing" :receipt="receipt" ref="categorization" @categorized="onCategorized" />
         </TarTab>
         <TarTab id="categories" :title="t('receipts.categories.title.list')">
-          <CategoryList />
+          <CategoryList @deleted="onCategoryDeleted" @saved="onCategorySaved" />
         </TarTab>
         <TarTab id="edit" :title="t('actions.edit')">
           <form @submit.prevent="onSubmit">
