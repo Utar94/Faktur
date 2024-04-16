@@ -4,6 +4,7 @@ import countries from "./countries.fr.json";
 import departments from "./departments.fr.json";
 import index from "./index.fr.json";
 import products from "./products.fr.json";
+import receipts from "./receipts.fr.json";
 import stores from "./stores.fr.json";
 import taxes from "./taxes.fr.json";
 import users from "./users.fr.json";
@@ -15,6 +16,7 @@ export default {
   countries,
   departments,
   products,
+  receipts,
   stores,
   taxes,
   users,

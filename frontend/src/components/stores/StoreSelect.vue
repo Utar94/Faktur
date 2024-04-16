@@ -10,16 +10,16 @@ import { searchStores } from "@/api/stores";
 const handleError = inject(handleErrorKey) as (e: unknown) => void;
 const { t } = useI18n();
 
-const stores = ref<Store[]>([]);
-
-const options = computed<SelectOption[]>(() => stores.value.map(({ id, displayName }) => ({ value: id, text: displayName })));
-
 const props = withDefaults(defineProps<SelectOptions>(), {
   floating: true,
   id: "store",
   label: "stores.select.label",
   placeholder: "stores.select.placeholder",
 });
+
+const stores = ref<Store[]>([]);
+
+const options = computed<SelectOption[]>(() => stores.value.map(({ id, displayName }) => ({ value: id, text: displayName })));
 
 onMounted(async () => {
   try {

@@ -124,7 +124,7 @@ public class ImportReceiptCommandTests : IntegrationTests
   {
     StringBuilder lines = new();
     lines.AppendLine(string.Join('\t', "lays-salt-vinegar-chips", "LAY'S CHIPS", "FPMRJ", "3.75"));
-    lines.AppendLine("*27-FRUITS ET LEGUMES");
+    lines.AppendLine("*27-FRUITS-ET-LEGUMES");
     lines.AppendLine(string.Join('\t', "0000004011", "BANANES", "MRJ", "1.150", "1.52", "1.75"));
     lines.AppendLine(string.Join('\t', "ananas", "ANANAS", "MRJ", "1.67"));
 
@@ -152,7 +152,7 @@ public class ImportReceiptCommandTests : IntegrationTests
     Assert.Contains(receipt.Items, i => i.Number == 0 && i.Gtin == null && i.Sku == "lays-salt-vinegar-chips" && i.Label == "LAY'S CHIPS" && i.Flags == "FPMRJ"
       && i.Quantity == 1.0d && i.UnitPrice == 3.75m && i.Price == 3.75m && i.Department == null && i.Category == null
       && i.CreatedBy.Equals(Actor) && i.UpdatedBy.Equals(Actor) && i.CreatedOn == i.UpdatedOn);
-    DepartmentSummary department = new("27", "FRUITS ET LEGUMES");
+    DepartmentSummary department = new("27", "FRUITS-ET-LEGUMES");
     Assert.Contains(receipt.Items, i => i.Number == 1 && i.Gtin == "0000004011" && i.Sku == null && i.Label == "BANANES" && i.Flags == "MRJ"
       && i.Quantity == 1.150d && i.UnitPrice == 1.52m && i.Price == 1.75m && i.Department == department && i.Category == null
       && i.CreatedBy.Equals(Actor) && i.UpdatedBy.Equals(Actor) && i.CreatedOn == i.UpdatedOn);
@@ -250,7 +250,7 @@ public class ImportReceiptCommandTests : IntegrationTests
   {
     string[] lines =
     [
-      "*27-FRUITS-ET-LEGUMES",
+      "*27",
       "*27 FRUITS ET LEGUMES-",
       "06038385904\tPC POULET BBQ\tFPMRJ\t9.99\t9.99",
       "-6038385904\t\tFPMRJFPMRJFPMRJ\t9.99,",
@@ -267,7 +267,7 @@ public class ImportReceiptCommandTests : IntegrationTests
     Assert.Equal(11, exception.Errors.Count());
 
     Assert.Contains(exception.Errors, e => e.ErrorCode == "InvalidDepartmentLineColumnCount" && e.PropertyName == "Lines[0]" && (string?)e.AttemptedValue == lines[0]
-      && e.ErrorMessage == "The department line does not have a valid column count (Expected=2, Actual=4).");
+      && e.ErrorMessage == "The department line does not have a valid column count (Expected=2, Actual=1).");
     Assert.Contains(exception.Errors, e => e.ErrorCode == "MaximumLengthValidator" && e.PropertyName == "Lines[1].DepartmentNumber" && (string?)e.AttemptedValue == "27 FRUITS ET LEGUMES");
     Assert.Contains(exception.Errors, e => e.ErrorCode == "NotEmptyValidator" && e.PropertyName == "Lines[1].DepartmentName" && (string?)e.AttemptedValue == "");
     Assert.Contains(exception.Errors, e => e.ErrorCode == "InvalidItemLineColumnCount" && e.PropertyName == "Lines[2]" && (string?)e.AttemptedValue == lines[2]

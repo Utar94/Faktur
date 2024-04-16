@@ -6,9 +6,14 @@ import { useRouter } from "vue-router";
 const router = useRouter();
 const { t } = useI18n();
 
-defineProps<{
-  hasChanges?: boolean;
-}>();
+withDefaults(
+  defineProps<{
+    hasChanges?: boolean;
+  }>(),
+  {
+    hasChanges: false,
+  },
+);
 </script>
 
 <template>

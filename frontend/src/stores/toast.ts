@@ -31,28 +31,28 @@ export const useToastStore = defineStore("toast", () => {
       variant: toast.variant,
     };
     add(toast);
-  }
-  function error(): void {
+  } // TODO(fpion): tests
+  function error(text?: string): void {
     toast({
-      text: "toasts.error.message",
+      text: text ?? "toasts.error.message",
       title: "toasts.error.title",
       variant: "danger",
     });
-  }
+  } // TODO(fpion): tests
   function success(text: string): void {
     toast({
       text,
       title: "toasts.success.title",
       variant: "success",
     });
-  }
+  } // TODO(fpion): tests
   function warning(text: string): void {
     toast({
       text,
       title: "toasts.warning.title",
       variant: "warning",
     });
-  }
+  } // TODO(fpion): tests
 
   return { toasts, add, remove, toast, error, success, warning };
 });

@@ -23,7 +23,7 @@ const props = withDefaults(
 
 const modalRef = ref<InstanceType<typeof TarModal> | null>(null);
 
-const modalId = computed<string>(() => `deleteModal_${props.id}`);
+const modalId = computed<string>(() => `delete-modal_${props.id}`);
 
 function hide(): void {
   modalRef.value?.hide();
@@ -45,7 +45,7 @@ defineEmits<{
       data-bs-toggle="modal"
       :data-bs-target="`#${modalId}`"
     />
-    <TarModal :close="t(close)" fade :id="modalId" ref="modalRef" :title="t(title)">
+    <TarModal :close="t(close)" :id="modalId" ref="modalRef" :title="t(title)">
       <p>
         {{ t(confirm) }}
         <br />

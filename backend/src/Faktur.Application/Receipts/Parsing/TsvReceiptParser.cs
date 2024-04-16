@@ -68,13 +68,20 @@ internal class TsvReceiptParser : IReceiptParser
     parsedDepartment = null;
     List<ValidationFailure> errors = [];
 
-    string[] values = line[1..].Split(DepartmentSeparator);
-    if (values.Length == 2)
+    int index = line.IndexOf(DepartmentSeparator);
+    if (index < 0)
+    {
+      errors.Add(new ValidationFailure(propertyName, "The department line does not have a valid column count (Expected=2, Actual=1).", line)
+      {
+        ErrorCode = "InvalidDepartmentLineColumnCount"
+      });
+    }
+    else
     {
       NumberUnit? number = null;
       try
       {
-        number = new(values[0]);
+        number = new(line[1..index]);
       }
       catch (ValidationException exception)
       {
@@ -87,7 +94,7 @@ internal class TsvReceiptParser : IReceiptParser
       DisplayNameUnit? displayName = null;
       try
       {
-        displayName = new(values[1]);
+        displayName = new(line[(index + 1)..]);
       }
       catch (ValidationException exception)
       {
@@ -101,13 +108,6 @@ internal class TsvReceiptParser : IReceiptParser
       {
         parsedDepartment = new(number, new DepartmentUnit(displayName));
       }
-    }
-    else
-    {
-      errors.Add(new ValidationFailure(propertyName, $"The department line does not have a valid column count (Expected=2, Actual={values.Length}).", line)
-      {
-        ErrorCode = "InvalidDepartmentLineColumnCount"
-      });
     }
 
     return errors;

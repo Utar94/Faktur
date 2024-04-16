@@ -7,6 +7,8 @@
     "create": "Create",
     "delete": "Delete",
     "edit": "Edit",
+    "import": "Import",
+    "process": "Process",
     "refresh": "Refresh",
     "save": "Save",
     "title": "Actions"
@@ -20,7 +22,8 @@
   "flag": "Flag",
   "flags": "Flags",
   "general": "General",
-  "loading": "Loading...",
+  "loading": "Loading…",
+  "no": "No",
   "notFound": {
     "help": "The requested page could not be found.",
     "lead": "Page Not Found",
@@ -34,6 +37,7 @@
     "next": "Next",
     "previous": "Previous"
   },
+  "price": "Price",
   "search": "Search",
   "sort": {
     "isDescending": "Is descending",
@@ -59,5 +63,6 @@
       "signedOut": "You have been signed-out, please try sign-in to your account again.",
       "title": "Warning!"
     }
-  }
+  },
+  "yes": "Yes"
 }

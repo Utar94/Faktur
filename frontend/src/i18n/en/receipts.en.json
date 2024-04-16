@@ -1,0 +1,77 @@
+{
+  "categories": {
+    "alreadyExists": "The specified category already exists.",
+    "delete": {
+      "confirm": "Do you really want to delete the following category?",
+      "title": "Delete category"
+    },
+    "none": "Uncategorized",
+    "title": {
+      "edit": "Edit category",
+      "list": "Categories",
+      "new": "New category"
+    }
+  },
+  "delete": {
+    "confirm": "Do you really want to delete the following receipt?",
+    "success": "The receipt has been deleted.",
+    "title": "Delete receipt"
+  },
+  "empty": "This list is empty.",
+  "error": {
+    "attemptedValue": "Attempted Value",
+    "code": "Code",
+    "lineNumber": "Line Number",
+    "message": "Message",
+    "propertyName": "Property Name",
+    "propertyNames": {
+      "DepartmentName": "Department Name",
+      "DepartmentNumber": "Department Number"
+    },
+    "title": "Errors",
+    "validation": "One or more validation errors occurred. See the error section for more detail."
+  },
+  "imported": "The receipt has been imported.",
+  "isEmpty": {
+    "label": "Empty",
+    "placeholder": "Select an option"
+  },
+  "issuedOn": {
+    "format": "Issued on {date} by",
+    "label": "Issued On"
+  },
+  "itemCount": "Item Count",
+  "items": {
+    "title": "Items"
+  },
+  "label": "Label",
+  "lines": "Lines",
+  "processed": "The receipt has been processed.",
+  "processedOn": "Processed on {date} by",
+  "quantity": "Quantity",
+  "sort": {
+    "options": {
+      "IssuedOn": "Issued on",
+      "Number": "Number",
+      "ProcessedOn": "Processed on",
+      "Total": "Total",
+      "UpdatedOn": "Updated on"
+    }
+  },
+  "status": {
+    "label": "Status",
+    "options": {
+      "new": "New",
+      "processed": "Processed"
+    },
+    "placeholder": "Select a status"
+  },
+  "title": {
+    "edit": "Receipt of {receipt}",
+    "import": "Receipt Import",
+    "imported": "Imported receipts",
+    "importing": "Importation",
+    "list": "Receipts"
+  },
+  "updated": "The receipt has been updated."
+}
