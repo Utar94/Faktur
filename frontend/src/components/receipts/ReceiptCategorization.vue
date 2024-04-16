@@ -59,6 +59,22 @@ function categorize(item: ReceiptItem, category?: string): void {
   }
 }
 
+function deleteCategory(category: string): void {
+  categorizedItems.value.forEach((value, number, map) => {
+    if (value === category) {
+      map.delete(number);
+    }
+  });
+}
+function renameCategory(oldCategory: string, newCategory: string): void {
+  categorizedItems.value.forEach((value, number, map) => {
+    if (value === oldCategory) {
+      map.set(number, newCategory);
+    }
+  });
+}
+defineExpose({ deleteCategory, renameCategory });
+
 const emit = defineEmits<{
   (e: "categorized", value: Map<number, string>): void;
 }>();
