@@ -16,9 +16,10 @@ const emit = defineEmits<{
   (e: "saved", value: CategorySavedEvent): void;
 }>();
 
-function onDeleted(category: string): void {
+function onDeleted(category: string, hideModal: () => void): void {
   if (categories.remove(category)) {
     emit("deleted", category);
+    hideModal();
   }
 }
 function onSaved(newCategory: string, oldCategory?: string): void {
@@ -55,7 +56,7 @@ function onSaved(newCategory: string, oldCategory?: string): void {
               confirm="receipts.categories.delete.confirm"
               :display-name="category"
               title="receipts.categories.delete.title"
-              @confirmed="onDeleted(category)"
+              @confirmed="onDeleted(category, $event)"
             />
           </td>
         </tr>
