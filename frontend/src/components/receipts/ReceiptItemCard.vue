@@ -23,13 +23,13 @@ function onClick(): void {
           >&nbsp;<sub>({{ item.flags }})</sub></template
         >
       </td>
-      <td class="text-right">
+      <td class="text-end">
         <strong>{{ n(item.price, "currency") }}</strong>
       </td>
     </tr>
     <tr>
       <td>{{ item.gtin ?? item.sku }}</td>
-      <td class="text-right">{{ n(item.quantity) }} &times; {{ n(item.unitPrice, "currency") }}</td>
+      <td class="text-end">{{ n(item.quantity) }} &times; {{ n(item.unitPrice, "currency") }}</td>
     </tr>
   </table>
 </template>
@@ -37,9 +37,14 @@ function onClick(): void {
 <style scoped>
 table {
   border: 1px solid lightgray;
+  --bs-table-bg: transparent;
 }
-/* table:hover {
+table:hover {
   cursor: pointer;
   background-color: lightgray;
-} TODO(fpion): not working correctly */
+}
+
+td {
+  padding: 0.75rem;
+}
 </style>
