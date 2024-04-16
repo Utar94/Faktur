@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { TarAlert } from "logitar-vue3-ui";
 import { computed, inject, onMounted, ref } from "vue";
 import { useForm } from "vee-validate";
 import { useI18n } from "vue-i18n";
@@ -11,7 +12,7 @@ import FlagsInput from "@/components/shared/FlagsInput.vue";
 import StatusDetail from "@/components/shared/StatusDetail.vue";
 import TaxCodeInput from "@/components/taxes/TaxCodeInput.vue";
 import TaxRateInput from "@/components/taxes/TaxRateInput.vue";
-import type { ApiError } from "@/types/api";
+import type { ApiError, PropertyError } from "@/types/api";
 import type { Tax } from "@/types/taxes";
 import { createTax, deleteTax, readTax, replaceTax } from "@/api/taxes";
 import { handleErrorKey } from "@/inject/App";
@@ -29,6 +30,7 @@ const hasLoaded = ref<boolean>(false);
 const isDeleting = ref<boolean>(false);
 const rate = ref<number>(0);
 const tax = ref<Tax>();
+const taxCodeAlreadyUsed = ref<boolean>(false);
 
 const hasChanges = computed<boolean>(
   () => code.value !== (tax.value?.code ?? "") || rate.value !== (tax.value?.rate ?? 0) || flags.value !== (tax.value?.flags ?? ""),
@@ -59,6 +61,7 @@ function setModel(model: Tax): void {
 
 const { handleSubmit, isSubmitting } = useForm();
 const onSubmit = handleSubmit(async () => {
+  taxCodeAlreadyUsed.value = false;
   try {
     if (tax.value) {
       const updatedTax = await replaceTax(
@@ -83,7 +86,12 @@ const onSubmit = handleSubmit(async () => {
       router.replace({ name: "TaxEdit", params: { id: createdTax.id } });
     }
   } catch (e: unknown) {
-    handleError(e);
+    const { data, status } = e as ApiError;
+    if (status === 409 && (data as PropertyError)?.code === "TaxCodeAlreadyUsed") {
+      taxCodeAlreadyUsed.value = true;
+    } else {
+      handleError(e);
+    }
   }
 });
 
@@ -110,6 +118,9 @@ onMounted(async () => {
   <main class="container">
     <template v-if="hasLoaded">
       <h1>{{ tax?.code ?? t("taxes.title.new") }}</h1>
+      <TarAlert :close="t('actions.close')" dismissible variant="warning" v-model="taxCodeAlreadyUsed">
+        <strong>{{ t("taxes.code.alreadyUsed.lead") }}</strong> {{ t("taxes.code.alreadyUsed.help") }}
+      </TarAlert>
       <StatusDetail v-if="tax" :aggregate="tax" />
       <form @submit.prevent="onSubmit">
         <div class="mb-3">

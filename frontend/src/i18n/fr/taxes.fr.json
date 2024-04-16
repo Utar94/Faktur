@@ -1,5 +1,11 @@
 {
-  "code": "Code",
+  "code": {
+    "alreadyUsed": {
+      "help": "Veuillez utiliser un autre code de taxe.",
+      "lead": "Le code de taxe est déjà utilisé !"
+    },
+    "label": "Code"
+  },
   "created": "La taxe a été créée.",
   "delete": {
     "confirm": "Désirez-vous vraiment supprimer la taxe suivante ?",

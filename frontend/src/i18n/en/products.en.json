@@ -6,7 +6,13 @@
     "title": "Delete product"
   },
   "empty": "This list is empty.",
-  "sku": "Stock-Keeping Unit (SKU)",
+  "sku": {
+    "alreadyUsed": {
+      "help": "Please use a different SKU.",
+      "lead": "The SKU is already used!"
+    },
+    "label": "Stock-Keeping Unit (SKU)"
+  },
   "sort": {
     "options": {
       "DisplayName": "Display name",

@@ -7,9 +7,9 @@ const { t } = useI18n();
 const props = withDefaults(defineProps<InputOptions>(), {
   floating: true,
   id: "sku",
-  label: "products.sku",
+  label: "products.sku.label",
   max: 32,
-  placeholder: "products.sku",
+  placeholder: "products.sku.label",
 });
 
 defineEmits<{
