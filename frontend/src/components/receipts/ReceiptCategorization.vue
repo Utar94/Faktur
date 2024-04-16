@@ -76,6 +76,11 @@ watchEffect(() => {
     }
   });
 });
+
+// TODO(fpion): Sub-totals, taxes and totals
+// TODO(fpion): processed at bottom
+// TODO(fpion): Back Button
+// TODO(fpion): Up Button
 </script>
 
 <template>
