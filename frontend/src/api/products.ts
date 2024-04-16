@@ -14,6 +14,9 @@ export async function deleteProduct(id: string): Promise<Product> {
 export async function readProduct(id: string): Promise<Product> {
   return (await get<Product>(`/products/${id}`)).data;
 }
+export async function readProductByArticle(storeId: string, articleId: string): Promise<Product> {
+  return (await get<Product>(`/stores/${storeId}/products/${articleId}`)).data;
+}
 
 export async function searchProducts(payload: SearchProductsPayload): Promise<SearchResults<Product>> {
   const params: string[] = [];
