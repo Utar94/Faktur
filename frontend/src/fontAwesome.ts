@@ -5,6 +5,7 @@ import { library } from "@fortawesome/fontawesome-svg-core";
 import {
   faArrowRightFromBracket,
   faArrowRightToBracket,
+  faArrowUp,
   faArrowUpRightFromSquare,
   faBan,
   faCarrot,
@@ -32,6 +33,7 @@ import {
 library.add(
   faArrowRightFromBracket,
   faArrowRightToBracket,
+  faArrowUp,
   faArrowUpRightFromSquare,
   faBan,
   faCarrot,

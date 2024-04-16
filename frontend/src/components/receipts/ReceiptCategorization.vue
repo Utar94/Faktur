@@ -3,6 +3,7 @@ import { TarButton } from "logitar-vue3-ui";
 import { computed, ref, watchEffect } from "vue";
 import { useI18n } from "vue-i18n";
 
+import AppBackButton from "@/components/shared/AppBackButton.vue";
 import ReceiptItemCard from "./ReceiptItemCard.vue";
 import type { Receipt, ReceiptItem } from "@/types/receipts";
 import { orderBy } from "@/helpers/arrayUtils";
@@ -59,6 +60,10 @@ function categorize(item: ReceiptItem, category?: string): void {
   }
 }
 
+function scrollToTop(): void {
+  window.scrollTo(0, 0);
+}
+
 function deleteCategory(category: string): void {
   categorizedItems.value.forEach((value, number, map) => {
     if (value === category) {
@@ -92,11 +97,6 @@ watchEffect(() => {
     }
   });
 });
-
-// TODO(fpion): Sub-totals, taxes and totals
-// TODO(fpion): processed at bottom
-// TODO(fpion): Back Button
-// TODO(fpion): Up Button
 </script>
 
 <template>
@@ -126,6 +126,7 @@ watchEffect(() => {
     </div>
     <div class="mb-3">
       <TarButton
+        class="me-1"
         :disabled="processing"
         icon="fas fa-dollar-sign"
         :loading="processing"
@@ -133,6 +134,8 @@ watchEffect(() => {
         :text="t('actions.process')"
         @click="onProcess"
       />
+      <AppBackButton class="ms-1" />
+      <TarButton class="float-end" icon="fas fa-arrow-up" :text="t('actions.back')" variant="info" @click="scrollToTop" />
     </div>
   </div>
 </template>

@@ -12,8 +12,8 @@ import CategoryList from "@/components/receipts/CategoryList.vue";
 import IssuedOnInput from "@/components/receipts/IssuedOnInput.vue";
 import NumberInput from "@/components/shared/NumberInput.vue";
 import ReceiptCategorization from "@/components/receipts/ReceiptCategorization.vue";
+import ReceiptStatus from "@/components/receipts/ReceiptStatus.vue";
 import StatusDetail from "@/components/shared/StatusDetail.vue";
-import StatusInfo from "@/components/shared/StatusInfo.vue";
 import type { ApiError } from "@/types/api";
 import type { CategorySavedEvent, Receipt } from "@/types/receipts";
 import { categorizeReceipt, deleteReceipt, readReceipt, replaceReceipt } from "@/api/receipts";
@@ -28,7 +28,7 @@ const handleError = inject(handleErrorKey) as (e: unknown) => void;
 const route = useRoute();
 const router = useRouter();
 const toasts = useToastStore();
-const { d, t } = useI18n();
+const { t } = useI18n();
 
 const categorization = ref<InstanceType<typeof ReceiptCategorization> | null>(null);
 const isDeleting = ref<boolean>(false);
@@ -135,18 +135,7 @@ onMounted(async () => {
     <template v-if="receipt">
       <h1>{{ title }}</h1>
       <StatusDetail :aggregate="receipt" />
-      <p>
-        <span>
-          {{ t("receipts.issuedOn.format", { date: d(receipt.issuedOn, "medium") }) }}
-          <RouterLink :to="{ name: 'StoreEdit', params: { id: receipt.store.id } }">
-            <font-awesome-icon icon="fas fa-store" />{{ receipt.store.displayName }}
-          </RouterLink>
-        </span>
-        <template v-if="receipt.processedBy && receipt.processedOn">
-          <br />
-          <StatusInfo :actor="receipt.processedBy" :date="receipt.processedOn" format="receipts.processedOn" />
-        </template>
-      </p>
+      <ReceiptStatus :receipt="receipt" />
       <div class="mb-3">
         <AppBackButton class="me-1" />
         <AppDelete
@@ -162,6 +151,7 @@ onMounted(async () => {
       <TarTabs>
         <TarTab active id="items" :title="`${t('receipts.items.title')} (${receipt.itemCount})`">
           <ReceiptCategorization :processing="isProcessing" :receipt="receipt" ref="categorization" @categorized="onCategorized" />
+          <ReceiptStatus :receipt="receipt" />
         </TarTab>
         <TarTab id="categories" :title="t('receipts.categories.title.list')">
           <CategoryList @deleted="onCategoryDeleted" @saved="onCategorySaved" />
