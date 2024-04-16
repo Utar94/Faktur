@@ -45,7 +45,7 @@ const onSubmit = handleSubmit(async () => {
 <template>
   <main class="container">
     <h1>{{ t("users.signIn.title") }}</h1>
-    <TarAlert dismissible variant="warning" v-model="invalidCredentials">
+    <TarAlert :close="t('actions.close')" dismissible variant="warning" v-model="invalidCredentials">
       <strong>{{ t("users.signIn.failed") }}</strong> {{ t("users.signIn.invalidCredentials") }}
     </TarAlert>
     <form @submit.prevent="onSubmit">

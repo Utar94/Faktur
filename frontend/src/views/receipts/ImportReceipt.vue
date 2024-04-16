@@ -62,7 +62,7 @@ function translatePropertyName(error: PropertyError): string {
       case "Flags":
         return t("flags");
       case "Gtin":
-        return t("articles.gtin");
+        return t("articles.gtin.label");
       case "Label":
         return t("receipts.label");
       case "Price":
@@ -70,7 +70,7 @@ function translatePropertyName(error: PropertyError): string {
       case "Quantity":
         return t("receipts.quantity");
       case "Sku":
-        return t("products.sku");
+        return t("products.sku.label");
       case "UnitPrice":
         return t("products.unitPrice");
     }

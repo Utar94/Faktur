@@ -6,7 +6,13 @@
     "title": "Delete article"
   },
   "empty": "This list is empty.",
-  "gtin": "Global Trade Item Number (GTIN)",
+  "gtin": {
+    "alreadyUsed": {
+      "help": "Please use a different GTIN.",
+      "lead": "The GTIN is already used!"
+    },
+    "label": "Global Trade Item Number (GTIN)"
+  },
   "select": {
     "label": "Article",
     "placeholder": "Select an article"

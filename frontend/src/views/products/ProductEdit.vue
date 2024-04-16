@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { TarAlert } from "logitar-vue3-ui";
 import { computed, inject, onMounted, ref } from "vue";
 import { parsingUtils } from "logitar-vue3-ui";
 import { useForm } from "vee-validate";
@@ -18,7 +19,7 @@ import SkuInput from "@/components/products/SkuInput.vue";
 import StatusDetail from "@/components/shared/StatusDetail.vue";
 import StoreSelect from "@/components/stores/StoreSelect.vue";
 import UnitTypeSelect from "@/components/products/UnitTypeSelect.vue";
-import type { ApiError } from "@/types/api";
+import type { ApiError, PropertyError } from "@/types/api";
 import type { Article } from "@/types/articles";
 import type { Department } from "@/types/departments";
 import type { Product, UnitType } from "@/types/products";
@@ -44,6 +45,7 @@ const hasLoaded = ref<boolean>(false);
 const isDeleting = ref<boolean>(false);
 const product = ref<Product>();
 const sku = ref<string>("");
+const skuAlreadyUsed = ref<boolean>(false);
 const store = ref<Store>();
 const unitPrice = ref<number>(0);
 const unitType = ref<string>("");
@@ -96,6 +98,7 @@ function setModel(model: Product): void {
 
 const { handleSubmit, isSubmitting } = useForm();
 const onSubmit = handleSubmit(async () => {
+  skuAlreadyUsed.value = false;
   try {
     if (store.value && article.value) {
       const savedProduct = await createOrReplaceProduct(
@@ -122,7 +125,12 @@ const onSubmit = handleSubmit(async () => {
       }
     }
   } catch (e: unknown) {
-    handleError(e);
+    const { data, status } = e as ApiError;
+    if (status === 409 && (data as PropertyError)?.code === "SkuAlreadyUsed") {
+      skuAlreadyUsed.value = true;
+    } else {
+      handleError(e);
+    }
   }
 });
 
@@ -160,6 +168,9 @@ onMounted(async () => {
   <main class="container">
     <template v-if="hasLoaded">
       <h1>{{ product?.displayName ?? product?.article.displayName ?? t("products.title.new") }}</h1>
+      <TarAlert :close="t('actions.close')" dismissible variant="warning" v-model="skuAlreadyUsed">
+        <strong>{{ t("products.sku.alreadyUsed.lead") }}</strong> {{ t("products.sku.alreadyUsed.help") }}
+      </TarAlert>
       <StatusDetail v-if="product" :aggregate="product" />
       <form @submit.prevent="onSubmit">
         <div class="mb-3">

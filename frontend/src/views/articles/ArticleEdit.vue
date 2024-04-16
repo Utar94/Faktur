@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { TarAlert } from "logitar-vue3-ui";
 import { computed, inject, onMounted, ref } from "vue";
 import { useForm } from "vee-validate";
 import { useI18n } from "vue-i18n";
@@ -11,7 +12,7 @@ import DescriptionTextarea from "@/components/shared/DescriptionTextarea.vue";
 import DisplayNameInput from "@/components/shared/DisplayNameInput.vue";
 import GtinInput from "@/components/articles/GtinInput.vue";
 import StatusDetail from "@/components/shared/StatusDetail.vue";
-import type { ApiError } from "@/types/api";
+import type { ApiError, PropertyError } from "@/types/api";
 import type { Article } from "@/types/articles";
 import { createArticle, deleteArticle, readArticle, replaceArticle } from "@/api/articles";
 import { handleErrorKey } from "@/inject/App";
@@ -27,6 +28,7 @@ const article = ref<Article>();
 const description = ref<string>("");
 const displayName = ref<string>("");
 const gtin = ref<string>("");
+const gtinAlreadyUsed = ref<boolean>(false);
 const hasLoaded = ref<boolean>(false);
 const isDeleting = ref<boolean>(false);
 
@@ -62,6 +64,7 @@ function setModel(model: Article): void {
 
 const { handleSubmit, isSubmitting } = useForm();
 const onSubmit = handleSubmit(async () => {
+  gtinAlreadyUsed.value = false;
   try {
     if (article.value) {
       const updatedArticle = await replaceArticle(
@@ -86,7 +89,12 @@ const onSubmit = handleSubmit(async () => {
       router.replace({ name: "ArticleEdit", params: { id: createdArticle.id } });
     }
   } catch (e: unknown) {
-    handleError(e);
+    const { data, status } = e as ApiError;
+    if (status === 409 && (data as PropertyError)?.code === "GtinAlreadyUsed") {
+      gtinAlreadyUsed.value = true;
+    } else {
+      handleError(e);
+    }
   }
 });
 
@@ -113,6 +121,9 @@ onMounted(async () => {
   <main class="container">
     <template v-if="hasLoaded">
       <h1>{{ article?.displayName ?? t("articles.title.new") }}</h1>
+      <TarAlert :close="t('actions.close')" dismissible variant="warning" v-model="gtinAlreadyUsed">
+        <strong>{{ t("articles.gtin.alreadyUsed.lead") }}</strong> {{ t("articles.gtin.alreadyUsed.help") }}
+      </TarAlert>
       <StatusDetail v-if="article" :aggregate="article" />
       <form @submit.prevent="onSubmit">
         <div class="mb-3">
