@@ -1,6 +1,35 @@
 import { describe, it, expect } from "vitest";
 
-import { combineURL, isAbsoluteURL, isDigit, isLetter, isLetterOrDigit, shortify, slugify, unaccent } from "../stringUtils";
+import {
+  cleanTrim,
+  combineURL,
+  isAbsoluteURL,
+  isDigit,
+  isLetter,
+  isLetterOrDigit,
+  isNullOrEmpty,
+  isNullOrWhiteSpace,
+  shortify,
+  slugify,
+  trim,
+  trimEnd,
+  trimStart,
+  unaccent,
+} from "../stringUtils";
+
+describe("stringUtils.cleanTrim", () => {
+  it.concurrent("should return undefined when the string is null, empty or white space", () => {
+    expect(cleanTrim(undefined)).toBeUndefined();
+    expect(cleanTrim("")).toBeUndefined();
+    expect(cleanTrim("    ")).toBeUndefined();
+  });
+
+  it.concurrent("should return the trimmed string when it is not null, empty nor white space", () => {
+    expect(cleanTrim("  test")).toBe("test");
+    expect(cleanTrim("test  ")).toBe("test");
+    expect(cleanTrim(" test ")).toBe("test");
+  });
+});
 
 describe("stringUtils.combineURL", () => {
   it.concurrent("should combine the segments with a slash (/)", () => {
@@ -93,6 +122,30 @@ describe("stringUtils.isLetterOrDigit", () => {
   });
 });
 
+describe("stringUtils.isNullOrEmpty", () => {
+  it.concurrent("should return false when the string is not null nor empty", () => {
+    expect(isNullOrEmpty("    ")).toBe(false);
+    expect(isNullOrEmpty("test")).toBe(false);
+  });
+
+  it.concurrent("should return true when the string is null or empty", () => {
+    expect(isNullOrEmpty(undefined)).toBe(true);
+    expect(isNullOrEmpty("")).toBe(true);
+  });
+});
+
+describe("stringUtils.isNullOrWhiteSpace", () => {
+  it.concurrent("should return false when the string is not null nor white space", () => {
+    expect(isNullOrWhiteSpace("  test  ")).toBe(false);
+  });
+
+  it.concurrent("should return true when the string is null or white space", () => {
+    expect(isNullOrWhiteSpace(undefined)).toBe(true);
+    expect(isNullOrWhiteSpace("")).toBe(true);
+    expect(isNullOrWhiteSpace("    ")).toBe(true);
+  });
+});
+
 describe("stringUtils.shortify", () => {
   it.concurrent("should return the same string when it is not too long", () => {
     expect(shortify("", 20)).toBe("");
@@ -121,6 +174,54 @@ describe("stringUtils.slugify", () => {
       expect(slugify("Héllo Wôrld!")).toBe("hello-world");
     },
   );
+});
+
+describe("stringUtils.trim", () => {
+  it.concurrent("should return the original string when it does not start nor end with the specified character", () => {
+    expect(trim("", "")).toBe("");
+    expect(trim("f|oo", "|")).toBe("f|oo");
+  });
+
+  it.concurrent("should trim the start and end of the specified string, removing the specified character", () => {
+    expect(trim("||f|oo+", "|")).toBe("f|oo+");
+    expect(trim("+f|oo||", "|")).toBe("+f|oo");
+    expect(trim("|f|oo||", "|")).toBe("f|oo");
+    expect(trim("]f|oo]", "]")).toBe("f|oo");
+    expect(trim("^f|oo^", "^")).toBe("f|oo");
+    expect(trim("\\f|oo\\", "\\")).toBe("f|oo");
+  });
+});
+
+describe("stringUtils.trimEnd", () => {
+  it.concurrent("should return the original string when it does not end with the specified character", () => {
+    expect(trimEnd("", "")).toBe("");
+    expect(trimEnd("||f|oo", "|")).toBe("||f|oo");
+  });
+
+  it.concurrent("should trim the end of the specified string, removing the specified character", () => {
+    expect(trimEnd("||f|oo+", "|")).toBe("||f|oo+");
+    expect(trimEnd("+f|oo||", "|")).toBe("+f|oo");
+    expect(trimEnd("|f|oo||", "|")).toBe("|f|oo");
+    expect(trimEnd("]f|oo]", "]")).toBe("]f|oo");
+    expect(trimEnd("^f|oo^", "^")).toBe("^f|oo");
+    expect(trimEnd("\\f|oo\\", "\\")).toBe("\\f|oo");
+  });
+});
+
+describe("stringUtils.trimStart", () => {
+  it.concurrent("should return the original string when it does not start with the specified character", () => {
+    expect(trimStart("", "")).toBe("");
+    expect(trimStart("f|oo||", "|")).toBe("f|oo||");
+  });
+
+  it.concurrent("should trim the start of the specified string, removing the specified character", () => {
+    expect(trimStart("||f|oo+", "|")).toBe("f|oo+");
+    expect(trimStart("+f|oo||", "|")).toBe("+f|oo||");
+    expect(trimStart("|f|oo||", "|")).toBe("f|oo||");
+    expect(trimStart("]f|oo]", "]")).toBe("f|oo]");
+    expect(trimStart("^f|oo^", "^")).toBe("f|oo^");
+    expect(trimStart("\\f|oo\\", "\\")).toBe("f|oo\\");
+  });
 });
 
 describe("stringUtils.unaccent", () => {
