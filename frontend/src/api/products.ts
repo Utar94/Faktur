@@ -1,39 +1,50 @@
 import type { CreateOrReplaceProductPayload, Product, SearchProductsPayload } from "@/types/products";
 import type { SearchResults } from "@/types/search";
+import { UrlBuilder, type IUrlBuilder } from "@/helpers/urlUtils";
 import { _delete, get, put } from ".";
 
+function createStoreUrlBuilder(storeId: string, articleId?: string): IUrlBuilder {
+  if (articleId) {
+    return new UrlBuilder({ path: "/stores/{storeId}/products/{articleId}" }).setParameter("storeId", storeId).setParameter("articleId", articleId);
+  }
+  return new UrlBuilder({ path: "/stores/{storeId}/products" }).setParameter("storeId", storeId);
+}
+function createUrlBuilder(id: string): IUrlBuilder {
+  return new UrlBuilder({ path: "/products/{id}" }).setParameter("id", id);
+}
+
 export async function createOrReplaceProduct(storeId: string, articleId: string, payload: CreateOrReplaceProductPayload, version?: number): Promise<Product> {
-  const query: string | undefined = version ? `?version=${version}` : "";
-  return (await put<CreateOrReplaceProductPayload, Product>(`/stores/${storeId}/products/${articleId}${query}`, payload)).data;
+  const url: string = createStoreUrlBuilder(storeId, articleId).setQueryString(`?version=${version}`).buildRelative();
+  return (await put<CreateOrReplaceProductPayload, Product>(url, payload)).data;
 }
 
 export async function deleteProduct(id: string): Promise<Product> {
-  return (await _delete<Product>(`/products/${id}`)).data;
+  return (await _delete<Product>(createUrlBuilder(id).buildRelative())).data;
 }
 
 export async function readProduct(id: string): Promise<Product> {
-  return (await get<Product>(`/products/${id}`)).data;
+  return (await get<Product>(createUrlBuilder(id).buildRelative())).data;
 }
 export async function readProductByArticle(storeId: string, articleId: string): Promise<Product> {
-  return (await get<Product>(`/stores/${storeId}/products/${articleId}`)).data;
+  return (await get<Product>(createStoreUrlBuilder(storeId, articleId).buildRelative())).data;
 }
 
 export async function searchProducts(payload: SearchProductsPayload): Promise<SearchResults<Product>> {
-  const params: string[] = [];
-  payload.ids.forEach((id) => params.push(`ids=${id}`));
-  if (payload.search.terms.length) {
-    payload.search.terms.forEach((term) => params.push(`search_terms=${term.value}`));
-    params.push(`search_operator=${payload.search.operator}`);
-  }
-  if (payload.departmentNumber) {
-    params.push(`department=${payload.departmentNumber}`);
-  }
-  if (payload.unitType) {
-    params.push(`unit_type=${payload.unitType}`);
-  }
-  payload.sort.forEach((sort) => params.push(`sort=${sort.isDescending ? `DESC.${sort.field}` : sort.field}`));
-  params.push(`skip=${payload.skip}`);
-  params.push(`limit=${payload.limit}`);
-  const query: string | undefined = params.length ? `?${params.join("&")}` : "";
-  return (await get<SearchResults<Product>>(`/stores/${payload.storeId}/products${query}`)).data;
+  const url: string = createStoreUrlBuilder(payload.storeId)
+    .setQuery("department", payload.departmentNumber ?? "")
+    .setQuery("unit_type", payload.unitType ?? "")
+    .setQuery("ids", payload.ids)
+    .setQuery(
+      "search_terms",
+      payload.search.terms.map(({ value }) => value),
+    )
+    .setQuery("search_operator", payload.search.operator)
+    .setQuery(
+      "sort",
+      payload.sort.map(({ field, isDescending }) => (isDescending ? `DESC.${field}` : field)),
+    )
+    .setQuery("skip", payload.skip.toString())
+    .setQuery("limit", payload.limit.toString())
+    .buildRelative();
+  return (await get<SearchResults<Product>>(url)).data;
 }

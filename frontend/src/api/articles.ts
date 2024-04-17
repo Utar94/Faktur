@@ -1,34 +1,46 @@
 import type { Article, CreateArticlePayload, ReplaceArticlePayload, SearchArticlesPayload } from "@/types/articles";
 import type { SearchResults } from "@/types/search";
+import { UrlBuilder, type IUrlBuilder } from "@/helpers/urlUtils";
 import { _delete, get, post, put } from ".";
 
+function createUrlBuilder(id?: string): IUrlBuilder {
+  if (id) {
+    return new UrlBuilder({ path: "/articles/{id}" }).setParameter("id", id);
+  }
+  return new UrlBuilder({ path: "/articles" });
+}
+
 export async function createArticle(payload: CreateArticlePayload): Promise<Article> {
-  return (await post<CreateArticlePayload, Article>("/articles", payload)).data;
+  return (await post<CreateArticlePayload, Article>(createUrlBuilder().buildRelative(), payload)).data;
 }
 
 export async function deleteArticle(id: string): Promise<Article> {
-  return (await _delete<Article>(`/articles/${id}`)).data;
+  return (await _delete<Article>(createUrlBuilder(id).buildRelative())).data;
 }
 
 export async function readArticle(id: string): Promise<Article> {
-  return (await get<Article>(`/articles/${id}`)).data;
+  return (await get<Article>(createUrlBuilder(id).buildRelative())).data;
 }
 
 export async function replaceArticle(id: string, payload: ReplaceArticlePayload, version?: number): Promise<Article> {
-  const query: string | undefined = version ? `?version=${version}` : "";
-  return (await put<CreateArticlePayload, Article>(`/articles/${id}${query}`, payload)).data;
+  const url: string = createUrlBuilder(id).setQueryString(`?version=${version}`).buildRelative();
+  return (await put<CreateArticlePayload, Article>(url, payload)).data;
 }
 
 export async function searchArticles(payload: SearchArticlesPayload): Promise<SearchResults<Article>> {
-  const params: string[] = [];
-  payload.ids.forEach((id) => params.push(`ids=${id}`));
-  if (payload.search.terms.length) {
-    payload.search.terms.forEach((term) => params.push(`search_terms=${term.value}`));
-    params.push(`search_operator=${payload.search.operator}`);
-  }
-  payload.sort.forEach((sort) => params.push(`sort=${sort.isDescending ? `DESC.${sort.field}` : sort.field}`));
-  params.push(`skip=${payload.skip}`);
-  params.push(`limit=${payload.limit}`);
-  const query: string | undefined = params.length ? `?${params.join("&")}` : "";
-  return (await get<SearchResults<Article>>(`/articles${query}`)).data;
+  const url: string = createUrlBuilder()
+    .setQuery("ids", payload.ids)
+    .setQuery(
+      "search_terms",
+      payload.search.terms.map(({ value }) => value),
+    )
+    .setQuery("search_operator", payload.search.operator)
+    .setQuery(
+      "sort",
+      payload.sort.map(({ field, isDescending }) => (isDescending ? `DESC.${field}` : field)),
+    )
+    .setQuery("skip", payload.skip.toString())
+    .setQuery("limit", payload.limit.toString())
+    .buildRelative();
+  return (await get<SearchResults<Article>>(url)).data;
 }

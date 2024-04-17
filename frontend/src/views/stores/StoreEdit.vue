@@ -113,7 +113,7 @@ const onSubmit = handleSubmit(async () => {
       const updatedStore = await replaceStore(
         store.value.id,
         {
-          bannerId: bannerId.value,
+          bannerId: bannerId.value || undefined,
           number: number.value,
           displayName: displayName.value,
           description: description.value,
@@ -127,7 +127,7 @@ const onSubmit = handleSubmit(async () => {
       toasts.success("stores.updated");
     } else {
       const createdStore = await createStore({
-        bannerId: bannerId.value,
+        bannerId: bannerId.value || undefined,
         number: number.value,
         displayName: displayName.value,
         description: description.value,

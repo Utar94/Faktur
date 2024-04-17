@@ -1,5 +1,5 @@
 import type { ApiError, ApiResult, ApiVersion, Error as ErrorT, GraphQLRequest, GraphQLResponse } from "@/types/api";
-import { combineURL } from "@/helpers/stringUtils";
+import { combineURL, isAbsoluteURL } from "@/helpers/stringUtils";
 
 const apiBaseUrl: string = import.meta.env.VITE_APP_API_BASE_URL ?? "";
 const contentType: string = "Content-Type";
@@ -11,7 +11,7 @@ async function execute<TData, TResult>(method: string, url: string, data?: TData
     body = JSON.stringify(data);
     headers.set(contentType, "application/json; charset=UTF-8");
   }
-  const input = combineURL(apiBaseUrl, url);
+  const input: string = isAbsoluteURL(url) ? url : combineURL(apiBaseUrl, url);
 
   const response: Response = await fetch(input, { method, headers, body, credentials: "include" });
 

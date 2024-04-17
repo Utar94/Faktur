@@ -1,6 +1,14 @@
 import type { CreateOrReplaceDepartmentPayload, Department, SearchDepartmentsPayload } from "@/types/departments";
 import type { SearchResults } from "@/types/search";
+import { UrlBuilder, type IUrlBuilder } from "@/helpers/urlUtils";
 import { _delete, get, put } from ".";
+
+function createUrlBuilder(storeId: string, number?: string): IUrlBuilder {
+  if (number) {
+    return new UrlBuilder({ path: "/stores/{storeId}/departments/{number}" }).setParameter("storeId", storeId).setParameter("number", number);
+  }
+  return new UrlBuilder({ path: "/stores/{storeId}/departments" }).setParameter("storeId", storeId);
+}
 
 export async function createOrReplaceDepartment(
   storeId: string,
@@ -8,24 +16,28 @@ export async function createOrReplaceDepartment(
   payload: CreateOrReplaceDepartmentPayload,
   version?: number,
 ): Promise<Department> {
-  const query: string | undefined = version ? `?version=${version}` : "";
-  return (await put<CreateOrReplaceDepartmentPayload, Department>(`/stores/${storeId}/departments/${number}${query}`, payload)).data;
+  const url: string = createUrlBuilder(storeId, number).setQueryString(`?version=${version}`).buildRelative();
+  return (await put<CreateOrReplaceDepartmentPayload, Department>(url, payload)).data;
 }
 
 export async function deleteDepartment(storeId: string, number: string): Promise<Department> {
-  return (await _delete<Department>(`/stores/${storeId}/departments/${number}`)).data;
+  return (await _delete<Department>(createUrlBuilder(storeId, number).buildRelative())).data;
 }
 
 export async function searchDepartments(payload: SearchDepartmentsPayload): Promise<SearchResults<Department>> {
-  const params: string[] = [];
-  payload.ids.forEach((id) => params.push(`ids=${id}`));
-  if (payload.search.terms.length) {
-    payload.search.terms.forEach((term) => params.push(`search_terms=${term.value}`));
-    params.push(`search_operator=${payload.search.operator}`);
-  }
-  payload.sort.forEach((sort) => params.push(`sort=${sort.isDescending ? `DESC.${sort.field}` : sort.field}`));
-  params.push(`skip=${payload.skip}`);
-  params.push(`limit=${payload.limit}`);
-  const query: string | undefined = params.length ? `?${params.join("&")}` : "";
-  return (await get<SearchResults<Department>>(`/stores/${payload.storeId}/departments${query}`)).data;
+  const url: string = createUrlBuilder(payload.storeId)
+    .setQuery("ids", payload.ids)
+    .setQuery(
+      "search_terms",
+      payload.search.terms.map(({ value }) => value),
+    )
+    .setQuery("search_operator", payload.search.operator)
+    .setQuery(
+      "sort",
+      payload.sort.map(({ field, isDescending }) => (isDescending ? `DESC.${field}` : field)),
+    )
+    .setQuery("skip", payload.skip.toString())
+    .setQuery("limit", payload.limit.toString())
+    .buildRelative();
+  return (await get<SearchResults<Department>>(url)).data;
 }
