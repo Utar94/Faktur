@@ -46,4 +46,4 @@ export const useCategoryStore = defineStore(
     return { categories, load, remove, save };
   },
   { persist: true },
-); // TODO(fpion): tests
+);
