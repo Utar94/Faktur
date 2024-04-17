@@ -1,35 +1,40 @@
 import type { CategorizeReceiptPayload, ImportReceiptPayload, Receipt, ReplaceReceiptPayload, SearchReceiptsPayload } from "@/types/receipts";
 import type { SearchResults } from "@/types/search";
+import { UrlBuilder, type IUrlBuilder } from "@/helpers/urlUtils";
 import { _delete, get, patch, post, put } from ".";
 
+function createUrlBuilder(id?: string): IUrlBuilder {
+  if (id) {
+    return new UrlBuilder({ path: "/receipts/{id}" }).setParameter("id", id);
+  }
+  return new UrlBuilder({ path: "/receipts" });
+}
+
 export async function categorizeReceipt(id: string, payload: CategorizeReceiptPayload): Promise<Receipt> {
-  return (await patch<CategorizeReceiptPayload, Receipt>(`/receipts/${id}/categorize`, payload)).data;
+  const url: string = new UrlBuilder({ path: "/receipts/{id}/categorize" }).setParameter("id", id).buildRelative();
+  return (await patch<CategorizeReceiptPayload, Receipt>(url, payload)).data;
 }
 
 export async function deleteReceipt(id: string): Promise<Receipt> {
-  return (await _delete<Receipt>(`/receipts/${id}`)).data;
+  return (await _delete<Receipt>(createUrlBuilder(id).buildRelative())).data;
 }
 
 export async function importReceipt(payload: ImportReceiptPayload): Promise<Receipt> {
-  return (await post<ImportReceiptPayload, Receipt>("/receipts/import", payload)).data;
+  const url: string = new UrlBuilder({ path: "/receipts/import" }).buildRelative();
+  return (await post<ImportReceiptPayload, Receipt>(url, payload)).data;
 }
 
 export async function readReceipt(id: string): Promise<Receipt> {
-  return (await get<Receipt>(`/receipts/${id}`)).data;
+  return (await get<Receipt>(createUrlBuilder(id).buildRelative())).data;
 }
 
 export async function replaceReceipt(id: string, payload: ReplaceReceiptPayload, version?: number): Promise<Receipt> {
-  const query: string | undefined = version ? `?version=${version}` : "";
-  return (await put<ReplaceReceiptPayload, Receipt>(`/receipts/${id}${query}`, payload)).data;
+  const url: string = createUrlBuilder(id).setQueryString(`?version=${version}`).buildRelative();
+  return (await put<ReplaceReceiptPayload, Receipt>(url, payload)).data;
 }
 
 export async function searchReceipts(payload: SearchReceiptsPayload): Promise<SearchResults<Receipt>> {
   const params: string[] = [];
-  payload.ids.forEach((id) => params.push(`ids=${id}`));
-  if (payload.search.terms.length) {
-    payload.search.terms.forEach((term) => params.push(`search_terms=${term.value}`));
-    params.push(`search_operator=${payload.search.operator}`);
-  }
   if (payload.storeId) {
     params.push(`store=${payload.storeId}`);
   }
@@ -39,9 +44,23 @@ export async function searchReceipts(payload: SearchReceiptsPayload): Promise<Se
   if (typeof payload.hasBeenProcessed !== "undefined") {
     params.push(`processed=${payload.hasBeenProcessed}`);
   }
-  payload.sort.forEach((sort) => params.push(`sort=${sort.isDescending ? `DESC.${sort.field}` : sort.field}`));
-  params.push(`skip=${payload.skip}`);
-  params.push(`limit=${payload.limit}`);
-  const query: string | undefined = params.length ? `?${params.join("&")}` : "";
-  return (await get<SearchResults<Receipt>>(`/receipts${query}`)).data;
+
+  const url: string = createUrlBuilder()
+    .setQuery("store", payload.storeId ?? "")
+    .setQuery("empty", payload.isEmpty?.toString() ?? "")
+    .setQuery("processed", payload.hasBeenProcessed?.toString() ?? "")
+    .setQuery("ids", payload.ids)
+    .setQuery(
+      "search_terms",
+      payload.search.terms.map(({ value }) => value),
+    )
+    .setQuery("search_operator", payload.search.operator)
+    .setQuery(
+      "sort",
+      payload.sort.map(({ field, isDescending }) => (isDescending ? `DESC.${field}` : field)),
+    )
+    .setQuery("skip", payload.skip.toString())
+    .setQuery("limit", payload.limit.toString())
+    .buildRelative();
+  return (await get<SearchResults<Receipt>>(url)).data;
 }

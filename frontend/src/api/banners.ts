@@ -1,34 +1,46 @@
 import type { Banner, CreateBannerPayload, ReplaceBannerPayload, SearchBannersPayload } from "@/types/banners";
 import type { SearchResults } from "@/types/search";
+import { UrlBuilder, type IUrlBuilder } from "@/helpers/urlUtils";
 import { _delete, get, post, put } from ".";
 
+function createUrlBuilder(id?: string): IUrlBuilder {
+  if (id) {
+    return new UrlBuilder({ path: "/banners/{id}" }).setParameter("id", id);
+  }
+  return new UrlBuilder({ path: "/banners" });
+}
+
 export async function createBanner(payload: CreateBannerPayload): Promise<Banner> {
-  return (await post<CreateBannerPayload, Banner>("/banners", payload)).data;
+  return (await post<CreateBannerPayload, Banner>(createUrlBuilder().buildRelative(), payload)).data;
 }
 
 export async function deleteBanner(id: string): Promise<Banner> {
-  return (await _delete<Banner>(`/banners/${id}`)).data;
+  return (await _delete<Banner>(createUrlBuilder(id).buildRelative())).data;
 }
 
 export async function readBanner(id: string): Promise<Banner> {
-  return (await get<Banner>(`/banners/${id}`)).data;
+  return (await get<Banner>(createUrlBuilder(id).buildRelative())).data;
 }
 
 export async function replaceBanner(id: string, payload: ReplaceBannerPayload, version?: number): Promise<Banner> {
-  const query: string | undefined = version ? `?version=${version}` : "";
-  return (await put<CreateBannerPayload, Banner>(`/banners/${id}${query}`, payload)).data;
+  const url: string = createUrlBuilder(id).setQueryString(`?version=${version}`).buildRelative();
+  return (await put<CreateBannerPayload, Banner>(url, payload)).data;
 }
 
 export async function searchBanners(payload: SearchBannersPayload): Promise<SearchResults<Banner>> {
-  const params: string[] = [];
-  payload.ids.forEach((id) => params.push(`ids=${id}`));
-  if (payload.search.terms.length) {
-    payload.search.terms.forEach((term) => params.push(`search_terms=${term.value}`));
-    params.push(`search_operator=${payload.search.operator}`);
-  }
-  payload.sort.forEach((sort) => params.push(`sort=${sort.isDescending ? `DESC.${sort.field}` : sort.field}`));
-  params.push(`skip=${payload.skip}`);
-  params.push(`limit=${payload.limit}`);
-  const query: string | undefined = params.length ? `?${params.join("&")}` : "";
-  return (await get<SearchResults<Banner>>(`/banners${query}`)).data;
+  const url: string = createUrlBuilder()
+    .setQuery("ids", payload.ids)
+    .setQuery(
+      "search_terms",
+      payload.search.terms.map(({ value }) => value),
+    )
+    .setQuery("search_operator", payload.search.operator)
+    .setQuery(
+      "sort",
+      payload.sort.map(({ field, isDescending }) => (isDescending ? `DESC.${field}` : field)),
+    )
+    .setQuery("skip", payload.skip.toString())
+    .setQuery("limit", payload.limit.toString())
+    .buildRelative();
+  return (await get<SearchResults<Banner>>(url)).data;
 }
