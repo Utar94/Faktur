@@ -21,7 +21,6 @@ import { categorizeReceipt, deleteReceipt, readReceipt, replaceReceipt } from "@
 import { formatReceipt } from "@/helpers/displayUtils";
 import { handleErrorKey } from "@/inject/App";
 import { searchTaxes } from "@/api/taxes";
-import { toDateTimeLocal } from "@/helpers/dateUtils";
 import { useCategoryStore } from "@/stores/categories";
 import { useToastStore } from "@/stores/toast";
 
@@ -35,14 +34,14 @@ const { t } = useI18n();
 const categorization = ref<InstanceType<typeof ReceiptCategorization> | null>(null);
 const isDeleting = ref<boolean>(false);
 const isProcessing = ref<boolean>(false);
-const issuedOn = ref<string>("");
+const issuedOn = ref<Date>();
 const number = ref<string>("");
 const receipt = ref<Receipt>();
 const taxes = ref<Tax[]>([]);
 
 const displayName = computed<string>(() => (receipt.value ? formatReceipt(receipt.value) : ""));
 const hasChanges = computed<boolean>(() =>
-  receipt.value ? issuedOn.value !== toDateTimeLocal(new Date(receipt.value.issuedOn)) || number.value !== (receipt.value.number ?? "") : false,
+  receipt.value ? issuedOn.value?.getTime() !== new Date(receipt.value.issuedOn).getTime() || number.value !== (receipt.value.number ?? "") : false,
 );
 const title = computed<string>(() => t("receipts.title.edit", { receipt: displayName.value }));
 
@@ -95,18 +94,18 @@ function scrollToBottom(): void {
 function setModel(model: Receipt): void {
   receipt.value = model;
   categories.load(model);
-  issuedOn.value = toDateTimeLocal(new Date(model.issuedOn));
+  issuedOn.value = new Date(model.issuedOn);
   number.value = model.number ?? "";
 }
 
 const { handleSubmit, isSubmitting } = useForm();
 const onSubmit = handleSubmit(async () => {
-  if (receipt.value) {
+  if (receipt.value && issuedOn.value) {
     try {
       const updatedReceipt = await replaceReceipt(
         receipt.value.id,
         {
-          issuedOn: new Date(issuedOn.value),
+          issuedOn: issuedOn.value,
           number: number.value,
         },
         receipt.value.version,
