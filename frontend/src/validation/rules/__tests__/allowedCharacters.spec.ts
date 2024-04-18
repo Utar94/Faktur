@@ -4,7 +4,7 @@ import allowedCharacters from "../allowedCharacters";
 
 const allowedCharacterList: string = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
 
-describe("username", () => {
+describe("allowedCharacters", () => {
   it.concurrent("should return false when the value contains characters that are not allowed", () => {
     expect(allowedCharacters(undefined, [undefined as any])).toBe(false);
     expect(allowedCharacters(undefined, [""])).toBe(false);
