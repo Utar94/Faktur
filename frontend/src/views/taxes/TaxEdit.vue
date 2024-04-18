@@ -137,7 +137,7 @@ onMounted(async () => {
           />
         </div>
         <TaxCodeInput required v-model="code" />
-        <TaxRateInput required :model-value="rate.toString()" @update:model-value="rate = $event ?? 0" />
+        <TaxRateInput required :model-value="rate" @update:model-value="rate = $event ?? 0" />
         <FlagsInput v-model="flags" />
       </form>
     </template>

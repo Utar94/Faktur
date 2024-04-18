@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { TarAlert } from "logitar-vue3-ui";
 import { computed, inject, onMounted, ref } from "vue";
-import { parsingUtils } from "logitar-vue3-ui";
 import { useForm } from "vee-validate";
 import { useI18n } from "vue-i18n";
 import { useRoute, useRouter } from "vue-router";
@@ -33,7 +32,6 @@ const handleError = inject(handleErrorKey) as (e: unknown) => void;
 const route = useRoute();
 const router = useRouter();
 const toasts = useToastStore();
-const { parseNumber } = parsingUtils;
 const { t } = useI18n();
 
 const article = ref<Article>();
@@ -230,9 +228,9 @@ onMounted(async () => {
               class="col-lg-6"
               id="unit-price"
               label="products.unitPrice"
-              :model-value="unitPrice.toString()"
+              :model-value="unitPrice"
               placeholder="products.unitPrice"
-              @update:model-value="unitPrice = parseNumber($event) ?? 0"
+              @update:model-value="unitPrice = $event ?? 0"
             />
             <UnitTypeSelect class="col-lg-6" v-model="unitType" />
           </div>

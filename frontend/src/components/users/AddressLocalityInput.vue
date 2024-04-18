@@ -1,16 +1,10 @@
 <script setup lang="ts">
-import { TarInput, type InputOptions } from "logitar-vue3-ui";
-import { useI18n } from "vue-i18n";
+import AppInput from "@/components/shared/AppInput.vue";
 
-const { t } = useI18n();
-
-const props = withDefaults(defineProps<InputOptions>(), {
-  floating: true,
-  id: "address-locality",
-  label: "users.address.locality",
-  max: 255,
-  placeholder: "users.address.locality",
-});
+defineProps<{
+  modelValue?: string;
+  required?: boolean | string;
+}>();
 
 defineEmits<{
   (e: "update:model-value", value?: string): void;
@@ -18,5 +12,14 @@ defineEmits<{
 </script>
 
 <template>
-  <TarInput v-bind="props" :label="t(label)" :placeholder="t(placeholder)" @update:model-value="$emit('update:model-value', $event)" />
+  <AppInput
+    floating
+    id="address-locality"
+    label="users.address.locality"
+    max="255"
+    :model-value="modelValue"
+    placeholder="users.address.locality"
+    :required="required"
+    @update:model-value="$emit('update:model-value', $event)"
+  />
 </template>

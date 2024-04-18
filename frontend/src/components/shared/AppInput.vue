@@ -51,6 +51,10 @@ const validationRules = computed<ValidationRules>(() => {
     }
   }
 
+  if (props.pattern) {
+    rules.regex = props.pattern;
+  }
+
   if (props.type === "email" || props.type === "url") {
     rules[props.type] = true;
   }
