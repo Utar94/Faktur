@@ -43,7 +43,7 @@ const sortOptions = computed<SelectOption[]>(() =>
 
 async function refresh(): Promise<void> {
   const payload: SearchTaxesPayload = {
-    flag: flag.value,
+    flag: flag.value.length > 1 ? flag.value[0] : flag.value,
     ids: [],
     search: {
       terms: search.value
