@@ -1,22 +1,17 @@
 <script setup lang="ts">
-import { TarInput, type InputOptions } from "logitar-vue3-ui";
-import { useI18n } from "vue-i18n";
+import AppInput from "./AppInput.vue";
 
-const { t } = useI18n();
-
-const props = withDefaults(defineProps<InputOptions>(), {
-  floating: true,
-  id: "flag",
-  label: "flag",
-  max: 1,
-  placeholder: "flag",
-});
+defineProps<{
+  modelValue?: string;
+}>();
 
 defineEmits<{
   (e: "update:model-value", value?: string): void;
 }>();
+
+// TODO(fpion): always ignore validation
 </script>
 
 <template>
-  <TarInput v-bind="props" :label="t(label)" :placeholder="t(placeholder)" @update:model-value="$emit('update:model-value', $event)" />
+  <AppInput floating id="flag" label="flag" max="1" :model-value="modelValue" placeholder="flag" @update:model-value="$emit('update:model-value', $event)" />
 </template>
