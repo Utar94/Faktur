@@ -136,7 +136,7 @@ watch(
       </RouterLink>
     </div>
     <div class="row">
-      <BannerSelect class="col-lg-3" :model-value="bannerId" @update:model-value="setQuery('bannerId', $event ?? '')" />
+      <BannerSelect class="col-lg-3" :model-value="bannerId" @error="handleError" @update:model-value="setQuery('bannerId', $event ?? '')" />
       <SearchInput class="col-lg-3" :model-value="search" @update:model-value="setQuery('search', $event ?? '')" />
       <SortSelect
         class="col-lg-3"

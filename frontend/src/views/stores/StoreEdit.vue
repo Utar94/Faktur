@@ -199,7 +199,7 @@ onMounted(async () => {
           <TarTab active :title="t('general')">
             <DisplayNameInput required v-model="displayName" />
             <div class="row">
-              <BannerSelect class="col-lg-6" v-model="bannerId" />
+              <BannerSelect class="col-lg-6" v-model="bannerId" @error="handleError" />
               <NumberInput class="col-lg-6" v-model="number" />
             </div>
             <DescriptionTextarea v-model="description" />
