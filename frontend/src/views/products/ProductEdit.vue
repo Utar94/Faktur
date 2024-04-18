@@ -212,7 +212,7 @@ onMounted(async () => {
         </div>
         <div class="row">
           <StoreSelect class="col-lg-6" :disabled="Boolean(product)" :model-value="store?.id" required @selected="onStoreSelected" />
-          <ArticleSelect class="col-lg-6" :disabled="Boolean(product)" :model-value="article?.id" required @selected="onArticleSelected" />
+          <ArticleSelect class="col-lg-6" :disabled="Boolean(product)" :model-value="article?.id" required @error="handleError" @selected="onArticleSelected" />
         </div>
         <template v-if="store">
           <div class="row">

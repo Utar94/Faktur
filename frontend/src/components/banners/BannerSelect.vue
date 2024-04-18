@@ -1,25 +1,34 @@
 <script setup lang="ts">
-import { TarSelect, type SelectOption, type SelectOptions } from "logitar-vue3-ui";
-import { computed, inject, onMounted, ref } from "vue";
-import { useI18n } from "vue-i18n";
+import type { SelectOption } from "logitar-vue3-ui";
+import { computed, onMounted, ref } from "vue";
 
+import AppSelect from "@/components/shared/AppSelect.vue";
 import type { Banner } from "@/types/banners";
-import { handleErrorKey } from "@/inject/App";
 import { searchBanners } from "@/api/banners";
 
-const handleError = inject(handleErrorKey) as (e: unknown) => void;
-const { t } = useI18n();
+defineProps<{
+  modelValue?: string;
+}>();
 
 const banners = ref<Banner[]>([]);
 
 const options = computed<SelectOption[]>(() => banners.value.map(({ id, displayName }) => ({ value: id, text: displayName })));
 
-const props = withDefaults(defineProps<SelectOptions>(), {
-  floating: true,
-  id: "banner",
-  label: "banners.select.label",
-  placeholder: "banners.select.placeholder",
-});
+const emit = defineEmits<{
+  (e: "error", value: unknown): void;
+  (e: "selected", value?: Banner): void;
+  (e: "update:model-value", value?: string): void;
+}>();
+
+function onModelValueUpdate(id?: string): void {
+  emit("update:model-value", id);
+  if (id) {
+    const banner = banners.value.find((banner) => banner.id === id);
+    emit("selected", banner);
+  } else {
+    emit("selected");
+  }
+}
 
 onMounted(async () => {
   try {
@@ -40,26 +49,21 @@ onMounted(async () => {
     });
     banners.value = results.items;
   } catch (e: unknown) {
-    handleError(e);
+    emit("error", e);
   }
 });
 
-const emit = defineEmits<{
-  (e: "selected", value?: Banner): void;
-  (e: "update:model-value", value?: string): void;
-}>();
-
-function onModelValueUpdate(id?: string): void {
-  emit("update:model-value", id);
-  if (id) {
-    const banner = banners.value.find((banner) => banner.id === id);
-    emit("selected", banner);
-  } else {
-    emit("selected");
-  }
-}
+// TODO(fpion): ignore validation in StoreList
 </script>
 
 <template>
-  <TarSelect v-bind="props" :label="t(label)" :options="options" :placeholder="t(placeholder)" @update:model-value="onModelValueUpdate" />
+  <AppSelect
+    floating
+    id="banner"
+    label="banners.select.label"
+    :model-value="modelValue"
+    :options="options"
+    placeholder="banners.select.placeholder"
+    @update:model-value="onModelValueUpdate"
+  />
 </template>
