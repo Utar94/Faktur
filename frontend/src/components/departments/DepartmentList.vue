@@ -120,7 +120,7 @@ watch(payload, (payload) => refresh(payload), { deep: true, immediate: true });
     <div class="row">
       <SearchInput class="col-lg-4" v-model="search" />
       <SortSelect class="col-lg-4" :descending="isDescending" :options="sortOptions" v-model="sort" @descending="isDescending = $event" />
-      <CountSelect class="col-lg-4" :model-value="count.toString()" @update:model-value="count = $event ?? 0" />
+      <CountSelect class="col-lg-4" :model-value="count" @update:model-value="count = $event ?? 0" />
     </div>
     <template v-if="departments.length">
       <table class="table table-striped">
