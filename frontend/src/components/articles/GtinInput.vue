@@ -8,8 +8,6 @@ defineProps<{
 defineEmits<{
   (e: "update:model-value", value?: string): void;
 }>();
-
-// TODO(fpion): validator 'AllowedCharactersValidator=0123456789'
 </script>
 
 <template>
@@ -20,6 +18,7 @@ defineEmits<{
     max="14"
     :model-value="modelValue"
     placeholder="articles.gtin.label"
+    :rules="{ allowed_characters: '0123456789' }"
     @update:model-value="$emit('update:model-value', $event)"
   />
 </template>

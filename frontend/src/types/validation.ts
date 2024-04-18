@@ -5,6 +5,7 @@ export type ValidationListeners = {
 };
 
 export type ValidationRules = {
+  allowed_characters?: string;
   confirmed?: string[];
   email?: boolean;
   max_length?: number;
@@ -19,5 +20,4 @@ export type ValidationRules = {
   required?: boolean;
   unique_chars?: number;
   url?: boolean;
-  username?: string;
 };

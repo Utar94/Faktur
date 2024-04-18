@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 
-import username from "../username";
+import username from "../allowedCharacters";
 
 const allowedCharacters: string = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
 
