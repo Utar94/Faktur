@@ -1,16 +1,9 @@
 <script setup lang="ts">
-import { TarTextarea, type TextareaOptions } from "logitar-vue3-ui";
-import { useI18n } from "vue-i18n";
+import AppTextarea from "@/components/shared/AppTextarea.vue";
 
-const { t } = useI18n();
-
-const props = withDefaults(defineProps<TextareaOptions>(), {
-  floating: true,
-  id: "receipt-lines",
-  label: "receipts.lines",
-  placeholder: "receipts.lines",
-  rows: 15,
-});
+defineProps<{
+  modelValue?: string;
+}>();
 
 defineEmits<{
   (e: "update:model-value", value?: string): void;
@@ -18,5 +11,13 @@ defineEmits<{
 </script>
 
 <template>
-  <TarTextarea v-bind="props" :label="t(label)" :placeholder="t(placeholder)" @update:model-value="$emit('update:model-value', $event)" />
+  <AppTextarea
+    floating
+    id="receipt-lines"
+    label="receipts.lines"
+    :model-value="modelValue"
+    placeholder="receipts.lines"
+    rows="15"
+    @update:model-value="$emit('update:model-value', $event)"
+  />
 </template>
