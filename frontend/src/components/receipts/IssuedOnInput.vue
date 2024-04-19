@@ -18,6 +18,8 @@ function onModelValueUpdate(value: string): void {
     emit("update:model-value", undefined);
   }
 }
+
+// TODO(fpion): create a DateTimeInput
 </script>
 
 <template>
