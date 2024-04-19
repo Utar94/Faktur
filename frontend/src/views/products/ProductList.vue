@@ -40,7 +40,7 @@ const page = computed<number>(() => parseNumber(route.query.page?.toString()) ||
 const search = computed<string>(() => route.query.search?.toString() ?? "");
 const sort = computed<string>(() => route.query.sort?.toString() ?? "");
 const storeId = computed<string>(() => route.query.storeId?.toString() ?? "");
-const unitType = computed<string>(() => route.query.unitType?.toString() ?? "");
+const unitType = computed<UnitType | undefined>(() => route.query.unitType?.toString() as UnitType);
 
 const sortOptions = computed<SelectOption[]>(() =>
   orderBy(
@@ -65,7 +65,7 @@ async function refresh(): Promise<void> {
         operator: "And",
       },
       storeId: storeId.value,
-      unitType: (unitType.value as UnitType) || undefined,
+      unitType: unitType.value,
       sort: sort.value ? [{ field: sort.value as ProductSort, isDescending: isDescending.value }] : [],
       skip: (page.value - 1) * count.value,
       limit: count.value,
@@ -160,7 +160,7 @@ watch(
       <RouterLink
         :to="{
           name: 'CreateProduct',
-          query: { storeId: storeId || undefined, departmentNumber: departmentNumber || undefined, unitType: unitType || undefined },
+          query: { storeId: storeId || undefined, departmentNumber: departmentNumber || undefined, unitType },
         }"
         class="btn btn-success ms-1"
       >
@@ -168,10 +168,22 @@ watch(
       </RouterLink>
     </div>
     <div class="row">
-      <StoreSelect :class="{ 'col-lg-4': Boolean(store) }" :model-value="storeId" @update:model-value="setQuery('storeId', $event ?? '')" />
+      <StoreSelect
+        :class="{ 'col-lg-4': Boolean(store) }"
+        :model-value="storeId"
+        no-status
+        @error="handleError"
+        @update:model-value="setQuery('storeId', $event ?? '')"
+      />
       <template v-if="store">
-        <DepartmentSelect class="col-lg-4" :model-value="departmentNumber" :store="store" @update:model-value="setQuery('departmentNumber', $event ?? '')" />
-        <UnitTypeSelect class="col-lg-4" :model-value="unitType" @update:model-value="setQuery('unitType', $event ?? '')" />
+        <DepartmentSelect
+          class="col-lg-4"
+          :model-value="departmentNumber"
+          no-status
+          :store="store"
+          @update:model-value="setQuery('departmentNumber', $event ?? '')"
+        />
+        <UnitTypeSelect class="col-lg-4" :model-value="unitType" no-status @update:model-value="setQuery('unitType', $event ?? '')" />
       </template>
     </div>
     <div v-if="store" class="row">
@@ -184,7 +196,7 @@ watch(
         @descending="setQuery('isDescending', $event.toString())"
         @update:model-value="setQuery('sort', $event ?? '')"
       />
-      <CountSelect class="col-lg-4" :model-value="count.toString()" @update:model-value="setQuery('count', ($event ?? 10).toString())" />
+      <CountSelect class="col-lg-4" :model-value="count" @update:model-value="setQuery('count', ($event ?? 10).toString())" />
     </div>
     <template v-if="products.length">
       <table class="table table-striped">

@@ -1,17 +1,9 @@
 <script setup lang="ts">
-import { TarInput, type InputOptions } from "logitar-vue3-ui";
-import { useI18n } from "vue-i18n";
+import AppInput from "@/components/shared/AppInput.vue";
 
-const { t } = useI18n();
-
-const props = withDefaults(defineProps<InputOptions>(), {
-  floating: true,
-  id: "email-address",
-  label: "users.email.address",
-  max: 255,
-  placeholder: "users.email.address",
-  type: "email",
-});
+defineProps<{
+  modelValue?: string;
+}>();
 
 defineEmits<{
   (e: "update:model-value", value?: string): void;
@@ -19,5 +11,14 @@ defineEmits<{
 </script>
 
 <template>
-  <TarInput v-bind="props" :label="t(label)" :placeholder="t(placeholder)" @update:model-value="$emit('update:model-value', $event)" />
+  <AppInput
+    floating
+    id="email-address"
+    label="users.email.address"
+    max="255"
+    :model-value="modelValue"
+    placeholder="users.email.address"
+    type="email"
+    @update:model-value="$emit('update:model-value', $event)"
+  />
 </template>

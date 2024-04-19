@@ -35,10 +35,21 @@ function hide(): void {
   modalRef.value?.hide();
 }
 
+function setModel(department?: Department) {
+  number.value = department?.number ?? "";
+  displayName.value = department?.displayName ?? "";
+  description.value = department?.description ?? "";
+}
+
 const emit = defineEmits<{
   (e: "error", value: unknown): void;
   (e: "saved", value: Department): void;
 }>();
+
+function onCancel(): void {
+  setModel(props.department);
+  hide();
+}
 
 const { handleSubmit, isSubmitting } = useForm();
 const onSubmit = handleSubmit(async () => {
@@ -61,9 +72,7 @@ const onSubmit = handleSubmit(async () => {
 
 watchEffect(() => {
   const department = props.department;
-  number.value = department?.number ?? "";
-  displayName.value = department?.displayName ?? "";
-  description.value = department?.description ?? "";
+  setModel(department);
 });
 </script>
 
@@ -83,7 +92,7 @@ watchEffect(() => {
         <DescriptionTextarea v-model="description" />
       </form>
       <template #footer>
-        <TarButton icon="fas fa-ban" :text="t('actions.cancel')" variant="secondary" @click="hide" />
+        <TarButton icon="fas fa-ban" :text="t('actions.cancel')" variant="secondary" @click="onCancel" />
         <TarButton
           :disabled="isSubmitting || !hasChanges"
           :icon="department ? 'fas fa-save' : 'fas fa-plus'"

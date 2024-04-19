@@ -1,19 +1,23 @@
 <script setup lang="ts">
-import { TarInput, parsingUtils, type InputOptions } from "logitar-vue3-ui";
-import { useI18n } from "vue-i18n";
+import { parsingUtils } from "logitar-vue3-ui";
 
-const { t } = useI18n();
+import AppInput from "./AppInput.vue";
+
 const { parseNumber } = parsingUtils;
 
-const props = withDefaults(defineProps<InputOptions>(), {
-  floating: true,
-  id: "price",
-  label: "price",
-  min: 0.0,
-  placeholder: "price",
-  step: 0.01,
-  type: "number",
-});
+withDefaults(
+  defineProps<{
+    id?: string;
+    label?: string;
+    modelValue?: number;
+    placeholder?: string;
+  }>(),
+  {
+    id: "price",
+    label: "price",
+    placeholder: "price",
+  },
+);
 
 defineEmits<{
   (e: "update:model-value", value?: number): void;
@@ -21,11 +25,21 @@ defineEmits<{
 </script>
 
 <template>
-  <TarInput v-bind="props" :label="t(label)" :placeholder="t(placeholder)" @update:model-value="$emit('update:model-value', parseNumber($event))">
+  <AppInput
+    floating
+    :id="id"
+    :label="label"
+    min="0"
+    :model-value="modelValue?.toString()"
+    :placeholder="placeholder"
+    step="0.01"
+    type="number"
+    @update:model-value="$emit('update:model-value', parseNumber($event))"
+  >
     <template #append>
       <span class="input-group-text">
         <font-awesome-icon icon="fas fa-dollar-sign" />
       </span>
     </template>
-  </TarInput>
+  </AppInput>
 </template>

@@ -1,17 +1,18 @@
 <script setup lang="ts">
-import { orderBy } from "@/helpers/arrayUtils";
-import { TarSelect, type SelectOption, type SelectOptions } from "logitar-vue3-ui";
+import type { SelectOption } from "logitar-vue3-ui";
 import { computed } from "vue";
 import { useI18n } from "vue-i18n";
 
-const { rt, t, tm } = useI18n();
+import AppSelect from "@/components/shared/AppSelect.vue";
+import type { UnitType } from "@/types/products";
+import { orderBy } from "@/helpers/arrayUtils";
 
-const props = withDefaults(defineProps<SelectOptions>(), {
-  floating: true,
-  id: "unit-type",
-  label: "products.unitType.label",
-  placeholder: "products.unitType.placeholder",
-});
+const { rt, tm } = useI18n();
+
+defineProps<{
+  modelValue?: UnitType;
+  noStatus?: boolean | string;
+}>();
 
 const options = computed<SelectOption[]>(() =>
   orderBy(
@@ -21,10 +22,19 @@ const options = computed<SelectOption[]>(() =>
 );
 
 defineEmits<{
-  (e: "update:model-value", value?: string): void;
+  (e: "update:model-value", value?: UnitType): void;
 }>();
 </script>
 
 <template>
-  <TarSelect v-bind="props" :label="t(label)" :options="options" :placeholder="t(placeholder)" @update:model-value="$emit('update:model-value', $event)" />
+  <AppSelect
+    floating
+    id="unit-type"
+    label="products.unitType.label"
+    :model-value="modelValue"
+    :no-status="noStatus"
+    :options="options"
+    placeholder="products.unitType.placeholder"
+    @update:model-value="$emit('update:model-value', $event)"
+  />
 </template>

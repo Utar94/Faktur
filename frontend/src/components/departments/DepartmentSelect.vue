@@ -1,28 +1,17 @@
 <script setup lang="ts">
-import { TarSelect, type SelectOption, type SelectOptions } from "logitar-vue3-ui";
+import type { SelectOption } from "logitar-vue3-ui";
 import { computed } from "vue";
-import { useI18n } from "vue-i18n";
 
+import AppSelect from "@/components/shared/AppSelect.vue";
 import type { Department } from "@/types/departments";
 import type { Store } from "@/types/stores";
 import { orderBy } from "@/helpers/arrayUtils";
 
-const { t } = useI18n();
-
-const props = withDefaults(
-  defineProps<
-    SelectOptions & {
-      store: Store;
-    }
-  >(),
-  {
-    floating: true,
-    id: "department",
-    label: "departments.select.label",
-    placeholder: "departments.select.placeholder",
-  },
-);
-
+const props = defineProps<{
+  modelValue?: string;
+  noStatus?: boolean | string;
+  store: Store;
+}>();
 const options = computed<SelectOption[]>(() =>
   orderBy(
     props.store.departments.map(({ displayName, number }) => ({ text: displayName, value: number })),
@@ -47,5 +36,14 @@ function onModelValueUpdate(number?: string): void {
 </script>
 
 <template>
-  <TarSelect v-bind="props" :label="t(label)" :options="options" :placeholder="t(placeholder)" @update:model-value="onModelValueUpdate" />
+  <AppSelect
+    floating
+    id="department"
+    label="departments.select.label"
+    :model-value="modelValue"
+    :no-status="noStatus"
+    :options="options"
+    placeholder="departments.select.placeholder"
+    @update:model-value="onModelValueUpdate"
+  />
 </template>

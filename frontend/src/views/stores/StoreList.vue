@@ -136,7 +136,7 @@ watch(
       </RouterLink>
     </div>
     <div class="row">
-      <BannerSelect class="col-lg-3" :model-value="bannerId" @update:model-value="setQuery('bannerId', $event ?? '')" />
+      <BannerSelect class="col-lg-3" :model-value="bannerId" no-status @error="handleError" @update:model-value="setQuery('bannerId', $event ?? '')" />
       <SearchInput class="col-lg-3" :model-value="search" @update:model-value="setQuery('search', $event ?? '')" />
       <SortSelect
         class="col-lg-3"
@@ -146,7 +146,7 @@ watch(
         @descending="setQuery('isDescending', $event.toString())"
         @update:model-value="setQuery('sort', $event ?? '')"
       />
-      <CountSelect class="col-lg-3" :model-value="count.toString()" @update:model-value="setQuery('count', ($event ?? 10).toString())" />
+      <CountSelect class="col-lg-3" :model-value="count" @update:model-value="setQuery('count', ($event ?? 10).toString())" />
     </div>
     <template v-if="stores.length">
       <table class="table table-striped">

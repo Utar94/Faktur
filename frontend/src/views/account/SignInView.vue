@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { TarAlert, TarButton, TarInput } from "logitar-vue3-ui";
+import { TarAlert, TarButton } from "logitar-vue3-ui";
 import { inject, ref } from "vue";
 import { useForm } from "vee-validate";
 import { useI18n } from "vue-i18n";
 import { useRoute, useRouter } from "vue-router";
 
+import AppInput from "@/components/shared/AppInput.vue";
 import type { ApiError, Error } from "@/types/api";
 import { handleErrorKey } from "@/inject/App";
 import { signIn } from "@/api/account";
@@ -18,7 +19,7 @@ const { t } = useI18n();
 
 const invalidCredentials = ref<boolean>(false);
 const password = ref<string>("");
-const passwordRef = ref<InstanceType<typeof TarInput> | null>(null);
+const passwordRef = ref<InstanceType<typeof AppInput> | null>(null);
 const username = ref<string>("");
 
 const { handleSubmit, isSubmitting } = useForm();
@@ -49,17 +50,8 @@ const onSubmit = handleSubmit(async () => {
       <strong>{{ t("users.signIn.failed") }}</strong> {{ t("users.signIn.invalidCredentials") }}
     </TarAlert>
     <form @submit.prevent="onSubmit">
-      <TarInput floating id="username" :label="t('users.username')" :placeholder="t('users.username')" required v-model="username" />
-      <TarInput
-        floating
-        id="password"
-        :label="t('users.password')"
-        :placeholder="t('users.password')"
-        ref="passwordRef"
-        required
-        type="password"
-        v-model="password"
-      />
+      <AppInput floating id="username" label="users.username" placeholder="users.username" required v-model="username" />
+      <AppInput floating id="password" label="users.password" placeholder="users.password" ref="passwordRef" required type="password" v-model="password" />
       <TarButton
         :disabled="isSubmitting"
         icon="fas fa-arrow-right-to-bracket"

@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { TarAlert } from "logitar-vue3-ui";
 import { computed, inject, onMounted, ref } from "vue";
-import { parsingUtils } from "logitar-vue3-ui";
 import { useForm } from "vee-validate";
 import { useI18n } from "vue-i18n";
 import { useRoute, useRouter } from "vue-router";
@@ -33,7 +32,6 @@ const handleError = inject(handleErrorKey) as (e: unknown) => void;
 const route = useRoute();
 const router = useRouter();
 const toasts = useToastStore();
-const { parseNumber } = parsingUtils;
 const { t } = useI18n();
 
 const article = ref<Article>();
@@ -49,7 +47,7 @@ const sku = ref<string>("");
 const skuAlreadyUsed = ref<boolean>(false);
 const store = ref<Store>();
 const unitPrice = ref<number>(0);
-const unitType = ref<string>("");
+const unitType = ref<UnitType>();
 
 const hasChanges = computed<boolean>(
   () =>
@@ -60,7 +58,7 @@ const hasChanges = computed<boolean>(
     displayName.value !== (product.value?.displayName ?? "") ||
     flags.value !== (product.value?.flags ?? "") ||
     unitPrice.value !== (product.value?.unitPrice ?? 0) ||
-    unitType.value !== (product.value?.unitType ?? "") ||
+    (unitType.value ?? "") !== (product.value?.unitType ?? "") ||
     description.value !== (product.value?.description ?? ""),
 );
 
@@ -116,7 +114,7 @@ function setModel(model: Product): void {
   flags.value = model.flags ?? "";
   sku.value = model.sku ?? "";
   unitPrice.value = model.unitPrice ?? 0;
-  unitType.value = model.unitType ?? "";
+  unitType.value = model.unitType;
 }
 
 const { handleSubmit, isSubmitting } = useForm();
@@ -134,7 +132,7 @@ const onSubmit = handleSubmit(async () => {
           description: description.value,
           flags: flags.value,
           unitPrice: unitPrice.value || undefined,
-          unitType: (unitType.value as UnitType) || undefined,
+          unitType: unitType.value || undefined,
         },
         product.value?.version,
       );
@@ -166,7 +164,7 @@ onMounted(async () => {
       storeId = product.store.id;
       setModel(product);
     } else {
-      unitType.value = route.query.unitType?.toString() ?? "";
+      unitType.value = route.query.unitType?.toString() as UnitType;
     }
     if (storeId) {
       store.value = await readStore(storeId);
@@ -213,8 +211,8 @@ onMounted(async () => {
           />
         </div>
         <div class="row">
-          <StoreSelect class="col-lg-6" :disabled="Boolean(product)" :model-value="store?.id" required @selected="onStoreSelected" />
-          <ArticleSelect class="col-lg-6" :disabled="Boolean(product)" :model-value="article?.id" required @selected="onArticleSelected" />
+          <StoreSelect class="col-lg-6" :disabled="Boolean(product)" :model-value="store?.id" required @error="handleError" @selected="onStoreSelected" />
+          <ArticleSelect class="col-lg-6" :disabled="Boolean(product)" :model-value="article?.id" required @error="handleError" @selected="onArticleSelected" />
         </div>
         <template v-if="store">
           <div class="row">
@@ -230,9 +228,9 @@ onMounted(async () => {
               class="col-lg-6"
               id="unit-price"
               label="products.unitPrice"
-              :model-value="unitPrice.toString()"
+              :model-value="unitPrice"
               placeholder="products.unitPrice"
-              @update:model-value="unitPrice = parseNumber($event) ?? 0"
+              @update:model-value="unitPrice = $event ?? 0"
             />
             <UnitTypeSelect class="col-lg-6" v-model="unitType" />
           </div>

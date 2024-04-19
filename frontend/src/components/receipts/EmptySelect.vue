@@ -1,18 +1,18 @@
 <script setup lang="ts">
-import { TarSelect, type SelectOption, type SelectOptions } from "logitar-vue3-ui";
+import { parsingUtils, type SelectOption } from "logitar-vue3-ui";
 import { computed } from "vue";
 import { useI18n } from "vue-i18n";
 
+import AppSelect from "@/components/shared/AppSelect.vue";
 import { orderBy } from "@/helpers/arrayUtils";
 
+const { parseBoolean } = parsingUtils;
 const { t } = useI18n();
 
-const props = withDefaults(defineProps<SelectOptions>(), {
-  floating: true,
-  id: "is-empty",
-  label: "receipts.isEmpty.label",
-  placeholder: "receipts.isEmpty.placeholder",
-});
+defineProps<{
+  modelValue?: boolean;
+  noStatus?: boolean | string;
+}>();
 
 const options = computed<SelectOption[]>(() =>
   orderBy(
@@ -29,8 +29,21 @@ const options = computed<SelectOption[]>(() =>
     "text",
   ),
 );
+
+defineEmits<{
+  (e: "update:model-value", value?: boolean): void;
+}>();
 </script>
 
 <template>
-  <TarSelect v-bind="props" :label="t(label)" :options="options" :placeholder="t(placeholder)" @update:model-value="$emit('update:model-value', $event)" />
+  <AppSelect
+    floating
+    id="is-empty"
+    label="receipts.isEmpty.label"
+    :model-value="modelValue?.toString()"
+    :no-status="noStatus"
+    :options="options"
+    placeholder="receipts.isEmpty.placeholder"
+    @update:model-value="$emit('update:model-value', parseBoolean($event))"
+  />
 </template>

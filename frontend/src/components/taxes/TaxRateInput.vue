@@ -1,19 +1,14 @@
 <script setup lang="ts">
-import { TarInput, parsingUtils, type InputOptions } from "logitar-vue3-ui";
-import { useI18n } from "vue-i18n";
+import { parsingUtils } from "logitar-vue3-ui";
 
-const { t } = useI18n();
+import AppInput from "@/components/shared/AppInput.vue";
+
 const { parseNumber } = parsingUtils;
 
-const props = withDefaults(defineProps<InputOptions>(), {
-  floating: true,
-  id: "rate",
-  label: "taxes.rate",
-  min: 0.00001,
-  placeholder: "taxes.rate",
-  step: 0.00001,
-  type: "number",
-});
+defineProps<{
+  modelValue?: number;
+  required?: boolean | string;
+}>();
 
 defineEmits<{
   (e: "update:model-value", value?: number): void;
@@ -21,5 +16,17 @@ defineEmits<{
 </script>
 
 <template>
-  <TarInput v-bind="props" :label="t(label)" :placeholder="t(placeholder)" @update:model-value="$emit('update:model-value', parseNumber($event))" />
+  <AppInput
+    floating
+    id="rate"
+    label="taxes.rate"
+    min="0.00001"
+    max="1"
+    :model-value="modelValue?.toString()"
+    placeholder="taxes.rate"
+    :required="required"
+    step="0.00001"
+    type="number"
+    @update:model-value="$emit('update:model-value', parseNumber($event))"
+  />
 </template>

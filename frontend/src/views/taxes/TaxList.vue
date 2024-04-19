@@ -43,7 +43,7 @@ const sortOptions = computed<SelectOption[]>(() =>
 
 async function refresh(): Promise<void> {
   const payload: SearchTaxesPayload = {
-    flag: flag.value,
+    flag: flag.value.length > 1 ? flag.value[0] : flag.value,
     ids: [],
     search: {
       terms: search.value
@@ -144,7 +144,7 @@ watch(
         @descending="setQuery('isDescending', $event.toString())"
         @update:model-value="setQuery('sort', $event ?? '')"
       />
-      <CountSelect class="col-lg-3" :model-value="count.toString()" @update:model-value="setQuery('count', ($event ?? 10).toString())" />
+      <CountSelect class="col-lg-3" :model-value="count" @update:model-value="setQuery('count', ($event ?? 10).toString())" />
     </div>
     <template v-if="taxes.length">
       <table class="table table-striped">

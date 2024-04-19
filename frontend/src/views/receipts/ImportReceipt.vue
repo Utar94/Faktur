@@ -27,13 +27,13 @@ const { parseNumber } = parsingUtils;
 const { t } = useI18n();
 
 const errors = ref<PropertyError[]>([]);
-const issuedOn = ref<string>("");
+const issuedOn = ref<Date>();
 const lines = ref<string>("");
 const number = ref<string>("");
 const receipts = ref<Receipt[]>([]);
 const store = ref<Store>();
 
-const hasChanges = computed<boolean>(() => store.value !== undefined || issuedOn.value !== "" || number.value !== "" || lines.value !== "");
+const hasChanges = computed<boolean>(() => store.value !== undefined || Boolean(issuedOn.value) || number.value !== "" || lines.value !== "");
 
 function parseLineNumber(error: PropertyError): number {
   if (error.propertyName) {
@@ -85,12 +85,12 @@ const onSubmit = handleSubmit(async () => {
     try {
       const receipt = await importReceipt({
         storeId: store.value.id,
-        issuedOn: new Date(issuedOn.value),
+        issuedOn: issuedOn.value,
         number: number.value,
         lines: lines.value,
       });
       receipts.value.push(receipt);
-      issuedOn.value = "";
+      issuedOn.value = undefined;
       number.value = "";
       lines.value = "";
       toasts.success("receipts.imported");
@@ -143,7 +143,7 @@ onMounted(async () => {
             />
             <AppBackButton class="ms-1" :has-changes="hasChanges" />
           </div>
-          <StoreSelect :model-value="store?.id" required @selected="store = $event" />
+          <StoreSelect :model-value="store?.id" required @error="handleError" @selected="store = $event" />
           <IssuedOnInput required v-model="issuedOn" />
           <NumberInput v-model="number" />
           <ReceiptLinesTextarea v-model="lines" />

@@ -152,9 +152,9 @@ watch(
       </RouterLink>
     </div>
     <div class="row">
-      <StoreSelect class="col-lg-4" :model-value="storeId" @update:model-value="setQuery('storeId', $event ?? '')" />
-      <EmptySelect class="col-lg-4" :model-value="isReceiptEmpty?.toString()" @update:model-value="setQuery('isEmpty', $event ?? '')" />
-      <StatusSelect class="col-lg-4" :model-value="hasBeenProcessed?.toString()" @update:model-value="setQuery('hasBeenProcessed', $event ?? '')" />
+      <StoreSelect class="col-lg-4" :model-value="storeId" no-status @error="handleError" @update:model-value="setQuery('storeId', $event ?? '')" />
+      <EmptySelect class="col-lg-4" :model-value="isReceiptEmpty" no-status @update:model-value="setQuery('isEmpty', $event?.toString() ?? '')" />
+      <StatusSelect class="col-lg-4" :model-value="hasBeenProcessed" no-status @update:model-value="setQuery('hasBeenProcessed', $event?.toString() ?? '')" />
     </div>
     <div class="row">
       <SearchInput class="col-lg-4" :model-value="search" @update:model-value="setQuery('search', $event ?? '')" />
@@ -166,7 +166,7 @@ watch(
         @descending="setQuery('isDescending', $event.toString())"
         @update:model-value="setQuery('sort', $event ?? '')"
       />
-      <CountSelect class="col-lg-4" :model-value="count.toString()" @update:model-value="setQuery('count', ($event ?? 10).toString())" />
+      <CountSelect class="col-lg-4" :model-value="count" @update:model-value="setQuery('count', ($event ?? 10).toString())" />
     </div>
     <template v-if="receipts.length">
       <ReceiptList :receipts="receipts" />

@@ -1,16 +1,9 @@
 <script setup lang="ts">
-import { TarInput, type InputOptions } from "logitar-vue3-ui";
-import { useI18n } from "vue-i18n";
+import AppInput from "@/components/shared/AppInput.vue";
 
-const { t } = useI18n();
-
-const props = withDefaults(defineProps<InputOptions>(), {
-  floating: true,
-  id: "gtin",
-  label: "articles.gtin.label",
-  max: 14,
-  placeholder: "articles.gtin.label",
-});
+defineProps<{
+  modelValue?: string;
+}>();
 
 defineEmits<{
   (e: "update:model-value", value?: string): void;
@@ -18,5 +11,14 @@ defineEmits<{
 </script>
 
 <template>
-  <TarInput v-bind="props" :label="t(label)" :placeholder="t(placeholder)" @update:model-value="$emit('update:model-value', $event)" />
+  <AppInput
+    floating
+    id="gtin"
+    label="articles.gtin.label"
+    max="14"
+    :model-value="modelValue"
+    placeholder="articles.gtin.label"
+    :rules="{ allowed_characters: '0123456789' }"
+    @update:model-value="$emit('update:model-value', $event)"
+  />
 </template>
