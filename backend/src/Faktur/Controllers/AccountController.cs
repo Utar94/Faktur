@@ -32,23 +32,6 @@ public class AccountController : ControllerBase
   }
 
   [Authorize]
-  [HttpPut("password/change")]
-  public async Task<ActionResult<UserProfile>> ChangePasswordAsync([FromBody] ChangePasswordInput password, CancellationToken cancellationToken)
-  {
-    UpdateUserPayload payload = new()
-    {
-      Password = new ChangePasswordPayload(password.New)
-      {
-        Current = password.Current
-      }
-    };
-    RequestContext context = new(User.Id.ToString(), cancellationToken);
-    User user = await _userClient.UpdateAsync(User.Id, payload, context) ?? throw new InvalidOperationException($"The user 'Id={User.Id}' update returned null.");
-    UserProfile profile = new(user);
-    return Ok(profile);
-  }
-
-  [Authorize]
   [HttpGet("profile")]
   public ActionResult<UserProfile> GetProfile()
   {

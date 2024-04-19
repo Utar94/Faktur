@@ -13,6 +13,7 @@ const { t } = useI18n();
 const props = withDefaults(
   defineProps<
     TextareaOptions & {
+      noStatus?: boolean | string;
       rules?: ValidationRules;
     }
   >(),
@@ -51,7 +52,7 @@ const { errorMessage, handleChange, meta, value } = useField<string>(inputName, 
   label: displayLabel,
 });
 const status = computed<TextareaStatus | undefined>(() => {
-  if (!meta.dirty && !meta.touched) {
+  if (parseBoolean(props.noStatus) || (!meta.dirty && !meta.touched)) {
     return undefined;
   }
   return meta.valid ? "valid" : "invalid";
@@ -88,6 +89,15 @@ defineExpose({ focus });
     :status="status"
     v-on="validationListeners"
   >
+    <template #before>
+      <slot name="before"></slot>
+    </template>
+    <template #prepend>
+      <slot name="prepend"></slot>
+    </template>
+    <template #append>
+      <slot name="append"></slot>
+    </template>
     <template #after>
       <div v-if="errorMessage" class="invalid-feedback" :id="describedBy">{{ errorMessage }}</div>
       <slot name="after"></slot>

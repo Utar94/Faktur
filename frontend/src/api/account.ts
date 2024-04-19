@@ -1,4 +1,4 @@
-import type { ChangePasswordInput, CurrentUser, SaveProfilePayload, SignInPayload, UserProfile } from "@/types/account";
+import type { CurrentUser, SaveProfilePayload, SignInPayload, UserProfile } from "@/types/account";
 import { UrlBuilder, type IUrlBuilder } from "@/helpers/urlUtils";
 import { get, post, put } from ".";
 
@@ -6,15 +6,11 @@ function createUrlBuilder(path: string): IUrlBuilder {
   return new UrlBuilder({ path: `/account/${path}` });
 }
 
-export async function changePassword(payload: ChangePasswordInput): Promise<UserProfile> {
-  return (await put<ChangePasswordInput, UserProfile>(createUrlBuilder("password/change").buildRelative(), payload)).data;
-}
-
 export async function getProfile(): Promise<UserProfile> {
   return (await get<UserProfile>(createUrlBuilder("profile").buildRelative())).data;
 }
 
-export async function putProfile(payload: SaveProfilePayload): Promise<UserProfile> {
+export async function saveProfile(payload: SaveProfilePayload): Promise<UserProfile> {
   return (await put<SaveProfilePayload, UserProfile>(createUrlBuilder("profile").buildRelative(), payload)).data;
 }
 

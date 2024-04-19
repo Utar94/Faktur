@@ -79,6 +79,15 @@ defineExpose({ focus });
     :status="status"
     v-on="validationListeners"
   >
+    <template #before>
+      <slot name="before"></slot>
+    </template>
+    <template #prepend>
+      <slot name="prepend"></slot>
+    </template>
+    <template #append>
+      <slot name="append"></slot>
+    </template>
     <template #after>
       <div v-if="errorMessage" class="invalid-feedback" :id="describedBy">{{ errorMessage }}</div>
       <slot name="after"></slot>

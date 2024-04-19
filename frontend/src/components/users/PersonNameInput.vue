@@ -1,12 +1,16 @@
 <script setup lang="ts">
 import AppInput from "@/components/shared/AppInput.vue";
-import type { CountrySettings } from "@/types/users";
+import { computed } from "vue";
+import type { PersonNameType } from "@/types/account";
 
-defineProps<{
-  country?: CountrySettings;
+const props = defineProps<{
   modelValue?: string;
   required?: boolean | string;
+  type: PersonNameType;
 }>();
+
+const inputId = computed<string>(() => (props.type === "nick" ? "nickname" : `${props.type}-name`));
+const inputLabel = computed<string>(() => `users.names.${props.type}`);
 
 defineEmits<{
   (e: "update:model-value", value?: string): void;
@@ -16,12 +20,11 @@ defineEmits<{
 <template>
   <AppInput
     floating
-    id="postal-code"
-    label="users.address.postalCode"
+    :id="inputId"
+    :label="inputLabel"
     max="255"
     :model-value="modelValue"
-    :pattern="country?.postalCode"
-    placeholder="users.address.postalCode"
+    :placeholder="inputLabel"
     :required="required"
     @update:model-value="$emit('update:model-value', $event)"
   />

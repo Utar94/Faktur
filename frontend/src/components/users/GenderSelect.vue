@@ -4,19 +4,19 @@ import { computed } from "vue";
 import { useI18n } from "vue-i18n";
 
 import AppSelect from "@/components/shared/AppSelect.vue";
-import type { CountrySettings } from "@/types/users";
 import { orderBy } from "@/helpers/arrayUtils";
 
-const { t } = useI18n();
+const { rt, tm } = useI18n();
 
-const props = defineProps<{
-  country?: CountrySettings;
+defineProps<{
   modelValue?: string;
-  required?: boolean | string;
 }>();
 
 const options = computed<SelectOption[]>(() =>
-  orderBy(props.country?.regions.map((region) => ({ text: t(`countries.${props.country?.code}.regions.${region}`), value: region })) ?? [], "text"),
+  orderBy(
+    Object.entries(tm(rt("users.gender.options"))).map(([value, text]) => ({ text, value }) as SelectOption),
+    "text",
+  ),
 );
 
 defineEmits<{
@@ -27,12 +27,11 @@ defineEmits<{
 <template>
   <AppSelect
     floating
-    id="address-region"
-    label="users.address.region.label"
+    id="gender"
+    label="users.gender.label"
     :model-value="modelValue"
     :options="options"
-    placeholder="users.address.region.placeholder"
-    :required="required"
+    placeholder="users.gender.placeholder"
     @update:model-value="$emit('update:model-value', $event)"
   />
 </template>

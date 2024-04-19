@@ -5,6 +5,8 @@ import { useForm } from "vee-validate";
 import { useI18n } from "vue-i18n";
 import { useRoute, useRouter } from "vue-router";
 
+import UsernameInput from "@/components/users/UsernameInput.vue";
+import PasswordInput from "@/components/users/PasswordInput.vue";
 import AppInput from "@/components/shared/AppInput.vue";
 import type { ApiError, Error } from "@/types/api";
 import { handleErrorKey } from "@/inject/App";
@@ -41,6 +43,9 @@ const onSubmit = handleSubmit(async () => {
     }
   }
 });
+
+// TODO(fpion): only required validation on username
+// TODO(fpion): only required validation on password
 </script>
 
 <template>
@@ -50,8 +55,8 @@ const onSubmit = handleSubmit(async () => {
       <strong>{{ t("users.signIn.failed") }}</strong> {{ t("users.signIn.invalidCredentials") }}
     </TarAlert>
     <form @submit.prevent="onSubmit">
-      <AppInput floating id="username" label="users.username" placeholder="users.username" required v-model="username" />
-      <AppInput floating id="password" label="users.password" placeholder="users.password" ref="passwordRef" required type="password" v-model="password" />
+      <UsernameInput required v-model="username" />
+      <PasswordInput required ref="passwordRef" v-model="password" />
       <TarButton
         :disabled="isSubmitting"
         icon="fas fa-arrow-right-to-bracket"

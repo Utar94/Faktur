@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import AppInput from "@/components/shared/AppInput.vue";
-import type { CountrySettings } from "@/types/users";
 
 defineProps<{
-  country?: CountrySettings;
+  disabled?: boolean | string;
   modelValue?: string;
   required?: boolean | string;
 }>();
@@ -15,14 +14,15 @@ defineEmits<{
 
 <template>
   <AppInput
+    :disabled="disabled"
     floating
-    id="postal-code"
-    label="users.address.postalCode"
+    id="username"
+    label="users.username"
     max="255"
     :model-value="modelValue"
-    :pattern="country?.postalCode"
-    placeholder="users.address.postalCode"
+    placeholder="users.username"
     :required="required"
+    :rules="{ allowed_characters: 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+' }"
     @update:model-value="$emit('update:model-value', $event)"
   />
 </template>

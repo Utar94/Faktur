@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import AppInput from "@/components/shared/AppInput.vue";
+import UrlInput from "../shared/UrlInput.vue";
 
 defineProps<{
   modelValue?: string;
-  required?: boolean | string;
 }>();
 
 defineEmits<{
@@ -12,15 +11,13 @@ defineEmits<{
 </script>
 
 <template>
-  <AppInput
+  <UrlInput
     floating
-    id="email-address"
-    label="users.email.address"
-    max="255"
+    id="picture"
+    label="users.pictureUrl"
+    max="2048"
     :model-value="modelValue"
-    placeholder="users.email.address"
-    :required="required"
-    type="email"
+    placeholder="users.pictureUrl"
     @update:model-value="$emit('update:model-value', $event)"
   />
 </template>
