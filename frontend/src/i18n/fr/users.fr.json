@@ -43,7 +43,7 @@
   },
   "pictureUrl": "Photo (URL)",
   "profile": {
-    "saved": "TODO",
+    "saved": "Votre profil a été enregistré !",
     "title": "Profil",
     "url": "Profil (URL)"
   },
@@ -55,6 +55,7 @@
   },
   "signOut": "Déconnexion",
   "tabs": {
+    "contact": "Informations de contact",
     "personal": "Informations personnelles"
   },
   "timeZone": {

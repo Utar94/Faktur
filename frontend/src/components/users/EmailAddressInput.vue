@@ -3,6 +3,7 @@ import AppInput from "@/components/shared/AppInput.vue";
 
 defineProps<{
   modelValue?: string;
+  required?: boolean | string;
 }>();
 
 defineEmits<{
@@ -18,6 +19,7 @@ defineEmits<{
     max="255"
     :model-value="modelValue"
     placeholder="users.email.address"
+    :required="required"
     type="email"
     @update:model-value="$emit('update:model-value', $event)"
   />

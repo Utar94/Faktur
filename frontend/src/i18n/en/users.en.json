@@ -43,7 +43,7 @@
   },
   "pictureUrl": "Picture URL",
   "profile": {
-    "saved": "TODO",
+    "saved": "Your profile has been saved!",
     "title": "Profile",
     "url": "Profile URL"
   },
@@ -55,6 +55,7 @@
   },
   "signOut": "Sign Out",
   "tabs": {
+    "contact": "Contact Information",
     "personal": "Personal Information"
   },
   "timeZone": {
