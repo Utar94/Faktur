@@ -13,13 +13,39 @@
     "street": "Numéro et nom de rue",
     "title": "Adresse postale"
   },
+  "birthdate": "Date de naissance",
   "email": {
     "address": "Adresse courriel"
+  },
+  "gender": {
+    "label": "Genre",
+    "options": {
+      "female": "Femme",
+      "male": "Homme",
+      "other": "Autre"
+    },
+    "placeholder": "Sélectionnez votre genre"
+  },
+  "locale": {
+    "label": "Langue de communication",
+    "placeholder": "Sélectionnez votre langue de communication préférée"
+  },
+  "names": {
+    "first": "Prénom",
+    "last": "Nom de famille",
+    "middle": "Nom intermédiaire",
+    "nick": "Surnom"
   },
   "password": "Mot de passe",
   "phone": {
     "extension": "Extension téléphonique",
     "number": "Numéro de téléphone"
+  },
+  "pictureUrl": "Photo (URL)",
+  "profile": {
+    "saved": "TODO",
+    "title": "Profil",
+    "url": "Profil (URL)"
   },
   "signIn": {
     "failed": "Connexion échouée !",
@@ -28,5 +54,13 @@
     "title": "Connexion"
   },
   "signOut": "Déconnexion",
-  "username": "Nom d’utilisateur"
+  "tabs": {
+    "personal": "Informations personnelles"
+  },
+  "timeZone": {
+    "label": "Fuseau horaire",
+    "placeholder": "Sélectionnez votre fuseau horaire"
+  },
+  "username": "Nom d’utilisateur",
+  "websiteUrl": "Site Web (URL)"
 }

@@ -14,7 +14,7 @@ export async function getProfile(): Promise<UserProfile> {
   return (await get<UserProfile>(createUrlBuilder("profile").buildRelative())).data;
 }
 
-export async function putProfile(payload: SaveProfilePayload): Promise<UserProfile> {
+export async function saveProfile(payload: SaveProfilePayload): Promise<UserProfile> {
   return (await put<SaveProfilePayload, UserProfile>(createUrlBuilder("profile").buildRelative(), payload)).data;
 }
 
