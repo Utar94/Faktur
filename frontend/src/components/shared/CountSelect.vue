@@ -22,6 +22,7 @@ defineEmits<{
 }>();
 
 // TODO(fpion): always ignore validation
+// TODO(fpion): does not work properly without option values
 </script>
 
 <template>
