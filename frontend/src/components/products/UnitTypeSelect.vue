@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { SelectOption } from "logitar-vue3-ui";
+import { parsingUtils, type SelectOption } from "logitar-vue3-ui";
 import { computed } from "vue";
 import { useI18n } from "vue-i18n";
 
@@ -7,6 +7,7 @@ import AppSelect from "@/components/shared/AppSelect.vue";
 import type { UnitType } from "@/types/products";
 import { orderBy } from "@/helpers/arrayUtils";
 
+const { parseBoolean } = parsingUtils;
 const { rt, tm } = useI18n();
 
 defineProps<{
@@ -32,9 +33,9 @@ defineEmits<{
     id="unit-type"
     label="products.unitType.label"
     :model-value="modelValue"
-    :no-status="noStatus"
     :options="options"
     placeholder="products.unitType.placeholder"
+    :show-status="parseBoolean(noStatus) ? 'never' : undefined"
     @update:model-value="$emit('update:model-value', $event)"
   />
 </template>

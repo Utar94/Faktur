@@ -1,10 +1,12 @@
 <script setup lang="ts">
-import type { SelectOption } from "logitar-vue3-ui";
+import { parsingUtils, type SelectOption } from "logitar-vue3-ui";
 import { computed, onMounted, ref } from "vue";
 
 import AppSelect from "@/components/shared/AppSelect.vue";
 import type { Banner } from "@/types/banners";
 import { searchBanners } from "@/api/banners";
+
+const { parseBoolean } = parsingUtils;
 
 defineProps<{
   modelValue?: string;
@@ -61,9 +63,9 @@ onMounted(async () => {
     id="banner"
     label="banners.select.label"
     :model-value="modelValue"
-    :no-status="noStatus"
     :options="options"
     placeholder="banners.select.placeholder"
+    :show-status="parseBoolean(noStatus) ? 'never' : undefined"
     @update:model-value="onModelValueUpdate"
   />
 </template>

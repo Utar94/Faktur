@@ -11,7 +11,6 @@ const { t } = useI18n();
 
 defineProps<{
   modelValue?: boolean;
-  noStatus?: boolean | string;
 }>();
 
 const options = computed<SelectOption[]>(() =>
@@ -41,9 +40,9 @@ defineEmits<{
     id="is-empty"
     label="receipts.isEmpty.label"
     :model-value="modelValue?.toString()"
-    :no-status="noStatus"
     :options="options"
     placeholder="receipts.isEmpty.placeholder"
+    validation="server"
     @update:model-value="$emit('update:model-value', parseBoolean($event))"
   />
 </template>

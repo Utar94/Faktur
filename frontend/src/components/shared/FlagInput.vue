@@ -1,8 +1,5 @@
 <script setup lang="ts">
-import { TarInput } from "logitar-vue3-ui";
-import { useI18n } from "vue-i18n";
-
-const { t } = useI18n();
+import AppInput from "./AppInput.vue";
 
 defineProps<{
   modelValue?: string;
@@ -14,13 +11,14 @@ defineEmits<{
 </script>
 
 <template>
-  <TarInput
+  <AppInput
     floating
     id="flag"
-    :label="t('flag')"
+    label="flag"
     max="1"
     :model-value="modelValue"
-    :placeholder="t('flag')"
+    placeholder="flag"
+    validation="server"
     @update:model-value="$emit('update:model-value', $event)"
   />
 </template>

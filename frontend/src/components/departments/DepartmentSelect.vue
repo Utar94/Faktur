@@ -1,11 +1,13 @@
 <script setup lang="ts">
-import type { SelectOption } from "logitar-vue3-ui";
+import { parsingUtils, type SelectOption } from "logitar-vue3-ui";
 import { computed } from "vue";
 
 import AppSelect from "@/components/shared/AppSelect.vue";
 import type { Department } from "@/types/departments";
 import type { Store } from "@/types/stores";
 import { orderBy } from "@/helpers/arrayUtils";
+
+const { parseBoolean } = parsingUtils;
 
 const props = defineProps<{
   modelValue?: string;
@@ -41,9 +43,9 @@ function onModelValueUpdate(number?: string): void {
     id="department"
     label="departments.select.label"
     :model-value="modelValue"
-    :no-status="noStatus"
     :options="options"
     placeholder="departments.select.placeholder"
+    :show-status="parseBoolean(noStatus) ? 'never' : undefined"
     @update:model-value="onModelValueUpdate"
   />
 </template>
