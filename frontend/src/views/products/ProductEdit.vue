@@ -47,7 +47,7 @@ const sku = ref<string>("");
 const skuAlreadyUsed = ref<boolean>(false);
 const store = ref<Store>();
 const unitPrice = ref<number>(0);
-const unitType = ref<string>("");
+const unitType = ref<UnitType>();
 
 const hasChanges = computed<boolean>(
   () =>
@@ -114,7 +114,7 @@ function setModel(model: Product): void {
   flags.value = model.flags ?? "";
   sku.value = model.sku ?? "";
   unitPrice.value = model.unitPrice ?? 0;
-  unitType.value = model.unitType ?? "";
+  unitType.value = model.unitType;
 }
 
 const { handleSubmit, isSubmitting } = useForm();
@@ -132,7 +132,7 @@ const onSubmit = handleSubmit(async () => {
           description: description.value,
           flags: flags.value,
           unitPrice: unitPrice.value || undefined,
-          unitType: (unitType.value as UnitType) || undefined,
+          unitType: unitType.value || undefined,
         },
         product.value?.version,
       );
@@ -164,7 +164,7 @@ onMounted(async () => {
       storeId = product.store.id;
       setModel(product);
     } else {
-      unitType.value = route.query.unitType?.toString() ?? "";
+      unitType.value = route.query.unitType?.toString() as UnitType;
     }
     if (storeId) {
       store.value = await readStore(storeId);

@@ -40,7 +40,7 @@ const page = computed<number>(() => parseNumber(route.query.page?.toString()) ||
 const search = computed<string>(() => route.query.search?.toString() ?? "");
 const sort = computed<string>(() => route.query.sort?.toString() ?? "");
 const storeId = computed<string>(() => route.query.storeId?.toString() ?? "");
-const unitType = computed<string>(() => route.query.unitType?.toString() ?? "");
+const unitType = computed<UnitType | undefined>(() => route.query.unitType?.toString() as UnitType);
 
 const sortOptions = computed<SelectOption[]>(() =>
   orderBy(
@@ -65,7 +65,7 @@ async function refresh(): Promise<void> {
         operator: "And",
       },
       storeId: storeId.value,
-      unitType: (unitType.value as UnitType) || undefined,
+      unitType: unitType.value,
       sort: sort.value ? [{ field: sort.value as ProductSort, isDescending: isDescending.value }] : [],
       skip: (page.value - 1) * count.value,
       limit: count.value,
@@ -160,7 +160,7 @@ watch(
       <RouterLink
         :to="{
           name: 'CreateProduct',
-          query: { storeId: storeId || undefined, departmentNumber: departmentNumber || undefined, unitType: unitType || undefined },
+          query: { storeId: storeId || undefined, departmentNumber: departmentNumber || undefined, unitType },
         }"
         class="btn btn-success ms-1"
       >
