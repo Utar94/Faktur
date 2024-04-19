@@ -1,26 +1,19 @@
 <script setup lang="ts">
-import { TarSelect, type SelectOption, type SelectOptions } from "logitar-vue3-ui";
+import type { SelectOption } from "logitar-vue3-ui";
 import { computed } from "vue";
 import { useI18n } from "vue-i18n";
 
+import AppSelect from "@/components/shared/AppSelect.vue";
 import type { CountrySettings } from "@/types/stores";
 import { orderBy } from "@/helpers/arrayUtils";
 
 const { t } = useI18n();
 
-const props = withDefaults(
-  defineProps<
-    SelectOptions & {
-      country?: CountrySettings;
-    }
-  >(),
-  {
-    floating: true,
-    id: "address-region",
-    label: "users.address.region.label",
-    placeholder: "users.address.region.placeholder",
-  },
-);
+const props = defineProps<{
+  country?: CountrySettings;
+  modelValue?: string;
+  required?: boolean | string;
+}>();
 
 const options = computed<SelectOption[]>(() =>
   orderBy(props.country?.regions.map((region) => ({ text: t(`countries.${props.country?.code}.regions.${region}`), value: region })) ?? [], "text"),
@@ -32,5 +25,14 @@ defineEmits<{
 </script>
 
 <template>
-  <TarSelect v-bind="props" :label="t(label)" :options="options" :placeholder="t(placeholder)" @update:model-value="$emit('update:model-value', $event)" />
+  <AppSelect
+    floating
+    id="address-region"
+    label="users.address.region.label"
+    :model-value="modelValue"
+    :options="options"
+    placeholder="users.address.region.placeholder"
+    :required="required"
+    @update:model-value="$emit('update:model-value', $event)"
+  />
 </template>
