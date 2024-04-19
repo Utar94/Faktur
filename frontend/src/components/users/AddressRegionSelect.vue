@@ -4,7 +4,7 @@ import { computed } from "vue";
 import { useI18n } from "vue-i18n";
 
 import AppSelect from "@/components/shared/AppSelect.vue";
-import type { CountrySettings } from "@/types/stores";
+import type { CountrySettings } from "@/types/users";
 import { orderBy } from "@/helpers/arrayUtils";
 
 const { t } = useI18n();

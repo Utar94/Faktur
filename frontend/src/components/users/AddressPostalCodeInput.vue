@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import AppInput from "@/components/shared/AppInput.vue";
-import type { CountrySettings } from "@/types/stores";
+import type { CountrySettings } from "@/types/users";
 
 defineProps<{
   country?: CountrySettings;
