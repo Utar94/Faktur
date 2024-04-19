@@ -54,8 +54,6 @@ onMounted(async () => {
     emit("error", e);
   }
 });
-
-// TODO(fpion): ignore validation in ProductList and ReceiptListView
 </script>
 
 <template>

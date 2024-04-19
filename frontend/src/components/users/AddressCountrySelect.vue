@@ -36,6 +36,8 @@ function onModelValueUpdate(code?: string): void {
     emit("selected");
   }
 }
+
+// TODO(fpion): always show status
 </script>
 
 <template>

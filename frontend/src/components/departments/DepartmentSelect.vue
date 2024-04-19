@@ -33,7 +33,7 @@ function onModelValueUpdate(number?: string): void {
   }
 }
 
-// TODO(fpion): ignore validation in ProductList
+// TODO(fpion): validation in ProductEdit
 </script>
 
 <template>

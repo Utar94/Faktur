@@ -53,7 +53,7 @@ onMounted(async () => {
   }
 });
 
-// TODO(fpion): ignore validation in StoreList
+// TODO(fpion): validation in StoreEdit
 </script>
 
 <template>
