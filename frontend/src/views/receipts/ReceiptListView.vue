@@ -152,9 +152,9 @@ watch(
       </RouterLink>
     </div>
     <div class="row">
-      <StoreSelect class="col-lg-4" :model-value="storeId" @error="handleError" @update:model-value="setQuery('storeId', $event ?? '')" />
-      <EmptySelect class="col-lg-4" :model-value="isReceiptEmpty" @update:model-value="setQuery('isEmpty', $event?.toString() ?? '')" />
-      <StatusSelect class="col-lg-4" :model-value="hasBeenProcessed" @update:model-value="setQuery('hasBeenProcessed', $event?.toString() ?? '')" />
+      <StoreSelect class="col-lg-4" :model-value="storeId" no-status @error="handleError" @update:model-value="setQuery('storeId', $event ?? '')" />
+      <EmptySelect class="col-lg-4" :model-value="isReceiptEmpty" no-status @update:model-value="setQuery('isEmpty', $event?.toString() ?? '')" />
+      <StatusSelect class="col-lg-4" :model-value="hasBeenProcessed" no-status @update:model-value="setQuery('hasBeenProcessed', $event?.toString() ?? '')" />
     </div>
     <div class="row">
       <SearchInput class="col-lg-4" :model-value="search" @update:model-value="setQuery('search', $event ?? '')" />

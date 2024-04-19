@@ -22,8 +22,6 @@ const options = computed<SelectOption[]>(() =>
 defineEmits<{
   (e: "update:model-value", value?: string): void;
 }>();
-
-// TODO(fpion): always show status
 </script>
 
 <template>

@@ -9,6 +9,7 @@ import { orderBy } from "@/helpers/arrayUtils";
 
 const props = defineProps<{
   modelValue?: string;
+  noStatus?: boolean | string;
   store: Store;
 }>();
 const options = computed<SelectOption[]>(() =>
@@ -32,8 +33,6 @@ function onModelValueUpdate(number?: string): void {
     emit("selected");
   }
 }
-
-// TODO(fpion): validation in ProductEdit
 </script>
 
 <template>
@@ -42,6 +41,7 @@ function onModelValueUpdate(number?: string): void {
     id="department"
     label="departments.select.label"
     :model-value="modelValue"
+    :no-status="noStatus"
     :options="options"
     placeholder="departments.select.placeholder"
     @update:model-value="onModelValueUpdate"

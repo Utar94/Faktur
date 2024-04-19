@@ -11,6 +11,7 @@ const { rt, tm } = useI18n();
 
 defineProps<{
   modelValue?: UnitType;
+  noStatus?: boolean | string;
 }>();
 
 const options = computed<SelectOption[]>(() =>
@@ -23,8 +24,6 @@ const options = computed<SelectOption[]>(() =>
 defineEmits<{
   (e: "update:model-value", value?: UnitType): void;
 }>();
-
-// TODO(fpion): validation in ProductEdit
 </script>
 
 <template>
@@ -33,6 +32,7 @@ defineEmits<{
     id="unit-type"
     label="products.unitType.label"
     :model-value="modelValue"
+    :no-status="noStatus"
     :options="options"
     placeholder="products.unitType.placeholder"
     @update:model-value="$emit('update:model-value', $event)"

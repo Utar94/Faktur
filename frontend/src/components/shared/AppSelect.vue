@@ -5,8 +5,7 @@ import { nanoid } from "nanoid";
 import { useField } from "vee-validate";
 import { useI18n } from "vue-i18n";
 
-import type { ValidationListeners, ValidationRules, ValidationType } from "@/types/validation";
-import { isEmpty } from "@/helpers/objectUtils";
+import type { ValidationListeners, ValidationRules } from "@/types/validation";
 
 const { parseBoolean } = parsingUtils;
 const { t } = useI18n();
@@ -14,13 +13,12 @@ const { t } = useI18n();
 const props = withDefaults(
   defineProps<
     SelectOptions & {
+      noStatus?: boolean | string;
       rules?: ValidationRules;
-      validation?: ValidationType;
     }
   >(),
   {
     id: () => nanoid(),
-    validation: "client",
   },
 );
 
@@ -31,9 +29,6 @@ const inputName = computed<string>(() => props.name ?? props.id);
 
 const validationRules = computed<ValidationRules>(() => {
   const rules: ValidationRules = {};
-  if (props.validation === "server") {
-    return rules;
-  }
 
   const required: boolean | undefined = parseBoolean(props.required);
   if (required) {
@@ -48,7 +43,7 @@ const { errorMessage, handleChange, meta, value } = useField<string>(inputName, 
   label: displayLabel,
 });
 const status = computed<SelectStatus | undefined>(() => {
-  if (isEmpty(validationRules.value) || (!meta.dirty && !meta.touched)) {
+  if (parseBoolean(props.noStatus) || (!meta.dirty && !meta.touched)) {
     return undefined;
   }
   return meta.valid ? "valid" : "invalid";
@@ -79,7 +74,7 @@ defineExpose({ focus });
     :options="options"
     :placeholder="placeholder ? t(placeholder) : undefined"
     ref="selectRef"
-    :required="parseBoolean(required) ? (validation === 'server' ? true : 'label') : undefined"
+    :required="parseBoolean(required) ? 'label' : undefined"
     :size="size"
     :status="status"
     v-on="validationListeners"

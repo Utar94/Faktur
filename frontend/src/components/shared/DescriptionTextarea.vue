@@ -8,8 +8,6 @@ defineProps<{
 defineEmits<{
   (e: "update:model-value", value?: string): void;
 }>();
-
-// TODO(fpion): always validate
 </script>
 
 <template>

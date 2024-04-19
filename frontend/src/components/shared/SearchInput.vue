@@ -1,5 +1,8 @@
 <script setup lang="ts">
-import AppInput from "./AppInput.vue";
+import { TarInput } from "logitar-vue3-ui";
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
 
 defineProps<{
   modelValue?: string;
@@ -11,12 +14,12 @@ defineEmits<{
 </script>
 
 <template>
-  <AppInput
+  <TarInput
     floating
     id="search"
-    label="search"
+    :label="t('search')"
     :model-value="modelValue"
-    placeholder="search"
+    :placeholder="t('search')"
     type="search"
     @update:model-value="$emit('update:model-value', $event)"
   />

@@ -9,6 +9,7 @@ import { searchStores } from "@/api/stores";
 defineProps<{
   disabled?: boolean | string;
   modelValue?: string;
+  noStatus?: boolean | string;
   required?: boolean | string;
 }>();
 
@@ -63,6 +64,7 @@ onMounted(async () => {
     id="store"
     label="stores.select.label"
     :model-value="modelValue"
+    :no-status="noStatus"
     :options="options"
     placeholder="stores.select.placeholder"
     :required="required"

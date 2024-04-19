@@ -8,6 +8,7 @@ import { searchBanners } from "@/api/banners";
 
 defineProps<{
   modelValue?: string;
+  noStatus?: boolean | string;
 }>();
 
 const banners = ref<Banner[]>([]);
@@ -52,8 +53,6 @@ onMounted(async () => {
     emit("error", e);
   }
 });
-
-// TODO(fpion): validation in StoreEdit
 </script>
 
 <template>
@@ -62,6 +61,7 @@ onMounted(async () => {
     id="banner"
     label="banners.select.label"
     :model-value="modelValue"
+    :no-status="noStatus"
     :options="options"
     placeholder="banners.select.placeholder"
     @update:model-value="onModelValueUpdate"

@@ -171,12 +171,19 @@ watch(
       <StoreSelect
         :class="{ 'col-lg-4': Boolean(store) }"
         :model-value="storeId"
+        no-status
         @error="handleError"
         @update:model-value="setQuery('storeId', $event ?? '')"
       />
       <template v-if="store">
-        <DepartmentSelect class="col-lg-4" :model-value="departmentNumber" :store="store" @update:model-value="setQuery('departmentNumber', $event ?? '')" />
-        <UnitTypeSelect class="col-lg-4" :model-value="unitType" @update:model-value="setQuery('unitType', $event ?? '')" />
+        <DepartmentSelect
+          class="col-lg-4"
+          :model-value="departmentNumber"
+          no-status
+          :store="store"
+          @update:model-value="setQuery('departmentNumber', $event ?? '')"
+        />
+        <UnitTypeSelect class="col-lg-4" :model-value="unitType" no-status @update:model-value="setQuery('unitType', $event ?? '')" />
       </template>
     </div>
     <div v-if="store" class="row">

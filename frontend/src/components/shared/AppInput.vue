@@ -5,8 +5,7 @@ import { nanoid } from "nanoid";
 import { useField } from "vee-validate";
 import { useI18n } from "vue-i18n";
 
-import type { ValidationListeners, ValidationRules, ValidationType } from "@/types/validation";
-import { isEmpty } from "@/helpers/objectUtils";
+import type { ValidationListeners, ValidationRules } from "@/types/validation";
 import { isNullOrWhiteSpace } from "@/helpers/stringUtils";
 
 const { isDateTimeInput, isNumericInput, isTextualInput } = inputUtils;
@@ -17,27 +16,22 @@ const props = withDefaults(
   defineProps<
     InputOptions & {
       rules?: ValidationRules;
-      validation?: ValidationType;
     }
   >(),
   {
     id: () => nanoid(),
-    validation: "client",
   },
 );
 
 const inputRef = ref<InstanceType<typeof TarInput> | null>(null);
 
 const describedBy = computed<string>(() => `${props.id}_invalid-feedback`);
-const inputMax = computed<number | string | undefined>(() => (props.validation === "server" || isDateTimeInput(props.type) ? props.max : undefined));
-const inputMin = computed<number | string | undefined>(() => (props.validation === "server" || isDateTimeInput(props.type) ? props.min : undefined));
+const inputMax = computed<number | string | undefined>(() => (isDateTimeInput(props.type) ? props.max : undefined));
+const inputMin = computed<number | string | undefined>(() => (isDateTimeInput(props.type) ? props.min : undefined));
 const inputName = computed<string>(() => props.name ?? props.id);
 
 const validationRules = computed<ValidationRules>(() => {
   const rules: ValidationRules = {};
-  if (props.validation === "server") {
-    return rules;
-  }
 
   const required: boolean | undefined = parseBoolean(props.required);
   if (required) {
@@ -83,7 +77,7 @@ const { errorMessage, handleChange, meta, value } = useField<string>(inputName, 
   label: displayLabel,
 });
 const status = computed<InputStatus | undefined>(() => {
-  if (isEmpty(validationRules.value) || (!meta.dirty && !meta.touched)) {
+  if (!meta.dirty && !meta.touched) {
     return undefined;
   }
   return meta.valid ? "valid" : "invalid";
@@ -111,12 +105,11 @@ defineExpose({ focus });
     :min="inputMin"
     :model-value="value"
     :name="name"
-    :pattern="validation === 'server' ? pattern : undefined"
     :placeholder="placeholder ? t(placeholder) : undefined"
     :plaintext="plaintext"
     :readonly="readonly"
     ref="inputRef"
-    :required="parseBoolean(required) ? (validation === 'server' ? true : 'label') : undefined"
+    :required="parseBoolean(required) ? 'label' : undefined"
     :size="size"
     :status="status"
     :step="step"
