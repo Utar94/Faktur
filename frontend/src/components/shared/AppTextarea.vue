@@ -5,7 +5,8 @@ import { nanoid } from "nanoid";
 import { useField } from "vee-validate";
 import { useI18n } from "vue-i18n";
 
-import type { ValidationListeners, ValidationRules } from "@/types/validation";
+import type { ValidationListeners, ValidationRules, ValidationType } from "@/types/validation";
+import { isEmpty } from "@/helpers/objectUtils";
 
 const { parseNumber } = parsingUtils;
 const { t } = useI18n();
@@ -14,10 +15,12 @@ const props = withDefaults(
   defineProps<
     TextareaOptions & {
       rules?: ValidationRules;
+      validation?: ValidationType;
     }
   >(),
   {
     id: () => nanoid(),
+    validation: "client",
   },
 );
 
@@ -28,6 +31,10 @@ const inputName = computed<string>(() => props.name ?? props.id);
 
 const validationRules = computed<ValidationRules>(() => {
   const rules: ValidationRules = {};
+  if (props.validation === "server") {
+    return rules;
+  }
+
   if (props.required) {
     rules.required = true;
   }
@@ -47,7 +54,7 @@ const { errorMessage, handleChange, meta, value } = useField<string>(inputName, 
   label: displayLabel,
 });
 const status = computed<TextareaStatus | undefined>(() => {
-  if (!meta.dirty && !meta.touched) {
+  if (isEmpty(validationRules.value) || (!meta.dirty && !meta.touched)) {
     return undefined;
   }
   return meta.valid ? "valid" : "invalid";
@@ -72,13 +79,15 @@ defineExpose({ focus });
     :floating="floating"
     :id="id"
     :label="label ? t(label) : undefined"
+    :max="validation === 'server' ? max : undefined"
+    :min="validation === 'server' ? min : undefined"
     :model-value="value"
     :name="name"
     :placeholder="placeholder ? t(placeholder) : undefined"
     :plaintext="plaintext"
     :readonly="readonly"
     ref="textareaRef"
-    :required="required ? 'label' : undefined"
+    :required="required ? (validation === 'server' ? required : 'label') : undefined"
     :rows="rows"
     :size="size"
     :status="status"

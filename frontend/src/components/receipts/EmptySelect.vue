@@ -32,8 +32,6 @@ const options = computed<SelectOption[]>(() =>
 defineEmits<{
   (e: "update:model-value", value?: boolean): void;
 }>();
-
-// TODO(fpion): always ignore validation
 </script>
 
 <template>

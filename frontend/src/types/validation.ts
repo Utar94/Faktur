@@ -21,3 +21,5 @@ export type ValidationRules = {
   unique_chars?: number;
   url?: boolean;
 };
+
+export type ValidationType = "client" | "server";
