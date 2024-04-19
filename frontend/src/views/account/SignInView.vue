@@ -43,9 +43,6 @@ const onSubmit = handleSubmit(async () => {
     }
   }
 });
-
-// TODO(fpion): only required validation on username
-// TODO(fpion): only required validation on password
 </script>
 
 <template>

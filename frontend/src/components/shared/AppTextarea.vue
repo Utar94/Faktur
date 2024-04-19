@@ -5,7 +5,7 @@ import { nanoid } from "nanoid";
 import { useField } from "vee-validate";
 import { useI18n } from "vue-i18n";
 
-import type { ValidationListeners, ValidationRules } from "@/types/validation";
+import type { ShowStatus, ValidationListeners, ValidationRules, ValidationType } from "@/types/validation";
 
 const { parseBoolean, parseNumber } = parsingUtils;
 const { t } = useI18n();
@@ -13,12 +13,15 @@ const { t } = useI18n();
 const props = withDefaults(
   defineProps<
     TextareaOptions & {
-      noStatus?: boolean | string;
       rules?: ValidationRules;
+      showStatus?: ShowStatus;
+      validation?: ValidationType;
     }
   >(),
   {
     id: () => nanoid(),
+    showStatus: "touched",
+    validation: "client",
   },
 );
 
@@ -26,9 +29,13 @@ const textareaRef = ref<InstanceType<typeof TarTextarea> | null>(null);
 
 const describedBy = computed<string>(() => `${props.id}_invalid-feedback`);
 const inputName = computed<string>(() => props.name ?? props.id);
+const inputRequired = computed<boolean | "label">(() => (parseBoolean(props.required) ? (props.validation === "server" ? true : "label") : false));
 
 const validationRules = computed<ValidationRules>(() => {
   const rules: ValidationRules = {};
+  if (props.validation === "server") {
+    return rules;
+  }
 
   const required: boolean | undefined = parseBoolean(props.required);
   if (required) {
@@ -51,11 +58,11 @@ const { errorMessage, handleChange, meta, value } = useField<string>(inputName, 
   initialValue: props.modelValue,
   label: displayLabel,
 });
-const status = computed<TextareaStatus | undefined>(() => {
-  if (parseBoolean(props.noStatus) || (!meta.dirty && !meta.touched)) {
-    return undefined;
+const inputStatus = computed<TextareaStatus | undefined>(() => {
+  if (props.showStatus === "always" || (props.showStatus === "touched" && (meta.dirty || meta.touched))) {
+    return props.status ?? (props.validation === "server" ? undefined : meta.valid ? "valid" : "invalid");
   }
-  return meta.valid ? "valid" : "invalid";
+  return undefined;
 });
 const validationListeners = computed<ValidationListeners>(() => ({
   blur: handleChange,
@@ -77,16 +84,18 @@ defineExpose({ focus });
     :floating="floating"
     :id="id"
     :label="label ? t(label) : undefined"
-    :model-value="value"
+    :max="validation === 'server' ? max : undefined"
+    :min="validation === 'server' ? min : undefined"
+    :model-value="validation === 'server' ? modelValue : value"
     :name="name"
     :placeholder="placeholder ? t(placeholder) : undefined"
     :plaintext="plaintext"
     :readonly="readonly"
     ref="textareaRef"
-    :required="parseBoolean(required) ? 'label' : undefined"
+    :required="inputRequired"
     :rows="rows"
     :size="size"
-    :status="status"
+    :status="inputStatus"
     v-on="validationListeners"
   >
     <template #before>

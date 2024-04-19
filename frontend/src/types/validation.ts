@@ -3,6 +3,8 @@ export type ConfirmedParams<T> = {
   label: string;
 };
 
+export type ShowStatus = "always" | "never" | "touched";
+
 export type ValidationListeners = {
   blur: (e: unknown, shouldValidate?: boolean) => void;
   change: (e: unknown, shouldValidate?: boolean) => void;
@@ -26,3 +28,5 @@ export type ValidationRules = {
   unique_chars?: number;
   url?: boolean;
 };
+
+export type ValidationType = "client" | "server";

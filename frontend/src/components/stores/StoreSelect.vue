@@ -1,10 +1,12 @@
 <script setup lang="ts">
-import type { SelectOption } from "logitar-vue3-ui";
+import { parsingUtils, type SelectOption } from "logitar-vue3-ui";
 import { computed, onMounted, ref } from "vue";
 
 import AppSelect from "@/components/shared/AppSelect.vue";
 import type { Store } from "@/types/stores";
 import { searchStores } from "@/api/stores";
+
+const { parseBoolean } = parsingUtils;
 
 defineProps<{
   disabled?: boolean | string;
@@ -64,10 +66,10 @@ onMounted(async () => {
     id="store"
     label="stores.select.label"
     :model-value="modelValue"
-    :no-status="noStatus"
     :options="options"
     placeholder="stores.select.placeholder"
     :required="required"
+    :show-status="parseBoolean(noStatus) ? 'never' : undefined"
     @update:model-value="onModelValueUpdate"
   />
 </template>

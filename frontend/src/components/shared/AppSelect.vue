@@ -5,7 +5,7 @@ import { nanoid } from "nanoid";
 import { useField } from "vee-validate";
 import { useI18n } from "vue-i18n";
 
-import type { ValidationListeners, ValidationRules } from "@/types/validation";
+import type { ShowStatus, ValidationListeners, ValidationRules, ValidationType } from "@/types/validation";
 
 const { parseBoolean } = parsingUtils;
 const { t } = useI18n();
@@ -13,12 +13,15 @@ const { t } = useI18n();
 const props = withDefaults(
   defineProps<
     SelectOptions & {
-      noStatus?: boolean | string;
       rules?: ValidationRules;
+      showStatus?: ShowStatus;
+      validation?: ValidationType;
     }
   >(),
   {
     id: () => nanoid(),
+    showStatus: "touched",
+    validation: "client",
   },
 );
 
@@ -26,9 +29,13 @@ const selectRef = ref<InstanceType<typeof TarSelect> | null>(null);
 
 const describedBy = computed<string>(() => `${props.id}_invalid-feedback`);
 const inputName = computed<string>(() => props.name ?? props.id);
+const inputRequired = computed<boolean | "label">(() => (parseBoolean(props.required) ? (props.validation === "server" ? true : "label") : false));
 
 const validationRules = computed<ValidationRules>(() => {
   const rules: ValidationRules = {};
+  if (props.validation === "server") {
+    return rules;
+  }
 
   const required: boolean | undefined = parseBoolean(props.required);
   if (required) {
@@ -42,11 +49,11 @@ const { errorMessage, handleChange, meta, value } = useField<string>(inputName, 
   initialValue: props.modelValue,
   label: displayLabel,
 });
-const status = computed<SelectStatus | undefined>(() => {
-  if (parseBoolean(props.noStatus) || (!meta.dirty && !meta.touched)) {
-    return undefined;
+const inputStatus = computed<SelectStatus | undefined>(() => {
+  if (props.showStatus === "always" || (props.showStatus === "touched" && (meta.dirty || meta.touched))) {
+    return props.status ?? (props.validation === "server" ? undefined : meta.valid ? "valid" : "invalid");
   }
-  return meta.valid ? "valid" : "invalid";
+  return undefined;
 });
 const validationListeners = computed<ValidationListeners>(() => ({
   blur: handleChange,
@@ -68,15 +75,15 @@ defineExpose({ focus });
     :floating="floating"
     :id="id"
     :label="label ? t(label) : undefined"
-    :model-value="value"
+    :model-value="validation === 'server' ? modelValue : value"
     :multiple="multiple"
     :name="name"
     :options="options"
     :placeholder="placeholder ? t(placeholder) : undefined"
     ref="selectRef"
-    :required="parseBoolean(required) ? 'label' : undefined"
+    :required="inputRequired"
     :size="size"
-    :status="status"
+    :status="inputStatus"
     v-on="validationListeners"
   >
     <template #before>

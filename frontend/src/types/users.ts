@@ -41,6 +41,15 @@ export type EmailPayload = ContactPayload & {
   address: string;
 };
 
+export type PasswordSettings = {
+  minimumLength?: number;
+  uniqueCharacters?: number;
+  requireNonAlphanumeric?: boolean;
+  requireLowercase?: boolean;
+  requireUppercase?: boolean;
+  requireDigit?: boolean;
+};
+
 export type Phone = Contact & {
   countryCode?: string;
   number: string;
@@ -52,4 +61,9 @@ export type PhonePayload = ContactPayload & {
   countryCode?: string;
   number: string;
   extension?: string;
+};
+
+export type UsernameSettings = {
+  maximumLength?: number;
+  allowedCharacters?: string;
 };

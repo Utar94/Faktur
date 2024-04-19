@@ -7,9 +7,18 @@ import { useI18n } from "vue-i18n";
 import PasswordInput from "./PasswordInput.vue";
 import UsernameInput from "./UsernameInput.vue";
 import type { ApiError, Error } from "@/types/api";
+import type { PasswordSettings } from "@/types/users";
 import type { UserProfile } from "@/types/account";
 import { saveProfile } from "@/api/account";
 
+const passwordSettings: PasswordSettings = {
+  minimumLength: 8,
+  uniqueCharacters: 8,
+  requireNonAlphanumeric: true,
+  requireLowercase: true,
+  requireUppercase: true,
+  requireDigit: true,
+};
 const { d, t } = useI18n();
 
 defineProps<{
@@ -60,14 +69,11 @@ const onSubmit = handleSubmit(async () => {
     }
   }
 });
-
-// TODO(fpion): no validation on UsernameInput
-// TODO(fpion): only required validation on current password
 </script>
 
 <template>
   <form @submit.prevent="onSubmit">
-    <UsernameInput disabled floating id="username" label="users.username" :model-value="user.username" placeholder="users.username" />
+    <UsernameInput disabled floating id="username" label="users.username" :model-value="user.username" no-status placeholder="users.username" />
     <h5>{{ t("users.password.label") }}</h5>
     <TarAlert :close="t('actions.close')" dismissible variant="warning" v-model="invalidCredentials">
       <strong>{{ t("users.password.failed") }}</strong> {{ t("users.password.invalid") }}
@@ -75,7 +81,7 @@ const onSubmit = handleSubmit(async () => {
     <p v-if="user.passwordChangedOn">{{ t("users.password.changedOn", { date: d(new Date(user.passwordChangedOn), "medium") }) }}</p>
     <PasswordInput id="current-password" label="users.password.current" ref="currentPasswordRef" :required="hasChanges" v-model="currentPassword" />
     <div class="row">
-      <PasswordInput class="col-lg-6" id="new-password" label="users.password.new" :required="hasChanges" v-model="newPassword" />
+      <PasswordInput class="col-lg-6" id="new-password" label="users.password.new" :required="hasChanges" :settings="passwordSettings" v-model="newPassword" />
       <PasswordInput
         class="col-lg-6"
         :confirm="{ value: newPassword, label: 'users.password.new' }"
