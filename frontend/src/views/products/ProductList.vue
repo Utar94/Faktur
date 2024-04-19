@@ -168,7 +168,12 @@ watch(
       </RouterLink>
     </div>
     <div class="row">
-      <StoreSelect :class="{ 'col-lg-4': Boolean(store) }" :model-value="storeId" @update:model-value="setQuery('storeId', $event ?? '')" />
+      <StoreSelect
+        :class="{ 'col-lg-4': Boolean(store) }"
+        :model-value="storeId"
+        @error="handleError"
+        @update:model-value="setQuery('storeId', $event ?? '')"
+      />
       <template v-if="store">
         <DepartmentSelect class="col-lg-4" :model-value="departmentNumber" :store="store" @update:model-value="setQuery('departmentNumber', $event ?? '')" />
         <UnitTypeSelect class="col-lg-4" :model-value="unitType" @update:model-value="setQuery('unitType', $event ?? '')" />

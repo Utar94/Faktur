@@ -143,7 +143,7 @@ onMounted(async () => {
             />
             <AppBackButton class="ms-1" :has-changes="hasChanges" />
           </div>
-          <StoreSelect :model-value="store?.id" required @selected="store = $event" />
+          <StoreSelect :model-value="store?.id" required @error="handleError" @selected="store = $event" />
           <IssuedOnInput required v-model="issuedOn" />
           <NumberInput v-model="number" />
           <ReceiptLinesTextarea v-model="lines" />
