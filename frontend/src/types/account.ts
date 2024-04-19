@@ -50,6 +50,8 @@ export type SignInPayload = {
 };
 
 export type UserProfile = {
+  createdOn: string;
+  updatedOn: string;
   username: string;
   passwordChangedOn?: string;
   authenticatedOn?: string;

@@ -5,6 +5,9 @@ namespace Faktur.Models.Account;
 
 public record UserProfile
 {
+  public DateTime CreatedOn { get; set; }
+  public DateTime UpdatedOn { get; set; }
+
   public string Username { get; set; }
   public DateTime? PasswordChangedOn { get; set; }
   public DateTime? AuthenticatedOn { get; set; }
@@ -34,6 +37,9 @@ public record UserProfile
 
   public UserProfile(User user) : this(user.UniqueName)
   {
+    CreatedOn = user.CreatedOn;
+    UpdatedOn = user.UpdatedOn;
+
     PasswordChangedOn = user.PasswordChangedOn;
     AuthenticatedOn = user.AuthenticatedOn;
 

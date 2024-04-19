@@ -11,11 +11,15 @@
       "placeholder": "Sélectionnez une région"
     },
     "street": "Numéro et nom de rue",
-    "title": "Adresse postale"
+    "title": "Adresse postale",
+    "verified": "Vérifiée"
   },
+  "authenticatedOn": "Dernière connexion",
   "birthdate": "Date de naissance",
+  "createdOn": "Création",
   "email": {
-    "address": "Adresse courriel"
+    "address": "Adresse courriel",
+    "verified": "Vérifiée"
   },
   "gender": {
     "label": "Genre",
@@ -32,6 +36,7 @@
   },
   "names": {
     "first": "Prénom",
+    "full": "Nom complet",
     "last": "Nom de famille",
     "middle": "Nom intermédiaire",
     "nick": "Surnom"
@@ -48,8 +53,10 @@
     "submit": "Modifier le mot de passe"
   },
   "phone": {
+    "e164": "Téléphone (E.164)",
     "extension": "Extension téléphonique",
-    "number": "Numéro de téléphone"
+    "number": "Numéro de téléphone",
+    "verified": "Vérifié"
   },
   "pictureUrl": "Photo (URL)",
   "profile": {
@@ -73,6 +80,7 @@
     "label": "Fuseau horaire",
     "placeholder": "Sélectionnez votre fuseau horaire"
   },
+  "updatedOn": "Dernière modification",
   "username": "Nom d’utilisateur",
   "websiteUrl": "Site Web (URL)"
 }

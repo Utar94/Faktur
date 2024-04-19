@@ -6,6 +6,7 @@ import { useI18n } from "vue-i18n";
 import AuthenticationInformation from "@/components/users/AuthenticationInformation.vue";
 import ContactInformation from "@/components/users/ContactInformation.vue";
 import PersonalInformation from "@/components/users/PersonalInformation.vue";
+import ProfileHeader from "@/components/users/ProfileHeader.vue";
 import type { UserProfile } from "@/types/account";
 import { getProfile } from "@/api/account";
 import { handleErrorKey } from "@/inject/App";
@@ -42,7 +43,7 @@ onMounted(async () => {
   <main class="container">
     <template v-if="user">
       <h1>{{ t("users.profile.title") }}</h1>
-      <!-- TODO(fpion): header -->
+      <ProfileHeader :user="user" />
       <TarTabs>
         <TarTab active id="authentication" :title="t('users.tabs.authentication')">
           <AuthenticationInformation :user="user" @error="handleError" @saved="onSaved($event, 'users.password.changed')" />

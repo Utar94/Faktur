@@ -11,11 +11,15 @@
       "placeholder": "Select a region"
     },
     "street": "Street Address",
-    "title": "Postal Address"
+    "title": "Postal Address",
+    "verified": "Verified"
   },
+  "authenticatedOn": "Last signed-in on",
   "birthdate": "Date of birth",
+  "createdOn": "Created on",
   "email": {
-    "address": "Email Address"
+    "address": "Email Address",
+    "verified": "Verified"
   },
   "gender": {
     "label": "Gender",
@@ -32,6 +36,7 @@
   },
   "names": {
     "first": "First Name",
+    "full": "Name",
     "last": "Last Name",
     "middle": "Middle Name",
     "nick": "Nickname"
@@ -48,8 +53,10 @@
     "submit": "Change password"
   },
   "phone": {
+    "e164": "Phone Number (E.164)",
     "extension": "Phone Extension",
-    "number": "Phone Number"
+    "number": "Phone Number",
+    "verified": "Verified"
   },
   "pictureUrl": "Picture URL",
   "profile": {
@@ -73,6 +80,7 @@
     "label": "Time Zone",
     "placeholder": "Select your time zone"
   },
+  "updatedOn": "Updated on",
   "username": "Username",
   "websiteUrl": "Website URL"
 }
