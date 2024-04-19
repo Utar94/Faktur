@@ -1,37 +1,24 @@
 <script setup lang="ts">
-import AppInput from "@/components/shared/AppInput.vue";
-import { toDateTimeLocal } from "@/helpers/dateUtils";
+import DateTimeInput from "@/components/shared/DateTimeInput.vue";
 
 defineProps<{
   modelValue?: Date;
   required?: boolean | string;
 }>();
 
-const emit = defineEmits<{
+defineEmits<{
   (e: "update:model-value", value?: Date): void;
 }>();
-function onModelValueUpdate(value: string): void {
-  try {
-    const date = new Date(value);
-    emit("update:model-value", isNaN(date.getTime()) ? undefined : date);
-  } catch (e: unknown) {
-    emit("update:model-value", undefined);
-  }
-}
-
-// TODO(fpion): create a DateTimeInput
 </script>
 
 <template>
-  <AppInput
+  <DateTimeInput
     floating
     id="issued-on"
     label="receipts.issuedOn.label"
-    :max="toDateTimeLocal(new Date())"
-    :model-value="modelValue ? toDateTimeLocal(modelValue) : undefined"
-    placeholder="receipts.issuedOn.label"
+    :max="new Date()"
+    :model-value="modelValue"
     :required="required"
-    type="datetime-local"
-    @update:model-value="onModelValueUpdate"
+    @update:model-value="$emit('update:model-value', $event)"
   />
 </template>
