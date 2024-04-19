@@ -7,9 +7,10 @@ import { useI18n } from "vue-i18n";
 
 import type { ValidationListeners, ValidationRules, ValidationType } from "@/types/validation";
 import { isEmpty } from "@/helpers/objectUtils";
+import { isNullOrWhiteSpace } from "@/helpers/stringUtils";
 
 const { isDateTimeInput, isNumericInput, isTextualInput } = inputUtils;
-const { parseNumber } = parsingUtils;
+const { parseBoolean, parseNumber } = parsingUtils;
 const { t } = useI18n();
 
 const props = withDefaults(
@@ -38,32 +39,40 @@ const validationRules = computed<ValidationRules>(() => {
     return rules;
   }
 
-  if (props.required) {
+  const required: boolean | undefined = parseBoolean(props.required);
+  if (required) {
     rules.required = true;
   }
 
+  const max: number | undefined = parseNumber(props.max);
+  const min: number | undefined = parseNumber(props.min);
   if (isNumericInput(props.type)) {
-    if (props.max) {
-      rules.max_value = parseNumber(props.max);
+    if (max) {
+      rules.max_value = max;
     }
-    if (props.min) {
-      rules.min_value = parseNumber(props.min);
+    if (min) {
+      rules.min_value = min;
     }
   } else if (isTextualInput(props.type)) {
-    if (props.max) {
-      rules.max_length = parseNumber(props.max);
+    if (max) {
+      rules.max_length = max;
     }
-    if (props.min) {
-      rules.min_length = parseNumber(props.min);
+    if (min) {
+      rules.min_length = min;
     }
   }
 
-  if (props.pattern) {
+  if (!isNullOrWhiteSpace(props.pattern)) {
     rules.regex = props.pattern;
   }
 
-  if (props.type === "email" || props.type === "url") {
-    rules[props.type] = true;
+  switch (props.type) {
+    case "email":
+      rules.email = true;
+      break;
+    case "url":
+      rules.url = true;
+      break;
   }
 
   return { ...rules, ...props.rules };
@@ -107,7 +116,7 @@ defineExpose({ focus });
     :plaintext="plaintext"
     :readonly="readonly"
     ref="inputRef"
-    :required="required ? (validation === 'server' ? required : 'label') : undefined"
+    :required="parseBoolean(required) ? (validation === 'server' ? true : 'label') : undefined"
     :size="size"
     :status="status"
     :step="step"

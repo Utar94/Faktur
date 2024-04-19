@@ -58,7 +58,7 @@ const hasChanges = computed<boolean>(
     displayName.value !== (product.value?.displayName ?? "") ||
     flags.value !== (product.value?.flags ?? "") ||
     unitPrice.value !== (product.value?.unitPrice ?? 0) ||
-    unitType.value !== (product.value?.unitType ?? "") ||
+    (unitType.value ?? "") !== (product.value?.unitType ?? "") ||
     description.value !== (product.value?.description ?? ""),
 );
 

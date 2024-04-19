@@ -8,7 +8,7 @@ import { useI18n } from "vue-i18n";
 import type { ValidationListeners, ValidationRules, ValidationType } from "@/types/validation";
 import { isEmpty } from "@/helpers/objectUtils";
 
-const { parseNumber } = parsingUtils;
+const { parseBoolean, parseNumber } = parsingUtils;
 const { t } = useI18n();
 
 const props = withDefaults(
@@ -35,15 +35,18 @@ const validationRules = computed<ValidationRules>(() => {
     return rules;
   }
 
-  if (props.required) {
+  const required: boolean | undefined = parseBoolean(props.required);
+  if (required) {
     rules.required = true;
   }
 
-  if (props.max) {
-    rules.max_length = parseNumber(props.max);
+  const max: number | undefined = parseNumber(props.max);
+  if (max) {
+    rules.max_length = max;
   }
-  if (props.min) {
-    rules.min_length = parseNumber(props.min);
+  const min: number | undefined = parseNumber(props.min);
+  if (min) {
+    rules.min_length = min;
   }
 
   return { ...rules, ...props.rules };
@@ -87,7 +90,7 @@ defineExpose({ focus });
     :plaintext="plaintext"
     :readonly="readonly"
     ref="textareaRef"
-    :required="required ? (validation === 'server' ? required : 'label') : undefined"
+    :required="parseBoolean(required) ? (validation === 'server' ? true : 'label') : undefined"
     :rows="rows"
     :size="size"
     :status="status"

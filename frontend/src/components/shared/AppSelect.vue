@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { TarSelect, type SelectOptions, type SelectStatus } from "logitar-vue3-ui";
+import { TarSelect, parsingUtils, type SelectOptions, type SelectStatus } from "logitar-vue3-ui";
 import { computed, ref } from "vue";
 import { nanoid } from "nanoid";
 import { useField } from "vee-validate";
@@ -8,6 +8,7 @@ import { useI18n } from "vue-i18n";
 import type { ValidationListeners, ValidationRules, ValidationType } from "@/types/validation";
 import { isEmpty } from "@/helpers/objectUtils";
 
+const { parseBoolean } = parsingUtils;
 const { t } = useI18n();
 
 const props = withDefaults(
@@ -34,7 +35,8 @@ const validationRules = computed<ValidationRules>(() => {
     return rules;
   }
 
-  if (props.required) {
+  const required: boolean | undefined = parseBoolean(props.required);
+  if (required) {
     rules.required = true;
   }
 
@@ -77,7 +79,7 @@ defineExpose({ focus });
     :options="options"
     :placeholder="placeholder ? t(placeholder) : undefined"
     ref="selectRef"
-    :required="required ? (validation === 'server' ? required : 'label') : undefined"
+    :required="parseBoolean(required) ? (validation === 'server' ? true : 'label') : undefined"
     :size="size"
     :status="status"
     v-on="validationListeners"
