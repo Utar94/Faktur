@@ -4,18 +4,20 @@ namespace Faktur.Models.Account;
 
 public record SaveProfilePayload
 {
+  public AuthenticationInformation? AuthenticationInformation { get; set; }
   public ContactInformation? ContactInformation { get; set; }
   public PersonalInformation? PersonalInformation { get; set; }
 
   public UpdateUserPayload? ToUpdatePayload()
   {
-    if (ContactInformation == null && PersonalInformation == null)
+    if (AuthenticationInformation == null && ContactInformation == null && PersonalInformation == null)
     {
       return null;
     }
 
     UpdateUserPayload payload = new();
 
+    AuthenticationInformation?.ApplyTo(payload);
     ContactInformation?.ApplyTo(payload);
     PersonalInformation?.ApplyTo(payload);
 

@@ -3,6 +3,7 @@ import { TarTab, TarTabs } from "logitar-vue3-ui";
 import { inject, onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
 
+import AuthenticationInformation from "@/components/users/AuthenticationInformation.vue";
 import ContactInformation from "@/components/users/ContactInformation.vue";
 import PersonalInformation from "@/components/users/PersonalInformation.vue";
 import type { UserProfile } from "@/types/account";
@@ -18,14 +19,14 @@ const { t } = useI18n();
 
 const user = ref<UserProfile>();
 
-function onSaved(profile: UserProfile) {
+function onSaved(profile: UserProfile, message?: string) {
   user.value = profile;
   account.signIn({
     displayName: profile.fullName ?? profile.username,
     emailAddress: profile.email?.address,
     pictureUrl: profile.picture,
   });
-  toasts.success("users.profile.saved");
+  toasts.success(message ?? "users.profile.saved");
 }
 
 onMounted(async () => {
@@ -43,11 +44,14 @@ onMounted(async () => {
       <h1>{{ t("users.profile.title") }}</h1>
       <!-- TODO(fpion): header -->
       <TarTabs>
-        <TarTab active id="personal" :title="t('users.tabs.personal')">
-          <PersonalInformation :user="user" @error="handleError" @saved="onSaved" />
+        <TarTab active id="authentication" :title="t('users.tabs.authentication')">
+          <AuthenticationInformation :user="user" @error="handleError" @saved="onSaved($event, 'users.password.changed')" />
         </TarTab>
         <TarTab id="contact" :title="t('users.tabs.contact')">
           <ContactInformation :user="user" @error="handleError" @saved="onSaved" />
+        </TarTab>
+        <TarTab id="personal" :title="t('users.tabs.personal')">
+          <PersonalInformation :user="user" @error="handleError" @saved="onSaved" />
         </TarTab>
       </TarTabs>
     </template>

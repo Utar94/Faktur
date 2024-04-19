@@ -36,14 +36,24 @@
     "middle": "Middle Name",
     "nick": "Nickname"
   },
-  "password": "Password",
+  "password": {
+    "changed": "Your password has been changed.",
+    "changedOn": "Last changed on {date}",
+    "confirm": "Password Confirmation",
+    "current": "Current Password",
+    "failed": "Password change failed!",
+    "invalid": "Please check you provided your correct current password.",
+    "label": "Password",
+    "new": "New Password",
+    "submit": "Change password"
+  },
   "phone": {
     "extension": "Phone Extension",
     "number": "Phone Number"
   },
   "pictureUrl": "Picture URL",
   "profile": {
-    "saved": "Your profile has been saved!",
+    "saved": "Your profile has been saved.",
     "title": "Profile",
     "url": "Profile URL"
   },
@@ -55,6 +65,7 @@
   },
   "signOut": "Sign Out",
   "tabs": {
+    "authentication": "Authentication Information",
     "contact": "Contact Information",
     "personal": "Personal Information"
   },

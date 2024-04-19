@@ -1,6 +1,10 @@
 import type { Address, AddressPayload, Email, EmailPayload, Phone, PhonePayload } from "./users";
 import type { Locale } from "./i18n";
 
+export type AuthenticationInformation = {
+  password?: ChangePasswordInput;
+};
+
 export type ChangePasswordInput = {
   current: string;
   new: string;
@@ -35,6 +39,7 @@ export type PersonalInformation = {
 };
 
 export type SaveProfilePayload = {
+  authenticationInformation?: AuthenticationInformation;
   contactInformation?: ContactInformation;
   personalInformation?: PersonalInformation;
 };

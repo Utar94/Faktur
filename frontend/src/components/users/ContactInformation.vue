@@ -16,6 +16,7 @@ import PhoneNumberInput from "./PhoneNumberInput.vue";
 import countries from "@/resources/countries.json";
 import type { AddressPayload, CountrySettings, EmailPayload, PhonePayload } from "@/types/users";
 import type { UserProfile } from "@/types/account";
+import { isNullOrWhiteSpace } from "@/helpers/stringUtils";
 import { saveProfile } from "@/api/account";
 
 const { t } = useI18n();
@@ -62,7 +63,7 @@ const onSubmit = handleSubmit(async () => {
           ? {
               countryCode: phone.value.countryCode,
               number: phone.value.number,
-              extension: phone.value.extension || undefined,
+              extension: isNullOrWhiteSpace(phone.value.extension) ? undefined : phone.value.extension,
               isVerified: false,
             }
           : undefined,

@@ -36,14 +36,24 @@
     "middle": "Nom intermédiaire",
     "nick": "Surnom"
   },
-  "password": "Mot de passe",
+  "password": {
+    "changed": "Votre mot de passe a été modifié.",
+    "changedOn": "Dernière modification le {date}",
+    "confirm": "Confirmation du mot de passe",
+    "current": "Mot de passe actuel",
+    "failed": "Modification du mot de passe échouée !",
+    "invalid": "Veuillez vérifier que vous avez entré le bon mot de passe actuel.",
+    "label": "Mot de passe",
+    "new": "Nouveau mot de passe",
+    "submit": "Modifier le mot de passe"
+  },
   "phone": {
     "extension": "Extension téléphonique",
     "number": "Numéro de téléphone"
   },
   "pictureUrl": "Photo (URL)",
   "profile": {
-    "saved": "Votre profil a été enregistré !",
+    "saved": "Votre profil a été enregistré.",
     "title": "Profil",
     "url": "Profil (URL)"
   },
@@ -55,6 +65,7 @@
   },
   "signOut": "Déconnexion",
   "tabs": {
+    "authentication": "Informations d’authentification",
     "contact": "Informations de contact",
     "personal": "Informations personnelles"
   },
