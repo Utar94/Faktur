@@ -11,6 +11,8 @@ export type CurrentUser = {
   pictureUrl?: string;
 };
 
+export type PersonNameType = "first" | "last" | "middle" | "nick";
+
 export type PersonalInformation = {
   firstName: string;
   middleName?: string;

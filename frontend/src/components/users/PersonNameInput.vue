@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import AppInput from "@/components/shared/AppInput.vue";
 import { computed } from "vue";
-import type { PersonNameType } from "@/types/users";
+import type { PersonNameType } from "@/types/account";
 
 const props = defineProps<{
   modelValue?: string;
