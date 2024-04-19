@@ -35,7 +35,7 @@ const validationRules = computed<ValidationRules>(() => {
 });
 const displayLabel = computed<string>(() => (props.label ? t(props.label).toLowerCase() : inputName.value));
 const { errorMessage, handleChange, meta, value } = useField<string>(inputName, validationRules, {
-  initialValue: props.modelValue || undefined,
+  initialValue: props.modelValue,
   label: displayLabel,
 });
 const status = computed<SelectStatus | undefined>(() => {
