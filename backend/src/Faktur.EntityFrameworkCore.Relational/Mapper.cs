@@ -141,7 +141,7 @@ internal class Mapper
 
     foreach (ReceiptTaxEntity tax in source.Taxes)
     {
-      destination.Taxes.Add(new ReceiptTax(tax.Code)
+      destination.Taxes.Add(new ReceiptTax(tax.Code, tax.Flags)
       {
         Rate = tax.Rate,
         TaxableAmount = tax.TaxableAmount,

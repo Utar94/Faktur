@@ -8,6 +8,7 @@ internal class ReceiptTaxEntity
   public int ReceiptId { get; private set; }
 
   public string Code { get; private set; } = string.Empty;
+  public string Flags { get; private set; } = string.Empty;
   public double Rate { get; private set; }
   public decimal TaxableAmount { get; private set; }
   public decimal Amount { get; private set; }
@@ -28,6 +29,7 @@ internal class ReceiptTaxEntity
 
   public void Update(ReceiptTaxUnit tax)
   {
+    Flags = tax.Flags.Value;
     Rate = tax.Rate;
     TaxableAmount = tax.TaxableAmount;
     Amount = tax.Amount;

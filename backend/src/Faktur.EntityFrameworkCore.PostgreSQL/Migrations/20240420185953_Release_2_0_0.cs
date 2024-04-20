@@ -254,6 +254,7 @@ namespace Faktur.EntityFrameworkCore.PostgreSQL.Migrations
                 {
                     ReceiptId = table.Column<int>(type: "integer", nullable: false),
                     Code = table.Column<string>(type: "character varying(4)", maxLength: 4, nullable: false),
+                    Flags = table.Column<string>(type: "character varying(10)", maxLength: 10, nullable: false),
                     Rate = table.Column<double>(type: "double precision", nullable: false),
                     TaxableAmount = table.Column<decimal>(type: "money", nullable: false),
                     Amount = table.Column<decimal>(type: "money", nullable: false)
@@ -708,6 +709,11 @@ namespace Faktur.EntityFrameworkCore.PostgreSQL.Migrations
                 name: "IX_ReceiptTaxes_Code",
                 table: "ReceiptTaxes",
                 column: "Code");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ReceiptTaxes_Flags",
+                table: "ReceiptTaxes",
+                column: "Flags");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ReceiptTaxes_Rate",

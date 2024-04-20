@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { TarButton } from "logitar-vue3-ui";
-import { computed, ref, watchEffect } from "vue";
+import { computed, ref, watch } from "vue";
 import { useForm } from "vee-validate";
 import { useI18n } from "vue-i18n";
 
@@ -87,27 +87,30 @@ function clearAddress(): void {
   country.value = undefined;
 }
 
-watchEffect(() => {
-  const user: UserProfile = props.user;
-  address.value = {
-    street: user.address?.street ?? "",
-    locality: user.address?.locality ?? "",
-    postalCode: user.address?.postalCode ?? "",
-    region: user.address?.region ?? "",
-    country: user.address?.country ?? "",
-    isVerified: false,
-  };
-  country.value = address.value.country ? countries.find(({ code }) => code === address.value.country) : undefined;
-  email.value = {
-    address: user.email?.address ?? "",
-    isVerified: false,
-  };
-  phone.value = {
-    number: user.phone?.number ?? "",
-    extension: user.phone?.extension ?? "",
-    isVerified: false,
-  };
-});
+watch(
+  props.user,
+  (user) => {
+    address.value = {
+      street: user.address?.street ?? "",
+      locality: user.address?.locality ?? "",
+      postalCode: user.address?.postalCode ?? "",
+      region: user.address?.region ?? "",
+      country: user.address?.country ?? "",
+      isVerified: false,
+    };
+    country.value = address.value.country ? countries.find(({ code }) => code === address.value.country) : undefined;
+    email.value = {
+      address: user.email?.address ?? "",
+      isVerified: false,
+    };
+    phone.value = {
+      number: user.phone?.number ?? "",
+      extension: user.phone?.extension ?? "",
+      isVerified: false,
+    };
+  },
+  { deep: true, immediate: true },
+);
 </script>
 
 <template>
@@ -130,6 +133,8 @@ watchEffect(() => {
       <AddressCountrySelect class="col-lg-6" :required="isAddressRequired" v-model="address.country" @selected="country = $event" />
       <AddressRegionSelect class="col-lg-6" :country="country" :required="Boolean(country?.regions?.length)" v-model="address.region" />
     </div>
-    <TarButton :disabled="!isAddressRequired" icon="fas fa-times" :text="t('actions.clear')" variant="warning" @click="clearAddress" />
+    <div class="mb-3">
+      <TarButton :disabled="!isAddressRequired" icon="fas fa-times" :text="t('actions.clear')" variant="warning" @click="clearAddress" />
+    </div>
   </form>
 </template>
