@@ -139,7 +139,7 @@ public class ReceiptAggregate : AggregateRoot
       {
         if (tax.Flags != null)
         {
-          receiptTaxes[tax.Code.Value] = new ReceiptTaxUnit(tax);
+          receiptTaxes[tax.Code.Value] = new ReceiptTaxUnit(tax.Flags, tax.Rate, taxableAmount: 0.00m, amount: 0.00m);
         }
       }
     }
