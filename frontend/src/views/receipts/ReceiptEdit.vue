@@ -104,7 +104,7 @@ function onItemSaved(item: ReceiptItem): void {
     if (index >= 0) {
       receipt.value.items.splice(index, 1, item);
     }
-    toasts.success("receipts.updated"); // TODO(fpion): works, but UpdatedBy seems to be System
+    toasts.success("receipts.updated");
   }
 }
 
