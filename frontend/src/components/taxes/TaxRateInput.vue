@@ -10,9 +10,13 @@ defineProps<{
   required?: boolean | string;
 }>();
 
-defineEmits<{
+const emit = defineEmits<{
   (e: "update:model-value", value?: number): void;
 }>();
+function onModelValueUpdate(value: any): void {
+  const number: number | undefined = parseNumber(value);
+  emit("update:model-value", number ? number / 100 : undefined);
+}
 </script>
 
 <template>
@@ -20,13 +24,19 @@ defineEmits<{
     floating
     id="rate"
     label="taxes.rate"
-    min="0.00001"
-    max="1"
-    :model-value="modelValue?.toString()"
+    min="0.001"
+    max="99.999"
+    :model-value="((modelValue ?? 0) * 100).toString()"
     placeholder="taxes.rate"
     :required="required"
-    step="0.00001"
+    step="0.001"
     type="number"
-    @update:model-value="$emit('update:model-value', parseNumber($event))"
-  />
+    @update:model-value="onModelValueUpdate"
+  >
+    <template #append>
+      <span class="input-group-text">
+        <font-awesome-icon icon="fas fa-percent" />
+      </span>
+    </template>
+  </AppInput>
 </template>
