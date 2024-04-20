@@ -165,7 +165,7 @@ public class CreateOrReplaceReceiptItemCommandTests : IntegrationTests
     {
       Flags = _chickenProduct.Flags.Value,
       Price = 9.99m,
-      Department = new DepartmentPayload(departmentNumber.Value, department.DisplayName.Value)
+      Department = new DepartmentSummary(departmentNumber.Value, department.DisplayName.Value)
     };
     CreateOrReplaceReceiptItemCommand command = new(_receipt.Id.ToGuid(), number, payload, version);
     CreateOrReplaceReceiptItemResult? result = await Mediator.Send(command);

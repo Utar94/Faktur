@@ -1,4 +1,12 @@
-import type { CategorizeReceiptPayload, ImportReceiptPayload, Receipt, ReplaceReceiptPayload, SearchReceiptsPayload } from "@/types/receipts";
+import type {
+  CategorizeReceiptPayload,
+  CreateOrReplaceReceiptItemPayload,
+  ImportReceiptPayload,
+  Receipt,
+  ReceiptItem,
+  ReplaceReceiptPayload,
+  SearchReceiptsPayload,
+} from "@/types/receipts";
 import type { SearchResults } from "@/types/search";
 import { UrlBuilder, type IUrlBuilder } from "@/helpers/urlUtils";
 import { _delete, get, patch, post, put } from ".";
@@ -13,6 +21,20 @@ function createUrlBuilder(id?: string): IUrlBuilder {
 export async function categorizeReceipt(id: string, payload: CategorizeReceiptPayload): Promise<Receipt> {
   const url: string = new UrlBuilder({ path: "/receipts/{id}/categorize" }).setParameter("id", id).buildRelative();
   return (await patch<CategorizeReceiptPayload, Receipt>(url, payload)).data;
+}
+
+export async function createOrReplaceReceiptItem(
+  receiptId: string,
+  number: number,
+  payload: CreateOrReplaceReceiptItemPayload,
+  version?: number,
+): Promise<ReceiptItem> {
+  const url: string = new UrlBuilder({ path: "/receipts/{id}/items/{number}" })
+    .setParameter("id", receiptId)
+    .setParameter("number", number.toString())
+    .setQueryString(`?version=${version}`)
+    .buildRelative();
+  return (await put<CreateOrReplaceReceiptItemPayload, ReceiptItem>(url, payload)).data;
 }
 
 export async function deleteReceipt(id: string): Promise<Receipt> {

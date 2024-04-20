@@ -42,6 +42,8 @@
   },
   "itemCount": "Nombre d’articles",
   "items": {
+    "edit": "Éditer l’article",
+    "gtinOrSku": "GTIN ou SKU",
     "title": "Articles"
   },
   "label": "Étiquette",

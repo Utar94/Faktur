@@ -5,7 +5,7 @@ using Logitar.Identity.Domain.Shared;
 
 namespace Faktur.Application.Receipts.Validators;
 
-internal class DepartmentValidator : AbstractValidator<DepartmentPayload>
+internal class DepartmentValidator : AbstractValidator<DepartmentSummary>
 {
   public DepartmentValidator()
   {

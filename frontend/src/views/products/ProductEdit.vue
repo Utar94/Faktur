@@ -224,14 +224,7 @@ onMounted(async () => {
             <FlagsInput class="col-lg-6" v-model="flags" />
           </div>
           <div class="row">
-            <PriceInput
-              class="col-lg-6"
-              id="unit-price"
-              label="products.unitPrice"
-              :model-value="unitPrice"
-              placeholder="products.unitPrice"
-              @update:model-value="unitPrice = $event ?? 0"
-            />
+            <PriceInput class="col-lg-6" id="unit-price" label="products.unitPrice" :model-value="unitPrice" @update:model-value="unitPrice = $event ?? 0" />
             <UnitTypeSelect class="col-lg-6" v-model="unitType" />
           </div>
           <DescriptionTextarea v-model="description" />

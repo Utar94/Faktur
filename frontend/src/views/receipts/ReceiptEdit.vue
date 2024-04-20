@@ -12,10 +12,11 @@ import CategoryList from "@/components/receipts/CategoryList.vue";
 import IssuedOnInput from "@/components/receipts/IssuedOnInput.vue";
 import NumberInput from "@/components/shared/NumberInput.vue";
 import ReceiptCategorization from "@/components/receipts/ReceiptCategorization.vue";
+import ReceiptItemEdit from "@/components/receipts/ReceiptItemEdit.vue";
 import ReceiptStatus from "@/components/receipts/ReceiptStatus.vue";
 import StatusDetail from "@/components/shared/StatusDetail.vue";
 import type { ApiError } from "@/types/api";
-import type { CategorySavedEvent, Receipt } from "@/types/receipts";
+import type { CategorySavedEvent, Receipt, ReceiptItem } from "@/types/receipts";
 import type { Tax } from "@/types/taxes";
 import { categorizeReceipt, deleteReceipt, readReceipt, replaceReceipt } from "@/api/receipts";
 import { formatReceipt } from "@/helpers/displayUtils";
@@ -35,6 +36,7 @@ const categorization = ref<InstanceType<typeof ReceiptCategorization> | null>(nu
 const isDeleting = ref<boolean>(false);
 const isProcessing = ref<boolean>(false);
 const issuedOn = ref<Date>();
+const itemEditRef = ref<InstanceType<typeof ReceiptItemEdit> | null>();
 const number = ref<string>("");
 const receipt = ref<Receipt>();
 const taxes = ref<Tax[]>([]);
@@ -84,6 +86,25 @@ async function onDelete(hideModal: () => void): Promise<void> {
     } finally {
       isDeleting.value = false;
     }
+  }
+}
+
+function onEdit(item: ReceiptItem): void {
+  if (itemEditRef.value && receipt.value) {
+    itemEditRef.value.edit(item, receipt.value);
+  }
+}
+function onItemSaved(item: ReceiptItem): void {
+  if (receipt.value) {
+    receipt.value = {
+      ...item.receipt,
+      items: receipt.value.items,
+    };
+    const index = receipt.value.items.findIndex(({ number }) => number === item.number);
+    if (index >= 0) {
+      receipt.value.items.splice(index, 1, item);
+    }
+    toasts.success("receipts.updated"); // TODO(fpion): works, but UpdatedBy seems to be System
   }
 }
 
@@ -169,8 +190,16 @@ onMounted(async () => {
       </div>
       <TarTabs>
         <TarTab active id="items" :title="`${t('receipts.items.title')} (${receipt.itemCount})`">
-          <ReceiptCategorization :processing="isProcessing" :receipt="receipt" ref="categorization" :taxes="taxes" @categorized="onCategorized" />
+          <ReceiptCategorization
+            :processing="isProcessing"
+            :receipt="receipt"
+            ref="categorization"
+            :taxes="taxes"
+            @categorized="onCategorized"
+            @edit="onEdit"
+          />
           <ReceiptStatus :receipt="receipt" />
+          <ReceiptItemEdit ref="itemEditRef" @error="handleError" @saved="onItemSaved" />
         </TarTab>
         <TarTab id="categories" :title="t('receipts.categories.title.list')">
           <CategoryList @deleted="onCategoryDeleted" @saved="onCategorySaved" />

@@ -9,13 +9,14 @@ withDefaults(
   defineProps<{
     id?: string;
     label?: string;
+    min?: number | string;
     modelValue?: number;
-    placeholder?: string;
+    required?: boolean | string;
   }>(),
   {
     id: "price",
     label: "price",
-    placeholder: "price",
+    min: 0,
   },
 );
 
@@ -29,9 +30,10 @@ defineEmits<{
     floating
     :id="id"
     :label="label"
-    min="0"
+    :min="min"
     :model-value="modelValue?.toString()"
-    :placeholder="placeholder"
+    :placeholder="label"
+    :required="required"
     step="0.01"
     type="number"
     @update:model-value="$emit('update:model-value', parseNumber($event))"

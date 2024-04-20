@@ -123,6 +123,7 @@ defineExpose({ deleteCategory, renameCategory });
 
 const emit = defineEmits<{
   (e: "categorized", value: Map<number, string>): void;
+  (e: "edit", value: ReceiptItem): void;
 }>();
 
 function onProcess(): void {
@@ -154,12 +155,12 @@ watchEffect(() => {
       <h4>{{ group.department }}</h4>
       <div class="row" v-for="item in group.items" :key="item.number">
         <div v-if="!categorizedItems.has(item.number)" :class="noCategoryClass">
-          <ReceiptItemCard :item="item" />
+          <ReceiptItemCard :item="item" @clicked="$emit('edit', item)" />
         </div>
         <div v-else :class="`clickable ${noCategoryClass}`" @click="categorize(item)"></div>
         <template v-for="category in categories.categories" :key="category">
           <div v-if="categorizedItems.get(item.number) === category" :class="categoryClass">
-            <ReceiptItemCard :item="item" />
+            <ReceiptItemCard :item="item" @clicked="$emit('edit', item)" />
           </div>
           <div v-else :class="`clickable ${categoryClass}`" @click="categorize(item, category)"></div>
         </template>

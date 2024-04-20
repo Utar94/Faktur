@@ -144,7 +144,7 @@ public class UpdateReceiptItemCommandTests : IntegrationTests
       Flags = new Modification<string>(_chickenProduct.Flags.Value),
       UnitPrice = 9.99m,
       Price = 9.99m,
-      Department = new Modification<DepartmentPayload>(new DepartmentPayload("36", "PRET-A-MANGER"))
+      Department = new Modification<DepartmentSummary>(new DepartmentSummary("36", "PRET-A-MANGER"))
     };
     UpdateReceiptItemCommand command = new(_receipt.Id.ToGuid(), ItemNumber, payload);
     ReceiptItem? item = await Mediator.Send(command);
@@ -207,7 +207,7 @@ public class UpdateReceiptItemCommandTests : IntegrationTests
       Quantity = 1.150d,
       UnitPrice = 1.52m,
       Price = 1.75m,
-      Department = new Modification<DepartmentPayload>(new DepartmentPayload("27", "FRUITS ET LEGUMES"))
+      Department = new Modification<DepartmentSummary>(new DepartmentSummary("27", "FRUITS ET LEGUMES"))
     };
     UpdateReceiptItemCommand command = new(_receipt.Id.ToGuid(), ItemNumber, payload);
     ReceiptItem? item = await Mediator.Send(command);
