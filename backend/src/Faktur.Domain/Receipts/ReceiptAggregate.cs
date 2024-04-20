@@ -148,43 +148,8 @@ public class ReceiptAggregate : AggregateRoot
 
   public void Calculate(ActorId actorId = default)
   {
-    Dictionary<string, decimal> taxableAmounts = [];
-    foreach (KeyValuePair<string, ReceiptTaxUnit> tax in _taxes)
-    {
-      taxableAmounts[tax.Key] = 0.00m;
-    }
-
-    decimal subTotal = 0m;
-    foreach (ReceiptItemUnit item in _items.Values)
-    {
-      subTotal += item.Price;
-
-      if (item.Flags != null)
-      {
-        foreach (KeyValuePair<string, ReceiptTaxUnit> tax in _taxes)
-        {
-          if (item.IsTaxable(tax.Value))
-          {
-            taxableAmounts[tax.Key] += item.Price;
-          }
-        }
-      }
-    }
-
-    decimal total = subTotal;
-    Dictionary<string, ReceiptTaxUnit> receiptTaxes = [];
-    foreach (KeyValuePair<string, ReceiptTaxUnit> tax in _taxes)
-    {
-      decimal taxableAmount = Math.Round(taxableAmounts[tax.Key], 2);
-      decimal amount = Math.Round((decimal)tax.Value.Rate * taxableAmount, 2);
-      ReceiptTaxUnit receiptTax = new(tax.Value.Flags, tax.Value.Rate, taxableAmount, amount);
-      receiptTaxes[tax.Key] = receiptTax;
-      total += receiptTax.Amount;
-    }
-
-    subTotal = Math.Round(subTotal, 2);
-    total = Math.Round(total, 2);
-    Raise(new ReceiptCalculatedEvent(subTotal, receiptTaxes, total), actorId);
+    ReceiptTotal total = ReceiptHelper.Calculate(Items.Values, Taxes);
+    Raise(new ReceiptCalculatedEvent(total.SubTotal, total.Taxes, total.Total), actorId);
   }
   protected virtual void Apply(ReceiptCalculatedEvent @event)
   {
