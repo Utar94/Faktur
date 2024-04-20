@@ -146,7 +146,7 @@ public class ReceiptAggregate : AggregateRoot
     return receiptTaxes;
   }
 
-  public void Calculate(IEnumerable<TaxAggregate> _, ActorId actorId = default)
+  public void Calculate(ActorId actorId = default)
   {
     Dictionary<string, decimal> taxableAmounts = [];
     foreach (KeyValuePair<string, ReceiptTaxUnit> tax in _taxes)

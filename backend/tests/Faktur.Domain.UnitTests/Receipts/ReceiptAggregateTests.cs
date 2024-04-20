@@ -47,7 +47,7 @@ public class ReceiptAggregateTests
     receipt.SetItem(3, new ReceiptItemUnit(new GtinUnit("4011"), sku: null, new DisplayNameUnit("BANANES"), new FlagsUnit("MRJ"),
       quantity: 1.150d, unitPrice: 1.52m, price: 1.75m, departmentNumber: null, department: null));
 
-    receipt.Calculate([_gst, _hst, _qst]);
+    receipt.Calculate();
     Assert.Equal(21.03m, receipt.SubTotal);
 
     Assert.Equal(3, receipt.Taxes.Count);
@@ -73,7 +73,7 @@ public class ReceiptAggregateTests
     _receipt.SetItem(1, new ReceiptItemUnit(new GtinUnit("06038385904"), sku: null, new DisplayNameUnit("PC POULET BBQ"), flags: null,
       quantity: 1.0d, unitPrice: 9.99m, price: 9.99m, departmentNumber: null, department: null));
 
-    _receipt.Calculate([_gst, _qst]);
+    _receipt.Calculate();
     Assert.Equal(9.99m, _receipt.SubTotal);
     Assert.Empty(_receipt.Taxes);
     Assert.Equal(9.99m, _receipt.Total);
@@ -85,7 +85,7 @@ public class ReceiptAggregateTests
     _receipt.SetItem(1, new ReceiptItemUnit(new GtinUnit("06038385904"), sku: null, new DisplayNameUnit("PC POULET BBQ"), new FlagsUnit("FPMRJ"),
       quantity: 1.0d, unitPrice: 9.99m, price: 9.99m, departmentNumber: null, department: null));
 
-    _receipt.Calculate([]);
+    _receipt.Calculate();
     Assert.Equal(9.99m, _receipt.SubTotal);
     Assert.Empty(_receipt.Taxes);
     Assert.Equal(9.99m, _receipt.Total);
@@ -94,7 +94,7 @@ public class ReceiptAggregateTests
   [Fact(DisplayName = "Calculate: it should not calculate any tax when there is no item.")]
   public void Calculate_it_should_not_calculate_any_tax_when_there_is_no_item()
   {
-    _receipt.Calculate([_gst, _qst]);
+    _receipt.Calculate();
     Assert.Equal(0m, _receipt.SubTotal);
     Assert.Empty(_receipt.Taxes);
     Assert.Equal(0m, _receipt.Total);

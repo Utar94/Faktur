@@ -1,6 +1,5 @@
 ﻿using Faktur.Contracts.Receipts;
 using Faktur.Domain.Receipts;
-using Faktur.Domain.Taxes;
 using MediatR;
 
 namespace Faktur.Application.Receipts.Commands;
@@ -9,13 +8,11 @@ internal class RemoveReceiptItemCommandHandler : IRequestHandler<RemoveReceiptIt
 {
   private readonly IReceiptItemQuerier _receiptItemQuerier;
   private readonly IReceiptRepository _receiptRepository;
-  private readonly ITaxRepository _taxRepository;
 
-  public RemoveReceiptItemCommandHandler(IReceiptItemQuerier receiptItemQuerier, IReceiptRepository receiptRepository, ITaxRepository taxRepository)
+  public RemoveReceiptItemCommandHandler(IReceiptItemQuerier receiptItemQuerier, IReceiptRepository receiptRepository)
   {
     _receiptItemQuerier = receiptItemQuerier;
     _receiptRepository = receiptRepository;
-    _taxRepository = taxRepository;
   }
 
   public async Task<ReceiptItem?> Handle(RemoveReceiptItemCommand command, CancellationToken cancellationToken)
@@ -28,9 +25,7 @@ internal class RemoveReceiptItemCommandHandler : IRequestHandler<RemoveReceiptIt
     ReceiptItem result = await _receiptItemQuerier.ReadAsync(receipt, command.ItemNumber, cancellationToken);
 
     receipt.RemoveItem(command.ItemNumber, command.ActorId);
-
-    IEnumerable<TaxAggregate> taxes = await _taxRepository.LoadAsync(cancellationToken);
-    receipt.Calculate(taxes, command.ActorId);
+    receipt.Calculate(command.ActorId);
 
     await _receiptRepository.SaveAsync(receipt, cancellationToken);
 
