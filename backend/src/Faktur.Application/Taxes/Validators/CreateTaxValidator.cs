@@ -10,7 +10,7 @@ internal class CreateTaxValidator : AbstractValidator<CreateTaxPayload>
   public CreateTaxValidator()
   {
     RuleFor(x => x.Code).SetValidator(new TaxCodeValidator());
-    RuleFor(x => x.Rate).GreaterThan(0.0);
+    RuleFor(x => x.Rate).SetValidator(new TaxRateValidator());
 
     When(x => !string.IsNullOrWhiteSpace(x.Flags), () => RuleFor(x => x.Flags!).SetValidator(new FlagsValidator()));
   }

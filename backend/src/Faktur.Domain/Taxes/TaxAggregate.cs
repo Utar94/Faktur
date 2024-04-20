@@ -1,6 +1,7 @@
 ﻿using Faktur.Contracts;
 using Faktur.Domain.Products;
 using Faktur.Domain.Taxes.Events;
+using FluentValidation;
 using Logitar.EventSourcing;
 
 namespace Faktur.Domain.Taxes;
@@ -24,16 +25,17 @@ public class TaxAggregate : AggregateRoot
       }
     }
   }
+  private readonly TaxRateValidator _rateValidator = new(nameof(Rate));
   private double _rate = 0;
   public double Rate
   {
     get => _rate;
     set
     {
-      // TODO(fpion): validation
-
       if (value != _rate)
       {
+        _rateValidator.ValidateAndThrow(value);
+
         _rate = value;
         _updatedEvent.Rate = value;
       }
@@ -58,9 +60,9 @@ public class TaxAggregate : AggregateRoot
   {
   }
 
-  public TaxAggregate(TaxCodeUnit code, double rate = 0.0, ActorId actorId = default, TaxId? id = null) : base((id ?? TaxId.NewId()).AggregateId)
+  public TaxAggregate(TaxCodeUnit code, double rate, ActorId actorId = default, TaxId? id = null) : base((id ?? TaxId.NewId()).AggregateId)
   {
-    // TODO(fpion): validate rate
+    new TaxRateValidator(nameof(rate)).ValidateAndThrow(rate);
 
     Raise(new TaxCreatedEvent(code, rate), actorId);
   }
