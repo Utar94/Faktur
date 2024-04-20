@@ -108,7 +108,9 @@ public class ImportReceiptCommandTests : IntegrationTests
     Assert.Empty(receipt.Items);
     Assert.Equal(0, receipt.SubTotal);
     Assert.Equal(0, receipt.Total);
-    Assert.Empty(receipt.Taxes);
+    Assert.Equal(2, receipt.Taxes.Count);
+    Assert.Contains(receipt.Taxes, t => t.Code == _gst.Code.Value && t.Rate == _gst.Rate && t.TaxableAmount == 0.00m && t.Amount == 0.00m);
+    Assert.Contains(receipt.Taxes, t => t.Code == _qst.Code.Value && t.Rate == _qst.Rate && t.TaxableAmount == 0.00m && t.Amount == 0.00m);
     Assert.False(receipt.HasBeenProcessed);
     Assert.Null(receipt.ProcessedBy);
     Assert.Null(receipt.ProcessedOn);

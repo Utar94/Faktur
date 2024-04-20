@@ -85,7 +85,7 @@ public class UpdateReceiptItemCommandTests : IntegrationTests
     };
     _chickenProduct.Update(ActorId);
 
-    _receipt = new(_store, actorId: ActorId);
+    _receipt = new(_store, taxes: [_gst, _qst], actorId: ActorId);
     _receipt.SetItem(ItemNumber, new ReceiptItemUnit(gtin: null, new SkuUnit("test"), new DisplayNameUnit("Test"), flags: null,
       quantity: 1.0d, unitPrice: 0.99m, price: 0.99m, departmentNumber: null, department: null), ActorId);
   }
@@ -235,8 +235,21 @@ public class UpdateReceiptItemCommandTests : IntegrationTests
     Assert.Equal(Actor, item.Receipt.UpdatedBy);
 
     Assert.Equal(1.75m, item.Receipt.SubTotal);
-    Assert.Empty(item.Receipt.Taxes);
     Assert.Equal(1.75m, item.Receipt.Total);
+
+    Assert.Equal(2, item.Receipt.Taxes.Count);
+
+    ReceiptTax? gst = item.Receipt.Taxes.SingleOrDefault(t => t.Code == _gst.Code.Value);
+    Assert.NotNull(gst);
+    Assert.Equal(0.05d, gst.Rate);
+    Assert.Equal(0.00m, gst.TaxableAmount);
+    Assert.Equal(0.00m, gst.Amount);
+
+    ReceiptTax? qst = item.Receipt.Taxes.SingleOrDefault(t => t.Code == _qst.Code.Value);
+    Assert.NotNull(qst);
+    Assert.Equal(0.09975d, qst.Rate);
+    Assert.Equal(0.00m, qst.TaxableAmount);
+    Assert.Equal(0.00m, qst.Amount);
 
     ReceiptItemEntity? entity = await FakturContext.ReceiptItems.AsNoTracking()
       .Include(x => x.Product)

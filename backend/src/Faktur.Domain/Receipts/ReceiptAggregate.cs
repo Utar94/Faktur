@@ -146,12 +146,12 @@ public class ReceiptAggregate : AggregateRoot
     return receiptTaxes;
   }
 
-  public void Calculate(IEnumerable<TaxAggregate> taxes, ActorId actorId = default)
+  public void Calculate(IEnumerable<TaxAggregate> _, ActorId actorId = default)
   {
     Dictionary<string, decimal> taxableAmounts = [];
-    foreach (TaxAggregate tax in taxes)
+    foreach (KeyValuePair<string, ReceiptTaxUnit> tax in _taxes)
     {
-      taxableAmounts[tax.Code.Value] = 0.0m;
+      taxableAmounts[tax.Key] = 0.00m;
     }
 
     decimal subTotal = 0m;
@@ -161,11 +161,11 @@ public class ReceiptAggregate : AggregateRoot
 
       if (item.Flags != null)
       {
-        foreach (TaxAggregate tax in taxes)
+        foreach (KeyValuePair<string, ReceiptTaxUnit> tax in _taxes)
         {
-          if (item.IsTaxable(tax))
+          if (item.IsTaxable(tax.Value))
           {
-            taxableAmounts[tax.Code.Value] += item.Price;
+            taxableAmounts[tax.Key] += item.Price;
           }
         }
       }
@@ -173,21 +173,17 @@ public class ReceiptAggregate : AggregateRoot
 
     decimal total = subTotal;
     Dictionary<string, ReceiptTaxUnit> receiptTaxes = [];
-    foreach (TaxAggregate tax in taxes)
+    foreach (KeyValuePair<string, ReceiptTaxUnit> tax in _taxes)
     {
-      if (tax.Flags != null)
-      {
-        decimal taxableAmount = taxableAmounts[tax.Code.Value];
-        if (taxableAmount > 0)
-        {
-          decimal amount = Math.Round((decimal)tax.Rate * taxableAmount, 2);
-          ReceiptTaxUnit receiptTax = new(tax.Flags, tax.Rate, taxableAmount, amount);
-          receiptTaxes[tax.Code.Value] = receiptTax;
-          total += receiptTax.Amount;
-        }
-      }
+      decimal taxableAmount = Math.Round(taxableAmounts[tax.Key], 2);
+      decimal amount = Math.Round((decimal)tax.Value.Rate * taxableAmount, 2);
+      ReceiptTaxUnit receiptTax = new(tax.Value.Flags, tax.Value.Rate, taxableAmount, amount);
+      receiptTaxes[tax.Key] = receiptTax;
+      total += receiptTax.Amount;
     }
 
+    subTotal = Math.Round(subTotal, 2);
+    total = Math.Round(total, 2);
     Raise(new ReceiptCalculatedEvent(subTotal, receiptTaxes, total), actorId);
   }
   protected virtual void Apply(ReceiptCalculatedEvent @event)
