@@ -125,6 +125,8 @@ public class CreateOrReplaceReceiptItemCommandTests : IntegrationTests
     Assert.Equal(Actor, item.UpdatedBy);
     Assert.Equal(item.CreatedOn, item.UpdatedOn);
     Assert.Equal(_receipt.Id.ToGuid(), item.Receipt.Id);
+    Assert.Equal(Actor, item.Receipt.CreatedBy);
+    Assert.Equal(Actor, item.Receipt.UpdatedBy);
 
     Assert.Equal(1.75m, item.Receipt.SubTotal);
     Assert.Empty(item.Receipt.Taxes);
@@ -188,6 +190,8 @@ public class CreateOrReplaceReceiptItemCommandTests : IntegrationTests
     Assert.Equal(Actor, item.UpdatedBy);
     Assert.True(item.CreatedOn < item.UpdatedOn);
     Assert.Equal(_receipt.Id.ToGuid(), item.Receipt.Id);
+    Assert.Equal(Actor, item.Receipt.CreatedBy);
+    Assert.Equal(Actor, item.Receipt.UpdatedBy);
 
     Assert.Equal(9.99m, item.Receipt.SubTotal);
     Assert.Equal(9.99m + 0.50m + 1.00m, item.Receipt.Total);
