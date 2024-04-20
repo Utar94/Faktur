@@ -2,9 +2,9 @@
 
 namespace Faktur.Domain.Receipts;
 
-internal static class ReceiptHelper
+public static class ReceiptHelper
 {
-  public static ReceiptTotal Calculate(IEnumerable<ReceiptItemUnit> items, IReadOnlyDictionary<TaxCodeUnit, ReceiptTaxUnit> taxes) // TODO(fpion): unit tests
+  public static ReceiptTotal Calculate(IEnumerable<ReceiptItemUnit> items, IReadOnlyDictionary<TaxCodeUnit, ReceiptTaxUnit> taxes)
   {
     Dictionary<TaxCodeUnit, decimal> taxableAmounts = [];
     foreach (KeyValuePair<TaxCodeUnit, ReceiptTaxUnit> tax in taxes)
