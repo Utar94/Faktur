@@ -140,12 +140,16 @@ public class ReceiptAggregate : AggregateRoot
     Dictionary<string, ReceiptTaxUnit> receiptTaxes = [];
     foreach (TaxAggregate tax in taxes)
     {
-      decimal taxableAmount = taxableAmounts[tax.Code.Value];
-      if (taxableAmount > 0)
+      if (tax.Flags != null)
       {
-        ReceiptTaxUnit receiptTax = ReceiptTaxUnit.Calculate(tax.Rate, taxableAmount);
-        receiptTaxes[tax.Code.Value] = receiptTax;
-        total += receiptTax.Amount;
+        decimal taxableAmount = taxableAmounts[tax.Code.Value];
+        if (taxableAmount > 0)
+        {
+          decimal amount = Math.Round((decimal)tax.Rate * taxableAmount, 2);
+          ReceiptTaxUnit receiptTax = new(tax.Flags, tax.Rate, taxableAmount, amount);
+          receiptTaxes[tax.Code.Value] = receiptTax;
+          total += receiptTax.Amount;
+        }
       }
     }
 
