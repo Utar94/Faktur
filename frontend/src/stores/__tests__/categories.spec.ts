@@ -53,12 +53,14 @@ const receipt: Receipt = {
   taxes: [
     {
       code: "GST",
+      flags: "F",
       rate: 0.05,
       taxableAmount: 9.99,
       amount: 0.5,
     },
     {
       code: "QST",
+      flags: "P",
       rate: 0.09975,
       taxableAmount: 9.99,
       amount: 1.0,

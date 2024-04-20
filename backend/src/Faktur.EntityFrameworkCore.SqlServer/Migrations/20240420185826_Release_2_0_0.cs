@@ -253,6 +253,7 @@ namespace Faktur.EntityFrameworkCore.SqlServer.Migrations
                 {
                     ReceiptId = table.Column<int>(type: "int", nullable: false),
                     Code = table.Column<string>(type: "nvarchar(4)", maxLength: 4, nullable: false),
+                    Flags = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
                     Rate = table.Column<double>(type: "float", nullable: false),
                     TaxableAmount = table.Column<decimal>(type: "money", nullable: false),
                     Amount = table.Column<decimal>(type: "money", nullable: false)
@@ -709,6 +710,11 @@ namespace Faktur.EntityFrameworkCore.SqlServer.Migrations
                 name: "IX_ReceiptTaxes_Code",
                 table: "ReceiptTaxes",
                 column: "Code");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ReceiptTaxes_Flags",
+                table: "ReceiptTaxes",
+                column: "Flags");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ReceiptTaxes_Rate",

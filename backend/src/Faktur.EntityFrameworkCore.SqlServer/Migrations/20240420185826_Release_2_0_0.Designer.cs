@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Faktur.EntityFrameworkCore.SqlServer.Migrations
 {
     [DbContext(typeof(FakturContext))]
-    [Migration("20240409151915_Release_2_0_0")]
+    [Migration("20240420185826_Release_2_0_0")]
     partial class Release_2_0_0
     {
         /// <inheritdoc />
@@ -600,6 +600,11 @@ namespace Faktur.EntityFrameworkCore.SqlServer.Migrations
                     b.Property<decimal>("Amount")
                         .HasColumnType("money");
 
+                    b.Property<string>("Flags")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
                     b.Property<double>("Rate")
                         .HasColumnType("float");
 
@@ -611,6 +616,8 @@ namespace Faktur.EntityFrameworkCore.SqlServer.Migrations
                     b.HasIndex("Amount");
 
                     b.HasIndex("Code");
+
+                    b.HasIndex("Flags");
 
                     b.HasIndex("Rate");
 

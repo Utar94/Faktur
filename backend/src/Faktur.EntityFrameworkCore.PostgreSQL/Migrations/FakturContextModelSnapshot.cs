@@ -595,6 +595,11 @@ namespace Faktur.EntityFrameworkCore.PostgreSQL.Migrations
                     b.Property<decimal>("Amount")
                         .HasColumnType("money");
 
+                    b.Property<string>("Flags")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)");
+
                     b.Property<double>("Rate")
                         .HasColumnType("double precision");
 
@@ -606,6 +611,8 @@ namespace Faktur.EntityFrameworkCore.PostgreSQL.Migrations
                     b.HasIndex("Amount");
 
                     b.HasIndex("Code");
+
+                    b.HasIndex("Flags");
 
                     b.HasIndex("Rate");
 

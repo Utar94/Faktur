@@ -17,11 +17,9 @@ import ReceiptStatus from "@/components/receipts/ReceiptStatus.vue";
 import StatusDetail from "@/components/shared/StatusDetail.vue";
 import type { ApiError } from "@/types/api";
 import type { CategorySavedEvent, Receipt, ReceiptItem } from "@/types/receipts";
-import type { Tax } from "@/types/taxes";
 import { categorizeReceipt, deleteReceipt, readReceipt, replaceReceipt } from "@/api/receipts";
 import { formatReceipt } from "@/helpers/displayUtils";
 import { handleErrorKey } from "@/inject/App";
-import { searchTaxes } from "@/api/taxes";
 import { useCategoryStore } from "@/stores/categories";
 import { useToastStore } from "@/stores/toast";
 
@@ -39,7 +37,6 @@ const issuedOn = ref<Date>();
 const itemEditRef = ref<InstanceType<typeof ReceiptItemEdit> | null>();
 const number = ref<string>("");
 const receipt = ref<Receipt>();
-const taxes = ref<Tax[]>([]);
 
 const displayName = computed<string>(() => (receipt.value ? formatReceipt(receipt.value) : ""));
 const hasChanges = computed<boolean>(() =>
@@ -146,18 +143,6 @@ onMounted(async () => {
       const receipt = await readReceipt(id);
       setModel(receipt);
     }
-    taxes.value = (
-      await searchTaxes({
-        ids: [],
-        search: {
-          terms: [],
-          operator: "And",
-        },
-        sort: [],
-        skip: 0,
-        limit: 0,
-      })
-    ).items;
   } catch (e: unknown) {
     const { status } = e as ApiError;
     if (status === 404) {
@@ -190,14 +175,7 @@ onMounted(async () => {
       </div>
       <TarTabs>
         <TarTab active id="items" :title="`${t('receipts.items.title')} (${receipt.itemCount})`">
-          <ReceiptCategorization
-            :processing="isProcessing"
-            :receipt="receipt"
-            ref="categorization"
-            :taxes="taxes"
-            @categorized="onCategorized"
-            @edit="onEdit"
-          />
+          <ReceiptCategorization :processing="isProcessing" :receipt="receipt" ref="categorization" @categorized="onCategorized" @edit="onEdit" />
           <ReceiptStatus :receipt="receipt" />
           <ReceiptItemEdit ref="itemEditRef" @error="handleError" @saved="onItemSaved" />
         </TarTab>

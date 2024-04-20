@@ -1,4 +1,5 @@
-﻿using Faktur.Domain.Taxes;
+﻿using Faktur.Domain.Products;
+using Faktur.Domain.Taxes;
 using Faktur.EntityFrameworkCore.Relational.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -13,10 +14,12 @@ internal class ReceiptTaxConfiguration : IEntityTypeConfiguration<ReceiptTaxEnti
     builder.HasKey(x => new { x.ReceiptId, x.Code });
 
     builder.HasIndex(x => x.Code);
+    builder.HasIndex(x => x.Flags);
     builder.HasIndex(x => x.Rate);
     builder.HasIndex(x => x.TaxableAmount);
     builder.HasIndex(x => x.Amount);
 
+    builder.Property(x => x.Flags).HasMaxLength(FlagsUnit.MaximumLength);
     builder.Property(x => x.Code).HasMaxLength(TaxCodeUnit.MaximumLength);
     builder.Property(x => x.TaxableAmount).HasColumnType("money");
     builder.Property(x => x.Amount).HasColumnType("money");

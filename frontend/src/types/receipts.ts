@@ -81,6 +81,7 @@ export type ReceiptSortOption = SortOption & {
 
 export type ReceiptTax = {
   code: string;
+  flags: string;
   rate: number;
   taxableAmount: number;
   amount: number;
