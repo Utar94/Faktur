@@ -22,7 +22,7 @@ public class ReceiptTaxUnitTests
   {
     var exception = Assert.Throws<FluentValidation.ValidationException>(() => new ReceiptTaxUnit(new FlagsUnit("F"), rate: 0.05, taxableAmount: 9.99m, amount: -0.50m));
     ValidationFailure failure = Assert.Single(exception.Errors);
-    Assert.Equal("GreaterThanValidator", failure.ErrorCode);
+    Assert.Equal("GreaterThanOrEqualValidator", failure.ErrorCode);
     Assert.Equal(nameof(ReceiptTaxUnit.Amount), failure.PropertyName);
   }
 }
