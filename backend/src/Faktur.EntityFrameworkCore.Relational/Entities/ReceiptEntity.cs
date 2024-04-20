@@ -37,7 +37,10 @@ internal class ReceiptEntity : AggregateEntity
     IssuedOn = @event.IssuedOn.ToUniversalTime();
     Number = @event.Number?.Value;
 
-    // TODO(fpion): Taxes
+    foreach (KeyValuePair<string, ReceiptTaxUnit> tax in @event.Taxes)
+    {
+      Taxes.Add(new ReceiptTaxEntity(this, tax.Key, tax.Value));
+    }
   }
 
   public ReceiptEntity(StoreEntity store, ReceiptImportedEvent @event) : base(@event)
