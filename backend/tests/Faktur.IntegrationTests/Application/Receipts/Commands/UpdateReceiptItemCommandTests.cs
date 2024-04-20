@@ -144,7 +144,7 @@ public class UpdateReceiptItemCommandTests : IntegrationTests
       Flags = new Modification<string>(_chickenProduct.Flags.Value),
       UnitPrice = 9.99m,
       Price = 9.99m,
-      Department = new Modification<DepartmentPayload>(new DepartmentPayload("36", "PRET-A-MANGER"))
+      Department = new Modification<DepartmentSummary>(new DepartmentSummary("36", "PRET-A-MANGER"))
     };
     UpdateReceiptItemCommand command = new(_receipt.Id.ToGuid(), ItemNumber, payload);
     ReceiptItem? item = await Mediator.Send(command);
@@ -166,6 +166,8 @@ public class UpdateReceiptItemCommandTests : IntegrationTests
     Assert.Equal(Actor, item.UpdatedBy);
     Assert.True(item.CreatedOn < item.UpdatedOn);
     Assert.Equal(_receipt.Id.ToGuid(), item.Receipt.Id);
+    Assert.Equal(Actor, item.Receipt.CreatedBy);
+    Assert.Equal(Actor, item.Receipt.UpdatedBy);
 
     Assert.Equal(9.99m, item.Receipt.SubTotal);
     Assert.Equal(9.99m + 0.50m + 1.00m, item.Receipt.Total);
@@ -207,7 +209,7 @@ public class UpdateReceiptItemCommandTests : IntegrationTests
       Quantity = 1.150d,
       UnitPrice = 1.52m,
       Price = 1.75m,
-      Department = new Modification<DepartmentPayload>(new DepartmentPayload("27", "FRUITS ET LEGUMES"))
+      Department = new Modification<DepartmentSummary>(new DepartmentSummary("27", "FRUITS ET LEGUMES"))
     };
     UpdateReceiptItemCommand command = new(_receipt.Id.ToGuid(), ItemNumber, payload);
     ReceiptItem? item = await Mediator.Send(command);
@@ -229,6 +231,8 @@ public class UpdateReceiptItemCommandTests : IntegrationTests
     Assert.Equal(Actor, item.UpdatedBy);
     Assert.True(item.CreatedOn < item.UpdatedOn);
     Assert.Equal(_receipt.Id.ToGuid(), item.Receipt.Id);
+    Assert.Equal(Actor, item.Receipt.CreatedBy);
+    Assert.Equal(Actor, item.Receipt.UpdatedBy);
 
     Assert.Equal(1.75m, item.Receipt.SubTotal);
     Assert.Empty(item.Receipt.Taxes);

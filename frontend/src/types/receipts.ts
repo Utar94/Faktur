@@ -12,6 +12,16 @@ export type CategorySavedEvent = {
   oldCategory?: string;
 };
 
+export type CreateOrReplaceReceiptItemPayload = {
+  gtinOrSku: string;
+  label: string;
+  flags?: string;
+  quantity?: number;
+  unitPrice?: number;
+  price: number;
+  department?: DepartmentSummary;
+};
+
 export type DepartmentSummary = {
   number: string;
   displayName: string;

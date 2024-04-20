@@ -1,10 +1,18 @@
 <script setup lang="ts">
 import AppInput from "./AppInput.vue";
 
-defineProps<{
-  modelValue?: string;
-  required?: boolean | string;
-}>();
+withDefaults(
+  defineProps<{
+    id?: string;
+    label?: string;
+    modelValue?: string;
+    required?: boolean | string;
+  }>(),
+  {
+    id: "display-name",
+    label: "displayName",
+  },
+);
 
 defineEmits<{
   (e: "update:model-value", value?: string): void;
@@ -14,11 +22,11 @@ defineEmits<{
 <template>
   <AppInput
     floating
-    id="display-name"
-    label="displayName"
+    :id="id"
+    :label="label"
     max="255"
     :model-value="modelValue"
-    placeholder="displayName"
+    :placeholder="label"
     :required="required"
     @update:model-value="$emit('update:model-value', $event)"
   />

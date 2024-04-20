@@ -11,7 +11,7 @@ public record CreateOrReplaceReceiptItemPayload
   public decimal? UnitPrice { get; set; }
   public decimal Price { get; set; }
 
-  public DepartmentPayload? Department { get; set; }
+  public DepartmentSummary? Department { get; set; }
 
   public CreateOrReplaceReceiptItemPayload() : this(string.Empty, string.Empty)
   {

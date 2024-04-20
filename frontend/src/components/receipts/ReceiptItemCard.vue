@@ -9,13 +9,13 @@ defineProps<{
   item: ReceiptItem;
 }>();
 
-function onClick(): void {
-  // TODO(fpion): implement
-}
+defineEmits<{
+  (e: "clicked"): void;
+}>();
 </script>
 
 <template>
-  <table class="table table-borderless" @click="onClick">
+  <table class="table table-borderless" @click="$emit('clicked')">
     <tr>
       <td>
         <strong>{{ item.label }}</strong>

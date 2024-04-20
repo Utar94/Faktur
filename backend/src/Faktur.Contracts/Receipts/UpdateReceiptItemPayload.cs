@@ -11,5 +11,5 @@ public record UpdateReceiptItemPayload
   public decimal? UnitPrice { get; set; }
   public decimal? Price { get; set; }
 
-  public Modification<DepartmentPayload>? Department { get; set; }
+  public Modification<DepartmentSummary>? Department { get; set; }
 }

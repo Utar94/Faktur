@@ -79,7 +79,7 @@ internal class UpdateReceiptItemCommandHandler : IRequestHandler<UpdateReceiptIt
     receipt.SetItem(command.ItemNumber, item, command.ActorId);
 
     IEnumerable<TaxAggregate> taxes = await _taxRepository.LoadAsync(cancellationToken);
-    receipt.Calculate(taxes);
+    receipt.Calculate(taxes, command.ActorId);
 
     await _receiptRepository.SaveAsync(receipt, cancellationToken);
 
