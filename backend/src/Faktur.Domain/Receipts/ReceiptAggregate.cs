@@ -95,18 +95,10 @@ public class ReceiptAggregate : AggregateRoot
 
     ReceiptAggregate receipt = new((id ?? ReceiptId.NewId()).AggregateId);
 
-    items ??= [];
-    Dictionary<ushort, ReceiptItemUnit> receiptItems = new(capacity: items.Count());
-    ushort itemNumber = 0;
-    foreach (ReceiptItemUnit item in items)
-    {
-      receiptItems[itemNumber] = item;
-      itemNumber++;
-    }
-
     IReadOnlyDictionary<string, ReceiptTaxUnit> receiptTaxes = InitializeTaxes(taxes);
+    ReceiptTotal total = ReceiptHelper.Calculate(items ?? [], receiptTaxes);
 
-    receipt.Raise(new ReceiptImportedEvent(store.Id, issuedOn ?? DateTime.Now, number, receiptItems, receiptTaxes), actorId);
+    receipt.Raise(ReceiptImportedEvent.Create(store, issuedOn, number, items, total), actorId);
 
     return receipt;
   }
@@ -143,7 +135,7 @@ public class ReceiptAggregate : AggregateRoot
         }
       }
     }
-    return receiptTaxes;
+    return receiptTaxes.AsReadOnly();
   }
 
   public void Calculate(ActorId actorId = default)
@@ -231,7 +223,17 @@ public class ReceiptAggregate : AggregateRoot
   {
     if (HasItem(number))
     {
-      Raise(new ReceiptItemRemovedEvent(number), actorId);
+      List<ReceiptItemUnit> items = new(capacity: _items.Count);
+      foreach (KeyValuePair<ushort, ReceiptItemUnit> item in _items)
+      {
+        if (item.Key != number)
+        {
+          items.Add(item.Value);
+        }
+      }
+
+      ReceiptTotal total = ReceiptHelper.Calculate(items, _taxes);
+      Raise(ReceiptItemRemovedEvent.Create(number, total), actorId);
     }
   }
   protected virtual void Apply(ReceiptItemRemovedEvent @event)
@@ -240,12 +242,26 @@ public class ReceiptAggregate : AggregateRoot
     _items.Remove(@event.Number);
   }
 
-  public void SetItem(ushort number, ReceiptItemUnit item, ActorId actorId = default)
+  public void SetItem(ushort number, ReceiptItemUnit changedItem, ActorId actorId = default)
   {
     ReceiptItemUnit? existingItem = TryFindItem(number);
-    if (existingItem == null || existingItem != item)
+    if (existingItem == null || existingItem != changedItem)
     {
-      Raise(new ReceiptItemChangedEvent(number, item), actorId);
+      List<ReceiptItemUnit> items = new(capacity: _items.Count);
+      foreach (KeyValuePair<ushort, ReceiptItemUnit> item in _items)
+      {
+        if (item.Key == number)
+        {
+          items.Add(changedItem);
+        }
+        else
+        {
+          items.Add(item.Value);
+        }
+      }
+
+      ReceiptTotal total = ReceiptHelper.Calculate(items, _taxes);
+      Raise(ReceiptItemChangedEvent.Create(number, changedItem, total), actorId);
     }
   }
   protected virtual void Apply(ReceiptItemChangedEvent @event)
