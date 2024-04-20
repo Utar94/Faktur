@@ -4,7 +4,6 @@ using Faktur.Domain.Articles;
 using Faktur.Domain.Products;
 using Faktur.Domain.Receipts;
 using Faktur.Domain.Stores;
-using Faktur.Domain.Taxes;
 using FluentValidation;
 using Logitar.Identity.Domain.Shared;
 using MediatR;
@@ -15,13 +14,11 @@ internal class UpdateReceiptItemCommandHandler : IRequestHandler<UpdateReceiptIt
 {
   private readonly IReceiptItemQuerier _receiptItemQuerier;
   private readonly IReceiptRepository _receiptRepository;
-  private readonly ITaxRepository _taxRepository;
 
-  public UpdateReceiptItemCommandHandler(IReceiptItemQuerier receiptItemQuerier, IReceiptRepository receiptRepository, ITaxRepository taxRepository)
+  public UpdateReceiptItemCommandHandler(IReceiptItemQuerier receiptItemQuerier, IReceiptRepository receiptRepository)
   {
     _receiptItemQuerier = receiptItemQuerier;
     _receiptRepository = receiptRepository;
-    _taxRepository = taxRepository;
   }
 
   public async Task<ReceiptItem?> Handle(UpdateReceiptItemCommand command, CancellationToken cancellationToken)
@@ -77,9 +74,6 @@ internal class UpdateReceiptItemCommandHandler : IRequestHandler<UpdateReceiptIt
 
     item = new(gtin, sku, label, flags, quantity, unitPrice, price, departmentNumber, department);
     receipt.SetItem(command.ItemNumber, item, command.ActorId);
-
-    IEnumerable<TaxAggregate> taxes = await _taxRepository.LoadAsync(cancellationToken);
-    receipt.Calculate(taxes, command.ActorId);
 
     await _receiptRepository.SaveAsync(receipt, cancellationToken);
 

@@ -36,6 +36,11 @@ internal class ReceiptEntity : AggregateEntity
 
     IssuedOn = @event.IssuedOn.ToUniversalTime();
     Number = @event.Number?.Value;
+
+    foreach (KeyValuePair<string, ReceiptTaxUnit> tax in @event.Taxes)
+    {
+      Taxes.Add(new ReceiptTaxEntity(this, tax.Key, tax.Value));
+    }
   }
 
   public ReceiptEntity(StoreEntity store, ReceiptImportedEvent @event) : base(@event)
@@ -73,40 +78,12 @@ internal class ReceiptEntity : AggregateEntity
       Items.Add(new ReceiptItemEntity(this, product, item.Key, item.Value, @event));
     }
     ItemCount = Items.Count;
+
+    Apply(@event);
   }
 
   private ReceiptEntity() : base()
   {
-  }
-
-  public void Calculate(ReceiptCalculatedEvent @event)
-  {
-    Update(@event);
-
-    SubTotal = @event.SubTotal;
-    Total = @event.Total;
-
-    foreach (KeyValuePair<string, ReceiptTaxUnit> tax in @event.Taxes)
-    {
-      ReceiptTaxEntity? entity = Taxes.SingleOrDefault(t => t.Code == tax.Key);
-      if (entity == null)
-      {
-        entity = new(this, tax.Key, tax.Value);
-        Taxes.Add(entity);
-      }
-      else
-      {
-        entity.Update(tax.Value);
-      }
-    }
-
-    foreach (ReceiptTaxEntity entity in Taxes)
-    {
-      if (!@event.Taxes.ContainsKey(entity.Code))
-      {
-        Taxes.Remove(entity);
-      }
-    }
   }
 
   public void Categorize(ReceiptCategorizedEvent @event)
@@ -154,6 +131,8 @@ internal class ReceiptEntity : AggregateEntity
       Items.Remove(item);
       ItemCount = Items.Count;
     }
+
+    Apply(@event);
   }
 
   public void SetItem(ProductEntity? product, ReceiptItemChangedEvent @event)
@@ -171,6 +150,8 @@ internal class ReceiptEntity : AggregateEntity
     {
       item.Update(product, @event);
     }
+
+    Apply(@event);
   }
 
   public void Update(ReceiptUpdatedEvent @event)
@@ -184,6 +165,34 @@ internal class ReceiptEntity : AggregateEntity
     if (@event.Number != null)
     {
       Number = @event.Number.Value?.Value;
+    }
+  }
+
+  private void Apply(IReceiptTotal total)
+  {
+    SubTotal = total.SubTotal;
+    Total = total.Total;
+
+    foreach (KeyValuePair<string, ReceiptTaxUnit> tax in total.Taxes)
+    {
+      ReceiptTaxEntity? entity = Taxes.SingleOrDefault(t => t.Code == tax.Key);
+      if (entity == null)
+      {
+        entity = new(this, tax.Key, tax.Value);
+        Taxes.Add(entity);
+      }
+      else
+      {
+        entity.Update(tax.Value);
+      }
+    }
+
+    foreach (ReceiptTaxEntity entity in Taxes)
+    {
+      if (!total.Taxes.ContainsKey(entity.Code))
+      {
+        Taxes.Remove(entity);
+      }
     }
   }
 }

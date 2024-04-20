@@ -3,6 +3,7 @@ using Faktur.Application.Stores;
 using Faktur.Contracts.Receipts;
 using Faktur.Domain.Receipts;
 using Faktur.Domain.Stores;
+using Faktur.Domain.Taxes;
 using FluentValidation;
 using MediatR;
 
@@ -13,12 +14,15 @@ internal class CreateReceiptCommandHandler : IRequestHandler<CreateReceiptComman
   private readonly IReceiptQuerier _receiptQuerier;
   private readonly IReceiptRepository _receiptRepository;
   private readonly IStoreRepository _storeRepository;
+  private readonly ITaxRepository _taxRepository;
 
-  public CreateReceiptCommandHandler(IReceiptQuerier receiptQuerier, IReceiptRepository receiptRepository, IStoreRepository storeRepository)
+  public CreateReceiptCommandHandler(IReceiptQuerier receiptQuerier, IReceiptRepository receiptRepository,
+    IStoreRepository storeRepository, ITaxRepository taxRepository)
   {
     _receiptQuerier = receiptQuerier;
     _receiptRepository = receiptRepository;
     _storeRepository = storeRepository;
+    _taxRepository = taxRepository;
   }
 
   public async Task<Receipt> Handle(CreateReceiptCommand command, CancellationToken cancellationToken)
@@ -30,7 +34,8 @@ internal class CreateReceiptCommandHandler : IRequestHandler<CreateReceiptComman
       ?? throw new StoreNotFoundException(payload.StoreId, nameof(payload.StoreId));
 
     NumberUnit? number = NumberUnit.TryCreate(payload.Number);
-    ReceiptAggregate receipt = new(store, payload.IssuedOn, number, command.ActorId);
+    IEnumerable<TaxAggregate> taxes = await _taxRepository.LoadAsync(cancellationToken);
+    ReceiptAggregate receipt = new(store, payload.IssuedOn, number, taxes, command.ActorId);
 
     await _receiptRepository.SaveAsync(receipt, cancellationToken);
 

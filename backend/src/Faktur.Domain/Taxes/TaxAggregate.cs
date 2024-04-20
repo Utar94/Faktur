@@ -30,6 +30,8 @@ public class TaxAggregate : AggregateRoot
     get => _rate;
     set
     {
+      // TODO(fpion): validation
+
       if (value != _rate)
       {
         _rate = value;
@@ -58,6 +60,8 @@ public class TaxAggregate : AggregateRoot
 
   public TaxAggregate(TaxCodeUnit code, double rate = 0.0, ActorId actorId = default, TaxId? id = null) : base((id ?? TaxId.NewId()).AggregateId)
   {
+    // TODO(fpion): validate rate
+
     Raise(new TaxCreatedEvent(code, rate), actorId);
   }
   protected virtual void Apply(TaxCreatedEvent @event)

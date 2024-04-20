@@ -97,10 +97,10 @@ public class ImportReceiptCommandTests : IntegrationTests
     Receipt receipt = await Mediator.Send(command);
 
     Assert.NotEqual(Guid.Empty, receipt.Id);
-    Assert.Equal(2, receipt.Version);
+    Assert.Equal(1, receipt.Version);
     Assert.Equal(Actor, receipt.CreatedBy);
     Assert.Equal(Actor, receipt.UpdatedBy);
-    Assert.True(receipt.CreatedOn < receipt.UpdatedOn);
+    Assert.Equal(receipt.CreatedOn, receipt.UpdatedOn);
 
     Assert.Equal(payload.IssuedOn?.ToUniversalTime(), receipt.IssuedOn);
     Assert.Null(receipt.Number);
@@ -108,7 +108,9 @@ public class ImportReceiptCommandTests : IntegrationTests
     Assert.Empty(receipt.Items);
     Assert.Equal(0, receipt.SubTotal);
     Assert.Equal(0, receipt.Total);
-    Assert.Empty(receipt.Taxes);
+    Assert.Equal(2, receipt.Taxes.Count);
+    Assert.Contains(receipt.Taxes, t => t.Code == _gst.Code.Value && t.Rate == _gst.Rate && t.TaxableAmount == 0.00m && t.Amount == 0.00m);
+    Assert.Contains(receipt.Taxes, t => t.Code == _qst.Code.Value && t.Rate == _qst.Rate && t.TaxableAmount == 0.00m && t.Amount == 0.00m);
     Assert.False(receipt.HasBeenProcessed);
     Assert.Null(receipt.ProcessedBy);
     Assert.Null(receipt.ProcessedOn);
@@ -140,10 +142,10 @@ public class ImportReceiptCommandTests : IntegrationTests
     Receipt receipt = await Mediator.Send(command);
 
     Assert.NotEqual(Guid.Empty, receipt.Id);
-    Assert.Equal(2, receipt.Version);
+    Assert.Equal(1, receipt.Version);
     Assert.Equal(Actor, receipt.CreatedBy);
     Assert.Equal(Actor, receipt.UpdatedBy);
-    Assert.True(receipt.CreatedOn < receipt.UpdatedOn);
+    Assert.Equal(receipt.CreatedOn, receipt.UpdatedOn);
 
     Assert.Equal(payload.IssuedOn?.ToUniversalTime(), receipt.IssuedOn);
     Assert.Equal(payload.Number, receipt.Number);

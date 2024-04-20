@@ -1,7 +1,6 @@
 ﻿using Faktur.Domain.Articles;
 using Faktur.Domain.Products;
 using Faktur.Domain.Stores;
-using Faktur.Domain.Taxes;
 using FluentValidation.Results;
 using Logitar.Identity.Domain.Shared;
 
@@ -52,11 +51,8 @@ public class ReceiptItemUnitTests
     ReceiptItemUnit itemWithoutFlags = new(gtin, sku: null, label, flags: null, quantity: 1.0d, unitPrice: 9.99m, price: 9.99m, departmentNumber: null, department: null);
     ReceiptItemUnit itemWithFlags = new(gtin, sku: null, label, flags: new FlagsUnit("FPMRJ"), quantity: 1.0d, unitPrice: 9.99m, price: 9.99m, departmentNumber: null, department: null);
 
-    TaxAggregate taxWithoutFlags = new(new TaxCodeUnit("GST"), rate: 0.05);
-    TaxAggregate taxWithFlags = new(new TaxCodeUnit("QST"), rate: 0.09975)
-    {
-      Flags = new FlagsUnit("Q")
-    };
+    ReceiptTaxUnit taxWithFlags = new(new FlagsUnit("Q"), rate: 0.09975, taxableAmount: 0.00m, amount: 0.00m);
+    ReceiptTaxUnit taxWithoutFlags = new(new FlagsUnit("Z"), rate: 0.05, taxableAmount: 0.00m, amount: 0.00m);
 
     Assert.False(itemWithoutFlags.IsTaxable(taxWithoutFlags));
     Assert.False(itemWithoutFlags.IsTaxable(taxWithFlags));
@@ -69,10 +65,7 @@ public class ReceiptItemUnitTests
   {
     ReceiptItemUnit item = new(new GtinUnit("06038385904"), sku: null, new DisplayNameUnit("PC POULET BBQ"),
       new FlagsUnit("FPMRJ"), quantity: 1.0d, unitPrice: 9.99m, price: 9.99m, departmentNumber: null, department: null);
-    TaxAggregate tax = new(new TaxCodeUnit("QST"), rate: 0.09975)
-    {
-      Flags = new FlagsUnit("P")
-    };
+    ReceiptTaxUnit tax = new(new FlagsUnit("P"), rate: 0.09975, taxableAmount: 0.00m, amount: 0.00m);
     Assert.True(item.IsTaxable(tax));
   }
 }

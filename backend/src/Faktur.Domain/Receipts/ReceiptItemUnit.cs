@@ -1,7 +1,6 @@
 ﻿using Faktur.Domain.Articles;
 using Faktur.Domain.Products;
 using Faktur.Domain.Stores;
-using Faktur.Domain.Taxes;
 using FluentValidation;
 using Logitar.Identity.Domain.Shared;
 
@@ -40,9 +39,9 @@ public record ReceiptItemUnit
     new ReceiptItemValidator().ValidateAndThrow(this);
   }
 
-  public bool IsTaxable(TaxAggregate tax)
+  public bool IsTaxable(ReceiptTaxUnit tax)
   {
-    if (Flags != null && tax.Flags != null)
+    if (Flags != null)
     {
       foreach (char flag in Flags.Value)
       {
