@@ -1,11 +1,13 @@
-﻿namespace Faktur.Domain.Receipts;
+﻿using Faktur.Domain.Taxes;
+
+namespace Faktur.Domain.Receipts;
 
 internal static class ReceiptHelper
 {
-  public static ReceiptTotal Calculate(IEnumerable<ReceiptItemUnit> items, IReadOnlyDictionary<string, ReceiptTaxUnit> taxes) // TODO(fpion): unit tests
+  public static ReceiptTotal Calculate(IEnumerable<ReceiptItemUnit> items, IReadOnlyDictionary<TaxCodeUnit, ReceiptTaxUnit> taxes) // TODO(fpion): unit tests
   {
-    Dictionary<string, decimal> taxableAmounts = [];
-    foreach (KeyValuePair<string, ReceiptTaxUnit> tax in taxes)
+    Dictionary<TaxCodeUnit, decimal> taxableAmounts = [];
+    foreach (KeyValuePair<TaxCodeUnit, ReceiptTaxUnit> tax in taxes)
     {
       taxableAmounts[tax.Key] = 0.00m;
     }
@@ -17,7 +19,7 @@ internal static class ReceiptHelper
 
       if (item.Flags != null)
       {
-        foreach (KeyValuePair<string, ReceiptTaxUnit> tax in taxes)
+        foreach (KeyValuePair<TaxCodeUnit, ReceiptTaxUnit> tax in taxes)
         {
           if (item.IsTaxable(tax.Value))
           {
@@ -29,12 +31,12 @@ internal static class ReceiptHelper
 
     decimal total = subTotal;
     Dictionary<string, ReceiptTaxUnit> calculatedTaxes = [];
-    foreach (KeyValuePair<string, ReceiptTaxUnit> tax in taxes)
+    foreach (KeyValuePair<TaxCodeUnit, ReceiptTaxUnit> tax in taxes)
     {
       decimal taxableAmount = Math.Round(taxableAmounts[tax.Key], 2);
       decimal amount = Math.Round((decimal)tax.Value.Rate * taxableAmount, 2);
       ReceiptTaxUnit receiptTax = new(tax.Value.Flags, tax.Value.Rate, taxableAmount, amount);
-      calculatedTaxes[tax.Key] = receiptTax;
+      calculatedTaxes[tax.Key.Value] = receiptTax;
       total += receiptTax.Amount;
     }
 

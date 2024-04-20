@@ -52,8 +52,8 @@ public class ReceiptAggregate : AggregateRoot
   public IReadOnlyDictionary<ushort, CategoryUnit> Categories => _categories.AsReadOnly();
 
   public decimal SubTotal { get; private set; }
-  private readonly Dictionary<string, ReceiptTaxUnit> _taxes = []; // TODO(fpion): TaxCodeUnit key
-  public IReadOnlyDictionary<string, ReceiptTaxUnit> Taxes => _taxes.AsReadOnly();
+  private readonly Dictionary<TaxCodeUnit, ReceiptTaxUnit> _taxes = [];
+  public IReadOnlyDictionary<TaxCodeUnit, ReceiptTaxUnit> Taxes => _taxes.AsReadOnly();
   public decimal Total { get; private set; }
 
   public ReceiptAggregate(AggregateId id) : base(id)
@@ -68,7 +68,18 @@ public class ReceiptAggregate : AggregateRoot
       new IssuedOnValidator(nameof(issuedOn)).ValidateAndThrow(issuedOn.Value);
     }
 
-    IReadOnlyDictionary<string, ReceiptTaxUnit> receiptTaxes = InitializeTaxes(taxes);
+    Dictionary<string, ReceiptTaxUnit> receiptTaxes = [];
+    if (taxes != null)
+    {
+      receiptTaxes = new(capacity: taxes.Count());
+      foreach (TaxAggregate tax in taxes)
+      {
+        if (tax.Flags != null)
+        {
+          receiptTaxes[tax.Code.Value] = new ReceiptTaxUnit(tax.Flags, tax.Rate, taxableAmount: 0.00m, amount: 0.00m);
+        }
+      }
+    }
 
     Raise(new ReceiptCreatedEvent(store.Id, issuedOn ?? DateTime.Now, number, receiptTaxes), actorId);
   }
@@ -81,7 +92,8 @@ public class ReceiptAggregate : AggregateRoot
     _taxes.Clear();
     foreach (KeyValuePair<string, ReceiptTaxUnit> tax in @event.Taxes)
     {
-      _taxes[tax.Key] = tax.Value;
+      TaxCodeUnit key = new(tax.Key);
+      _taxes[key] = tax.Value;
     }
   }
 
@@ -95,7 +107,19 @@ public class ReceiptAggregate : AggregateRoot
 
     ReceiptAggregate receipt = new((id ?? ReceiptId.NewId()).AggregateId);
 
-    IReadOnlyDictionary<string, ReceiptTaxUnit> receiptTaxes = InitializeTaxes(taxes);
+    Dictionary<TaxCodeUnit, ReceiptTaxUnit> receiptTaxes = [];
+    if (taxes != null)
+    {
+      receiptTaxes = new(capacity: taxes.Count());
+      foreach (TaxAggregate tax in taxes)
+      {
+        if (tax.Flags != null)
+        {
+          receiptTaxes[tax.Code] = new ReceiptTaxUnit(tax);
+        }
+      }
+    }
+
     ReceiptTotal total = ReceiptHelper.Calculate(items ?? [], receiptTaxes);
 
     receipt.Raise(ReceiptImportedEvent.Create(store, issuedOn, number, items, total), actorId);
@@ -115,23 +139,6 @@ public class ReceiptAggregate : AggregateRoot
     }
 
     Apply((IReceiptTotal)@event);
-  }
-
-  private static IReadOnlyDictionary<string, ReceiptTaxUnit> InitializeTaxes(IEnumerable<TaxAggregate>? taxes)
-  {
-    Dictionary<string, ReceiptTaxUnit> receiptTaxes = [];
-    if (taxes != null)
-    {
-      receiptTaxes = new(capacity: taxes.Count());
-      foreach (TaxAggregate tax in taxes)
-      {
-        if (tax.Flags != null)
-        {
-          receiptTaxes[tax.Code.Value] = new ReceiptTaxUnit(tax.Flags, tax.Rate, taxableAmount: 0.00m, amount: 0.00m);
-        }
-      }
-    }
-    return receiptTaxes.AsReadOnly();
   }
 
   public void Categorize(IEnumerable<KeyValuePair<ushort, CategoryUnit?>> itemCategories, ActorId actorId = default)
@@ -266,7 +273,8 @@ public class ReceiptAggregate : AggregateRoot
     _taxes.Clear();
     foreach (KeyValuePair<string, ReceiptTaxUnit> tax in total.Taxes)
     {
-      _taxes[tax.Key] = tax.Value;
+      TaxCodeUnit key = new(tax.Key);
+      _taxes[key] = tax.Value;
     }
 
     Total = total.Total;
