@@ -114,11 +114,7 @@ public class ReceiptAggregate : AggregateRoot
       _items[item.Key] = item.Value;
     }
 
-    _taxes.Clear();
-    foreach (KeyValuePair<string, ReceiptTaxUnit> tax in @event.Taxes)
-    {
-      _taxes[tax.Key] = tax.Value;
-    }
+    Apply((IReceiptTotal)@event);
   }
 
   private static IReadOnlyDictionary<string, ReceiptTaxUnit> InitializeTaxes(IEnumerable<TaxAggregate>? taxes)
@@ -136,22 +132,6 @@ public class ReceiptAggregate : AggregateRoot
       }
     }
     return receiptTaxes.AsReadOnly();
-  }
-
-  public void Calculate(ActorId actorId = default)
-  {
-    ReceiptTotal total = ReceiptHelper.Calculate(Items.Values, Taxes);
-    Raise(new ReceiptCalculatedEvent(total.SubTotal, total.Taxes, total.Total), actorId);
-  }
-  protected virtual void Apply(ReceiptCalculatedEvent @event)
-  {
-    SubTotal = @event.SubTotal;
-    _taxes.Clear();
-    foreach (KeyValuePair<string, ReceiptTaxUnit> tax in @event.Taxes)
-    {
-      _taxes[tax.Key] = tax.Value;
-    }
-    Total = @event.Total;
   }
 
   public void Categorize(IEnumerable<KeyValuePair<ushort, CategoryUnit?>> itemCategories, ActorId actorId = default)
@@ -223,16 +203,10 @@ public class ReceiptAggregate : AggregateRoot
   {
     if (HasItem(number))
     {
-      List<ReceiptItemUnit> items = new(capacity: _items.Count);
-      foreach (KeyValuePair<ushort, ReceiptItemUnit> item in _items)
-      {
-        if (item.Key != number)
-        {
-          items.Add(item.Value);
-        }
-      }
+      Dictionary<ushort, ReceiptItemUnit> items = new(_items);
+      items.Remove(number);
 
-      ReceiptTotal total = ReceiptHelper.Calculate(items, _taxes);
+      ReceiptTotal total = ReceiptHelper.Calculate(items.Values, _taxes);
       Raise(ReceiptItemRemovedEvent.Create(number, total), actorId);
     }
   }
@@ -240,33 +214,29 @@ public class ReceiptAggregate : AggregateRoot
   {
     _categories.Remove(@event.Number);
     _items.Remove(@event.Number);
+
+    Apply((IReceiptTotal)@event);
   }
 
-  public void SetItem(ushort number, ReceiptItemUnit changedItem, ActorId actorId = default)
+  public void SetItem(ushort number, ReceiptItemUnit item, ActorId actorId = default)
   {
     ReceiptItemUnit? existingItem = TryFindItem(number);
-    if (existingItem == null || existingItem != changedItem)
+    if (existingItem == null || existingItem != item)
     {
-      List<ReceiptItemUnit> items = new(capacity: _items.Count);
-      foreach (KeyValuePair<ushort, ReceiptItemUnit> item in _items)
+      Dictionary<ushort, ReceiptItemUnit> items = new(_items)
       {
-        if (item.Key == number)
-        {
-          items.Add(changedItem);
-        }
-        else
-        {
-          items.Add(item.Value);
-        }
-      }
+        [number] = item
+      };
 
-      ReceiptTotal total = ReceiptHelper.Calculate(items, _taxes);
-      Raise(ReceiptItemChangedEvent.Create(number, changedItem, total), actorId);
+      ReceiptTotal total = ReceiptHelper.Calculate(items.Values, _taxes);
+      Raise(ReceiptItemChangedEvent.Create(number, item, total), actorId);
     }
   }
   protected virtual void Apply(ReceiptItemChangedEvent @event)
   {
     _items[@event.Number] = @event.Item;
+
+    Apply((IReceiptTotal)@event);
   }
 
   public void Update(ActorId actorId = default)
@@ -287,5 +257,18 @@ public class ReceiptAggregate : AggregateRoot
     {
       _number = @event.Number.Value;
     }
+  }
+
+  private void Apply(IReceiptTotal total)
+  {
+    SubTotal = total.SubTotal;
+
+    _taxes.Clear();
+    foreach (KeyValuePair<string, ReceiptTaxUnit> tax in total.Taxes)
+    {
+      _taxes[tax.Key] = tax.Value;
+    }
+
+    Total = total.Total;
   }
 }

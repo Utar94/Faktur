@@ -130,7 +130,6 @@ internal class ImportReceiptCommandHandler : IRequestHandler<ImportReceiptComman
     NumberUnit? number = NumberUnit.TryCreate(payload.Number);
     IEnumerable<TaxAggregate> taxes = await _taxRepository.LoadAsync(cancellationToken);
     ReceiptAggregate receipt = ReceiptAggregate.Import(store, payload.IssuedOn, number, items, taxes, command.ActorId);
-    receipt.Calculate(command.ActorId);
 
     await _receiptRepository.SaveAsync(receipt, cancellationToken);
 

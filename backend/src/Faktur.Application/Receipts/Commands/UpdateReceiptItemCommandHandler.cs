@@ -74,7 +74,6 @@ internal class UpdateReceiptItemCommandHandler : IRequestHandler<UpdateReceiptIt
 
     item = new(gtin, sku, label, flags, quantity, unitPrice, price, departmentNumber, department);
     receipt.SetItem(command.ItemNumber, item, command.ActorId);
-    receipt.Calculate(command.ActorId);
 
     await _receiptRepository.SaveAsync(receipt, cancellationToken);
 

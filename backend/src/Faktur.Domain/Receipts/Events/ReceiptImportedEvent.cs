@@ -5,7 +5,7 @@ using MediatR;
 namespace Faktur.Domain.Receipts.Events;
 
 public record ReceiptImportedEvent(StoreId StoreId, DateTime IssuedOn, NumberUnit? Number, IReadOnlyDictionary<ushort, ReceiptItemUnit> Items,
-  decimal SubTotal, IReadOnlyDictionary<string, ReceiptTaxUnit> Taxes, decimal Total) : DomainEvent, INotification
+  decimal SubTotal, IReadOnlyDictionary<string, ReceiptTaxUnit> Taxes, decimal Total) : DomainEvent, INotification, IReceiptTotal
 {
   public static ReceiptImportedEvent Create(StoreAggregate store, DateTime? issuedOn, NumberUnit? number, IEnumerable<ReceiptItemUnit>? items, ReceiptTotal total)
   {

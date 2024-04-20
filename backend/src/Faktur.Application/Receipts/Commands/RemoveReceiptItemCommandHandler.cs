@@ -25,7 +25,6 @@ internal class RemoveReceiptItemCommandHandler : IRequestHandler<RemoveReceiptIt
     ReceiptItem result = await _receiptItemQuerier.ReadAsync(receipt, command.ItemNumber, cancellationToken);
 
     receipt.RemoveItem(command.ItemNumber, command.ActorId);
-    receipt.Calculate(command.ActorId);
 
     await _receiptRepository.SaveAsync(receipt, cancellationToken);
 

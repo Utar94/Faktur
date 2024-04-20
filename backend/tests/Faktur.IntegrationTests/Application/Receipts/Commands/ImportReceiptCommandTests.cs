@@ -97,10 +97,10 @@ public class ImportReceiptCommandTests : IntegrationTests
     Receipt receipt = await Mediator.Send(command);
 
     Assert.NotEqual(Guid.Empty, receipt.Id);
-    Assert.Equal(2, receipt.Version);
+    Assert.Equal(1, receipt.Version);
     Assert.Equal(Actor, receipt.CreatedBy);
     Assert.Equal(Actor, receipt.UpdatedBy);
-    Assert.True(receipt.CreatedOn < receipt.UpdatedOn);
+    Assert.Equal(receipt.CreatedOn, receipt.UpdatedOn);
 
     Assert.Equal(payload.IssuedOn?.ToUniversalTime(), receipt.IssuedOn);
     Assert.Null(receipt.Number);
@@ -142,10 +142,10 @@ public class ImportReceiptCommandTests : IntegrationTests
     Receipt receipt = await Mediator.Send(command);
 
     Assert.NotEqual(Guid.Empty, receipt.Id);
-    Assert.Equal(2, receipt.Version);
+    Assert.Equal(1, receipt.Version);
     Assert.Equal(Actor, receipt.CreatedBy);
     Assert.Equal(Actor, receipt.UpdatedBy);
-    Assert.True(receipt.CreatedOn < receipt.UpdatedOn);
+    Assert.Equal(receipt.CreatedOn, receipt.UpdatedOn);
 
     Assert.Equal(payload.IssuedOn?.ToUniversalTime(), receipt.IssuedOn);
     Assert.Equal(payload.Number, receipt.Number);

@@ -7,29 +7,6 @@ namespace Faktur.EntityFrameworkCore.Relational.Handlers;
 
 internal static class Receipts
 {
-  public class ReceiptCalculatedEventHandler : INotificationHandler<ReceiptCalculatedEvent>
-  {
-    private readonly FakturContext _context;
-
-    public ReceiptCalculatedEventHandler(FakturContext context)
-    {
-      _context = context;
-    }
-
-    public async Task Handle(ReceiptCalculatedEvent @event, CancellationToken cancellationToken)
-    {
-      ReceiptEntity receipt = await _context.Receipts
-        .Include(x => x.Items)
-        .Include(x => x.Taxes)
-        .SingleOrDefaultAsync(x => x.AggregateId == @event.AggregateId.Value, cancellationToken)
-        ?? throw new InvalidOperationException($"The receipt 'AggregateId={@event.AggregateId}' could not be found.");
-
-      receipt.Calculate(@event);
-
-      await _context.SaveChangesAsync(cancellationToken);
-    }
-  }
-
   public class ReceiptCategorizedEventHandler : INotificationHandler<ReceiptCategorizedEvent>
   {
     private readonly FakturContext _context;
