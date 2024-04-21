@@ -43,6 +43,7 @@ internal class ImportBannersCommandHandler : IRequestHandler<ImportBannersComman
 
       if (existingBanner.HasChanges)
       {
+        existingBanner.SetDates(banner);
         count++;
       }
     }

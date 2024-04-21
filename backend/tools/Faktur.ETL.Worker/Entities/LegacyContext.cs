@@ -17,7 +17,6 @@ internal class LegacyContext : DbContext
   public DbSet<ReceiptTaxEntity> ReceiptTaxes { get; private set; }
   public DbSet<ReceiptEntity> Receipts { get; private set; }
   public DbSet<StoreEntity> Stores { get; private set; }
-  public DbSet<UserEntity> Users { get; private set; }
 
   protected override void OnModelCreating(ModelBuilder modelBuilder)
   {

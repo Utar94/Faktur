@@ -13,19 +13,11 @@ namespace Faktur.ETL.Worker;
 
 internal class Mapper
 {
-  private readonly Dictionary<Guid, Actor> _actors;
+  private readonly Actor _actor;
 
-  public Mapper()
+  public Mapper(Actor actor)
   {
-    _actors = [];
-  }
-
-  public Mapper(IEnumerable<Actor> actors) : this()
-  {
-    foreach (Actor actor in actors)
-    {
-      _actors[actor.Id] = actor;
-    }
+    _actor = actor;
   }
 
   public Article ToArticle(ArticleEntity source)
@@ -63,9 +55,9 @@ internal class Mapper
     return new Department(store, source.Number, source.Name)
     {
       Description = source.Description,
-      CreatedBy = FindActor(source.CreatedById),
+      CreatedBy = _actor,
       CreatedOn = AsUniversalTime(source.CreatedAt),
-      UpdatedBy = FindActor(source.UpdatedById ?? source.CreatedById),
+      UpdatedBy = _actor,
       UpdatedOn = AsUniversalTime(source.UpdatedAt ?? source.CreatedAt)
     };
   }
@@ -106,7 +98,7 @@ internal class Mapper
       SubTotal = source.SubTotal,
       Total = source.Total,
       HasBeenProcessed = source.Processed,
-      ProcessedBy = source.ProcessedById.HasValue ? FindActor(source.ProcessedById.Value) : null,
+      ProcessedBy = source.ProcessedById.HasValue ? _actor : null,
       ProcessedOn = source.ProcessedAt.HasValue ? AsUniversalTime(source.ProcessedAt.Value) : null
     };
 
@@ -199,14 +191,12 @@ internal class Mapper
     destination.Id = source.Key;
     destination.Version = source.Version;
 
-    destination.CreatedBy = FindActor(source.CreatedById);
+    destination.CreatedBy = _actor;
     destination.CreatedOn = AsUniversalTime(source.CreatedAt);
 
-    destination.UpdatedBy = FindActor(source.UpdatedById ?? source.CreatedById);
+    destination.UpdatedBy = _actor;
     destination.UpdatedOn = AsUniversalTime(source.UpdatedAt ?? source.CreatedAt);
   }
-
-  private Actor FindActor(Guid id) => _actors.TryGetValue(id, out Actor? actor) ? actor : Actor.System;
 
   private static DateTime AsUniversalTime(DateTime value) => value.Kind switch
   {

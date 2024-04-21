@@ -44,6 +44,7 @@ internal class ImportArticlesCommandHandler : IRequestHandler<ImportArticlesComm
 
       if (existingArticle.HasChanges)
       {
+        existingArticle.SetDates(article);
         count++;
       }
     }

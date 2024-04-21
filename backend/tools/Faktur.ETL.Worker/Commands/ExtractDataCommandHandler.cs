@@ -3,7 +3,6 @@ using Faktur.Contracts.Banners;
 using Faktur.Contracts.Products;
 using Faktur.Contracts.Receipts;
 using Faktur.Contracts.Stores;
-using Logitar.Portal.Contracts.Actors;
 using MediatR;
 
 namespace Faktur.ETL.Worker.Commands;
@@ -19,10 +18,9 @@ internal class ExtractDataCommandHandler : IRequestHandler<ExtractDataCommand, E
     _sender = sender;
   }
 
-  public async Task<ExtractedData> Handle(ExtractDataCommand _, CancellationToken cancellationToken)
+  public async Task<ExtractedData> Handle(ExtractDataCommand command, CancellationToken cancellationToken)
   {
-    IEnumerable<Actor> actors = await _sender.Send(new ExtractActorsCommand(), cancellationToken);
-    Mapper mapper = new(actors);
+    Mapper mapper = new(command.Actor);
 
     IEnumerable<Article> articles = await _sender.Send(new ExtractArticlesCommand(mapper), cancellationToken);
     _logger.LogInformation("Extracted {Count} articles.", articles.Count());

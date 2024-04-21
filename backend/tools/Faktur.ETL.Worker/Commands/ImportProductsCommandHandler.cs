@@ -55,6 +55,7 @@ internal class ImportProductsCommandHandler : IRequestHandler<ImportProductsComm
 
       if (existingProduct.HasChanges)
       {
+        existingProduct.SetDates(product);
         count++;
       }
     }

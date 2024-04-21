@@ -1,5 +1,6 @@
-﻿using MediatR;
+﻿using Logitar.Portal.Contracts.Actors;
+using MediatR;
 
 namespace Faktur.ETL.Worker.Commands;
 
-internal record ExtractDataCommand : IRequest<ExtractedData>;
+internal record ExtractDataCommand(Actor Actor) : IRequest<ExtractedData>;

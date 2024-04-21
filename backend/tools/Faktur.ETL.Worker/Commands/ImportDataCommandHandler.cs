@@ -17,6 +17,9 @@ internal class ImportDataCommandHandler : IRequestHandler<ImportDataCommand>
   {
     ExtractedData extractedData = command.ExtractedData;
 
+    int taxes = await _sender.Send(new ImportTaxesCommand(command.Actor), cancellationToken);
+    _logger.LogInformation("Saved {Count} taxes.", taxes);
+
     int articles = await _sender.Send(new ImportArticlesCommand(extractedData.Articles), cancellationToken);
     _logger.LogInformation("Saved {Count} articles.", articles);
 
@@ -29,6 +32,7 @@ internal class ImportDataCommandHandler : IRequestHandler<ImportDataCommand>
     int products = await _sender.Send(new ImportProductsCommand(extractedData.Products), cancellationToken);
     _logger.LogInformation("Saved {Count} products.", products);
 
-    // TODO(fpion): import receipts
+    int receipts = await _sender.Send(new ImportReceiptsCommand(extractedData.Receipts), cancellationToken);
+    _logger.LogInformation("Saved {Count} receipts.", receipts);
   }
 }

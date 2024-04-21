@@ -59,6 +59,7 @@ internal class ImportStoresCommandHandler : IRequestHandler<ImportStoresCommand,
 
       if (existingStore.HasChanges)
       {
+        existingStore.SetDates(store);
         count++;
       }
     }

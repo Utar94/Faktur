@@ -3,4 +3,4 @@ using MediatR;
 
 namespace Faktur.ETL.Worker.Commands;
 
-internal record ExtractActorsCommand : IRequest<IEnumerable<Actor>>;
+internal record ImportTaxesCommand(Actor Actor) : IRequest<int>;
