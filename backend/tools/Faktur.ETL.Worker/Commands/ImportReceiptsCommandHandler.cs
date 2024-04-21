@@ -23,8 +23,6 @@ internal class ImportReceiptsCommandHandler : IRequestHandler<ImportReceiptsComm
 
   public async Task<int> Handle(ImportReceiptsCommand command, CancellationToken cancellationToken)
   {
-    int errors = 0;
-
     IEnumerable<TaxAggregate> taxes = await _taxRepository.LoadAsync(cancellationToken);
 
     Dictionary<Guid, ReceiptAggregate> receipts = (await _receiptRepository.LoadAsync(cancellationToken))
@@ -52,12 +50,6 @@ internal class ImportReceiptsCommandHandler : IRequestHandler<ImportReceiptsComm
         Dictionary<ushort, CategoryUnit?> itemCategories = new(capacity: receipt.Items.Count);
         foreach (ReceiptItem item in receipt.Items)
         {
-          if (item.Quantity < 1 || item.UnitPrice < 1 || item.Price < 1)
-          {
-            errors++;
-            continue;
-          }
-
           NumberUnit? departmentNumber = null;
           DepartmentUnit? department = null;
           if (item.Department != null)
@@ -68,13 +60,7 @@ internal class ImportReceiptsCommandHandler : IRequestHandler<ImportReceiptsComm
 
           items.Add(new ReceiptItemUnit(GtinUnit.TryCreate(item.Gtin), SkuUnit.TryCreate(item.Sku), new DisplayNameUnit(item.Label), FlagsUnit.TryCreate(item.Flags),
             item.Quantity, item.UnitPrice, item.Price, departmentNumber, department));
-
-          CategoryUnit? category = null;
-          if (item.Category != null && item.Category != "Shared")
-          {
-            category = new CategoryUnit(item.Category);
-          }
-          itemCategories[item.Number] = category;
+          itemCategories[item.Number] = CategoryUnit.TryCreate(item.Category);
         }
 
         ActorId createdBy = new(receipt.CreatedBy.Id);
