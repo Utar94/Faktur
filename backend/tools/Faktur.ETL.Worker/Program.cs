@@ -6,7 +6,7 @@ internal class Program
   {
     HostApplicationBuilder builder = Host.CreateApplicationBuilder(args);
 
-    Startup startup = new();
+    Startup startup = new(builder.Configuration);
     startup.ConfigureServices(builder.Services);
 
     IHost host = builder.Build();

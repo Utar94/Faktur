@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Faktur.ETL.Worker.Entities;
+namespace Faktur.ETL.Worker.Entities.Configurations;
 
 internal class UserConfiguration : IEntityTypeConfiguration<UserEntity>
 {
