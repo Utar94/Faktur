@@ -34,7 +34,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Faktur.Tests", "tests\Faktu
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Faktur.Domain.UnitTests", "tests\Faktur.Domain.UnitTests\Faktur.Domain.UnitTests.csproj", "{10259F5B-ABEA-4ED5-AB22-DA3F4D79326D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Faktur.EntityFrameworkCore.PostgreSQL", "src\Faktur.EntityFrameworkCore.PostgreSQL\Faktur.EntityFrameworkCore.PostgreSQL.csproj", "{741135EE-522D-45A2-BF55-3998102D8BC5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Faktur.EntityFrameworkCore.PostgreSQL", "src\Faktur.EntityFrameworkCore.PostgreSQL\Faktur.EntityFrameworkCore.PostgreSQL.csproj", "{741135EE-522D-45A2-BF55-3998102D8BC5}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{40B8B75C-4DBD-488B-9F94-3E0626726761}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Faktur.ETL.Worker", "tools\Faktur.ETL.Worker\Faktur.ETL.Worker.csproj", "{705E503D-E904-47CD-8C42-266594D5D783}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -86,6 +90,10 @@ Global
 		{741135EE-522D-45A2-BF55-3998102D8BC5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{741135EE-522D-45A2-BF55-3998102D8BC5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{741135EE-522D-45A2-BF55-3998102D8BC5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{705E503D-E904-47CD-8C42-266594D5D783}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{705E503D-E904-47CD-8C42-266594D5D783}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{705E503D-E904-47CD-8C42-266594D5D783}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{705E503D-E904-47CD-8C42-266594D5D783}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -94,6 +102,7 @@ Global
 		{ABC4557E-132B-429E-9E6F-E812A126C1D9} = {D6C0BA2F-F805-4BAB-AFD7-9D5A92DF1352}
 		{16B07B53-284A-4D6A-88E4-CB20CACCC4C5} = {D6C0BA2F-F805-4BAB-AFD7-9D5A92DF1352}
 		{10259F5B-ABEA-4ED5-AB22-DA3F4D79326D} = {D6C0BA2F-F805-4BAB-AFD7-9D5A92DF1352}
+		{705E503D-E904-47CD-8C42-266594D5D783} = {40B8B75C-4DBD-488B-9F94-3E0626726761}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C3414F6E-6810-45E8-ADAA-2782088197F3}
