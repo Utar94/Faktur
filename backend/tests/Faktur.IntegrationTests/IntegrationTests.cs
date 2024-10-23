@@ -52,7 +52,7 @@ public abstract class IntegrationTests : IAsyncLifetime
     switch (_databaseProvider)
     {
       case DatabaseProvider.EntityFrameworkCorePostgreSQL:
-        connectionString = configuration.GetValue<string>("POSTGRESQLCONNSTR_Portal")?.Replace("{Database}", GetType().Name) ?? string.Empty;
+        connectionString = configuration.GetValue<string>("POSTGRESQLCONNSTR_Faktur")?.Replace("{Database}", GetType().Name) ?? string.Empty;
         services.AddFakturWithEntityFrameworkCorePostgreSQL(connectionString);
         break;
       case DatabaseProvider.EntityFrameworkCoreSqlServer:
