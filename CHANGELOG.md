@@ -15,6 +15,10 @@ Nothing yet.
 
 - Implemented publication to DockerHub.
 
+### Fixed
+
+- Fixed NuGet vulnerability.
+
 ## [2.0.0] - 2024-04-20
 
 ### Added
