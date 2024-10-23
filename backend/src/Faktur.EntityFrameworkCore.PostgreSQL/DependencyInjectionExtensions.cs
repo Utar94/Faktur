@@ -8,7 +8,7 @@ namespace Faktur.EntityFrameworkCore.PostgreSQL;
 
 public static class DependencyInjectionExtensions
 {
-  private const string ConfigurationKey = "POSTGRESQLCONNSTR_Portal";
+  private const string ConfigurationKey = "POSTGRESQLCONNSTR_Faktur";
 
   public static IServiceCollection AddFakturWithEntityFrameworkCorePostgreSQL(this IServiceCollection services, IConfiguration configuration)
   {
