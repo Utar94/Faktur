@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Nothing yet.
 
+## [2.0.1] - 2024-10-22
+
+### Added
+
+- Implemented publication to DockerHub.
+
+### Fixed
+
+- Fixed NuGet vulnerability.
+
 ## [2.0.0] - 2024-04-20
 
 ### Added
@@ -47,7 +57,8 @@ Nothing yet.
 - Implemented product management.
 - Implemented receipt management.
 
-[unreleased]: https://github.com/Utar94/Faktur/compare/v2.0.0...HEAD
+[unreleased]: https://github.com/Utar94/Faktur/compare/v2.0.1...HEAD
+[2.0.1]: https://github.com/Utar94/Faktur/compare/v2.0.0...v2.0.1
 [2.0.0]: https://github.com/Utar94/Faktur/compare/v1.7.2...v2.0.0
 [1.7.2]: https://github.com/Utar94/Faktur/compare/v1.7.1...v1.7.2
 [1.7.1]: https://github.com/Utar94/Faktur/releases/tag/v1.7.1
