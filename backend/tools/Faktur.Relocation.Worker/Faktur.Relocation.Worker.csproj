@@ -1,0 +1,43 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Worker">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>dotnet-Faktur.Relocation.Worker-134ea5cb-41d2-4c77-9686-2f758cb3cdec</UserSecretsId>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <DockerfileContext>..\..</DockerfileContext>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Remove="secrets.sample.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="secrets.sample.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Logitar" Version="6.3.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.1" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.21.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Faktur.EntityFrameworkCore.PostgreSQL\Faktur.EntityFrameworkCore.PostgreSQL.csproj" />
+    <ProjectReference Include="..\..\src\Faktur.EntityFrameworkCore.SqlServer\Faktur.EntityFrameworkCore.SqlServer.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="System.Diagnostics" />
+    <Using Include="System.Reflection" />
+  </ItemGroup>
+</Project>
