@@ -1,24 +1,21 @@
 ﻿using Faktur.Relocation.Worker.Commands;
-using Logitar.EventSourcing;
+using Logitar.EventSourcing.EntityFrameworkCore.Relational;
 using MediatR;
 
 namespace Faktur.Relocation.Worker;
 
 internal class Worker : BackgroundService
 {
-  private const string ActorIdKey = "ActorId";
   private const string GenericErrorMessage = "An unhandled exception occurred.";
 
-  private readonly IConfiguration _configuration;
   private readonly IHostApplicationLifetime _hostApplicationLifetime;
   private readonly ILogger<Worker> _logger;
   private readonly IServiceProvider _serviceProvider;
 
   private LogLevel _result = LogLevel.Information; // NOTE(fpion): "Information" means success.
 
-  public Worker(IConfiguration configuration, IHostApplicationLifetime hostApplicationLifetime, ILogger<Worker> logger, IServiceProvider serviceProvider)
+  public Worker(IHostApplicationLifetime hostApplicationLifetime, ILogger<Worker> logger, IServiceProvider serviceProvider)
   {
-    _configuration = configuration;
     _hostApplicationLifetime = hostApplicationLifetime;
     _logger = logger;
     _serviceProvider = serviceProvider;
@@ -34,15 +31,8 @@ internal class Worker : BackgroundService
 
     try
     {
-      IReadOnlyCollection<DomainEvent> changes = await mediator.Send(new ExtractChangesCommand(), cancellationToken);
-
-      ActorId actorId = GetActorId();
-      foreach (DomainEvent change in changes)
-      {
-        change.ActorId = actorId;
-      }
-
-      await mediator.Send(new LoadChangesCommand(changes), cancellationToken);
+      IReadOnlyCollection<EventEntity> events = await mediator.Send(new ExtractEventsCommand(), cancellationToken);
+      await mediator.Send(new LoadEventsCommand(events), cancellationToken);
     }
     catch (Exception exception)
     {
@@ -72,12 +62,5 @@ internal class Worker : BackgroundService
 
       _hostApplicationLifetime.StopApplication();
     }
-  }
-  private ActorId GetActorId()
-  {
-    string? value = _configuration.GetValue<string>(ActorIdKey);
-    return string.IsNullOrWhiteSpace(value)
-      ? throw new InvalidOperationException($"The configuration '{ActorIdKey}' is required.")
-      : new(value);
   }
 }
