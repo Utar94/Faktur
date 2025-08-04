@@ -22,6 +22,7 @@ services:
     container_name: Faktur_portal
     depends_on:
       - faktur_mssql
+      - faktur_postgres
     restart: unless-stopped
     environment:
       EnableBasicAuthentication: "true"
@@ -39,6 +40,8 @@ services:
     container_name: Faktur_backend
     depends_on:
       - faktur_mssql
+      - faktur_portal
+      - faktur_postgres
     restart: unless-stopped
     environment:
       ASPNETCORE_Environment: Development
